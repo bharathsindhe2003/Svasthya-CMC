@@ -32,9 +32,7 @@ if (fb !== undefined) {
       console.log("Messaging initialized successfully.");
 
       navigator.serviceWorker
-        // Register the FCM service worker under the /production scope
-        // Use an absolute URL so it always resolves correctly from /production/index.html
-        .register(new URL("../../../production/firebase-messaging-sw.js", window.location.href).href)
+        .register(new URL("../../../production/firebase-messaging-sw.js", import.meta.url))
         .then((registration) => {
           console.log("notification [notification.js] Service worker registered successfully.", registration.scope);
           messaging.useServiceWorker(registration);
