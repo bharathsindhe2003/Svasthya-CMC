@@ -1,6 +1,6 @@
 import { fb } from "../livepage/database_function.js";
 import { heartrate_data, blood_pressure_data, respiration_rate_data, acceleration_data, blood_oxygen_data, temperature_data, ews_value_passing } from "../livepage/live-custom.js";
-import { NoEcgData, NoPpgData, NoRRData } from "../livepage/EchartGraphs.js";
+import { NoEcgData, NoPpgData, NoRRData, NoData } from "../livepage/EchartGraphs.js";
 
 var username;
 var heart_rate;
@@ -289,9 +289,13 @@ try {
           }
         }
         if (patientEWSData) {
-          ews_color = patientEWSData.color !== undefined && patientEWSData.color !== null && patientEWSData.color !== "" ? patientEWSData.color : null;
-          ews_score = patientEWSData.ews_score !== undefined && patientEWSData.ews_score !== null && patientEWSData.ews_score !== "" ? parseInt(patientEWSData.ews_score, 10) : null;
-          ews_value_passing(ews_score, ews_color);
+          const ewsColor = patientEWSData.color !== undefined && patientEWSData.color !== null && patientEWSData.color !== "" ? patientEWSData.color : null;
+          const parsedEwsScore = patientEWSData.ews_score !== undefined && patientEWSData.ews_score !== null && patientEWSData.ews_score !== "" ? parseInt(patientEWSData.ews_score, 10) : null;
+          const ewsScore = Number.isNaN(parsedEwsScore) ? null : parsedEwsScore;
+
+          ews_value_passing_context(ewsScore, ewsColor);
+        } else {
+          ews_value_passing_context(NoData);
         }
       })
       .catch((error) => {
@@ -517,33 +521,33 @@ function openSymptomImagePopup(imageSrc, grid, painspot) {
   img.src = imageSrc;
   modal.style.display = "flex";
 }
-// function ews_value_passing(ews_value, ews_color) {
-//   try {
-//     const cardContainer = document.getElementById("ews_id");
-//     const scoreElement = document.getElementById("ews_id1");
-//     const colorBar = document.getElementById("ews_color1");
+function ews_value_passing_context(ews_value, ews_color) {
+  try {
+    const cardContainer = document.getElementById("context_ews_id");
+    const scoreElement = document.getElementById("context_ews_id1");
+    const colorBar = document.getElementById("context_ews_color1");
 
-//     if (!cardContainer || !scoreElement || !colorBar) {
-//       return;
-//     }
+    if (!cardContainer || !scoreElement || !colorBar) {
+      return;
+    }
 
-//     // Treat missing/placeholder or non-numeric values as "no data" and hide the card
-//     const isNoData = ews_value === undefined || ews_value === null || ews_value === "" || ews_value === "--" || typeof ews_value === "object";
+    // Treat missing/placeholder or non-numeric values as "no data" and hide the card
+    const isNoData = ews_value === undefined || ews_value === null || ews_value === "" || ews_value === "--" || typeof ews_value === "object";
 
-//     if (isNoData) {
-//       scoreElement.innerHTML = "";
-//       colorBar.style.backgroundColor = "#ffffff00";
-//       cardContainer.style.display = "none";
-//       return;
-//     }
+    if (isNoData) {
+      scoreElement.innerHTML = "";
+      colorBar.style.backgroundColor = "#ffffff00";
+      cardContainer.style.display = "none";
+      return;
+    }
 
-//     cardContainer.style.display = "block";
-//     colorBar.style.backgroundColor = ews_color || colorBar.style.backgroundColor || "#ffffff";
-//     scoreElement.innerHTML = "EWS Score - " + ews_value;
-//   } catch (e) {
-//     console.log("[live-custom.js] Error in ews_value_passing:", e);
-//   }
-// }
+    cardContainer.style.display = "block";
+    colorBar.style.backgroundColor = ews_color || colorBar.style.backgroundColor || "#ffffff";
+    scoreElement.innerHTML = "EWS Score - " + ews_value;
+  } catch (e) {
+    console.log("[live-custom.js] Error in ews_value_passing:", e);
+  }
+}
 function ECG_data(LiveEcgValues, date, time, option1, value, ecgdata, endzoom) {
   var EcgData;
   var contextECG;

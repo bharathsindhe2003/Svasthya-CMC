@@ -8,11 +8,13 @@ var temperature_opt;
 var blood_pressure_opt;
 var Respiration_opt;
 var vital_notifications_opt;
+var vital_notifications_2_opt;
 
 const ews_score_echart_context_graph = echarts.init(document.getElementById("ews_score_echart_context"));
 const context_assment_graph = echarts.init(document.getElementById("context_assessment_echart_context"));
 const threshold_notifications_graph = echarts.init(document.getElementById("threshold_notifications_echart_content"));
 const vital_notifications_graph = echarts.init(document.getElementById("vital_notifications_echart_content"));
+const vital_notifications_2_graph = echarts.init(document.getElementById("vital_notifications_2_echart_content"));
 const ECG_scatter_graph = echarts.init(document.getElementById("ecg_echart_content"));
 const Heart_rate_graph = echarts.init(document.getElementById("heart_rate_echart_content"));
 const blood_oxygen_graph = echarts.init(document.getElementById("spo2_echart_content"));
@@ -558,6 +560,169 @@ function history_context_assessment_2(min_time, max_time, id, context_timestamp)
     //     openModal(url);
     //   });
     // }
+  } catch (error) {
+    console.error(" [history_UI_module.js] Error in history_context_assessment function:", error);
+  }
+}
+function history_vital_notification_2(min_time, max_time, id, context_timestamp) {
+  try {
+    if (!$("#vital_notifications_2_echart_content").length) {
+      return;
+    }
+
+    var context_data = context_timestamp || [];
+
+    context_data.unshift([min_time * 1000, null]);
+    context_data.push([max_time * 1000, null]);
+
+    vital_notifications_2_opt = {
+      grid: {
+        top: 30,
+        left: 30,
+        right: 30,
+        bottom: 80,
+      },
+      dataZoom: [
+        {
+          type: "inside",
+          xAxisIndex: [0],
+          zoomOnMouseWheel: "ctrl",
+          moveOnMouseMove: true,
+          moveOnMouseWheel: true,
+          filterMode: "none",
+          realtime: true,
+          start: 0,
+          end: 100,
+          minSpan: 0.1,
+        },
+        {
+          type: "slider",
+          xAxisIndex: [0],
+          handleIcon: "pin",
+          show: true,
+          showDetail: false,
+          handleSize: "100%",
+          height: 25,
+          handleStyle: {
+            color: "#0865C1",
+            borderColor: "#ACB8D1",
+            borderWidth: 1,
+          },
+          start: 0,
+          end: 100,
+        },
+      ],
+
+      xAxis: {
+        name: "Time",
+        nameLocation: "end",
+        nameGap: 1,
+        type: "time",
+        boundaryGap: true,
+        scale: true,
+        min: "dataMin",
+        max: "dataMax",
+        axisTick: {
+          show: false,
+        },
+        axisLabel: {
+          rotate: 40,
+          show: true,
+          margin: 12,
+          hideOverlap: true,
+          fontStyle: "oblique",
+          fontSize: 10,
+          formatter: "{d}-{MM}" + "\n" + "{HH}:{mm}",
+          textStyle: {
+            color: "#ffffff",
+          },
+        },
+        splitLine: {
+          show: false,
+          opacity: 1,
+          lineStyle: {
+            color: "#0277ada9",
+            width: 1,
+          },
+        },
+        splitArea: {
+          interval: "auto",
+          show: false,
+        },
+      },
+
+      yAxis: {
+        type: "value",
+        boundaryGap: [0, "100%"],
+        min: function (finaldata) {
+          return finaldata.min - 5;
+        },
+        max: function (finaldata) {
+          return finaldata.max + 5;
+        },
+        splitLine: {
+          show: false,
+          lineStyle: {
+            color: "#0277ada9",
+            width: 1,
+          },
+        },
+        axisLine: {
+          show: true,
+        },
+        axisLabel: {
+          show: false,
+        },
+        axisTick: {
+          show: false,
+        },
+        minorSplitLine: {
+          show: false,
+          lineStyle: {
+            color: "#2178a049",
+          },
+        },
+      },
+      tooltip: {
+        trigger: "axis",
+        formatter: "Time : {dd}/{MM}/{yy}" + "\n" + "{HH}:{mm}",
+        axisPointer: {
+          show: false,
+        },
+        textStyle: {
+          color: "#4C5964",
+          fontSize: 12,
+        },
+      },
+
+      series: [
+        {
+          name: "Time:",
+          type: "scatter",
+          showSymbol: false,
+          data: context_data,
+          symbol: "circle",
+          symbolSize: 10,
+        },
+      ],
+    };
+
+    vital_notifications_2_graph.clear();
+    vital_notifications_2_graph.setOption(vital_notifications_2_opt);
+
+    if (typeof vital_notifications_2_graph.off === "function") {
+      vital_notifications_2_graph.off("click");
+    }
+
+    vital_notifications_2_graph.on("click", function (param) {
+      var timestamp = param.data[0];
+      var param1 = btoa(timestamp / 1000);
+      var param2 = btoa(id);
+      var param3 = btoa("1");
+
+      var url = "context_assment.html" + "?param1=" + param1 + "&param2=" + param2 + "&param3=" + param3;
+      openModal(url);
+    });
   } catch (error) {
     console.error(" [history_UI_module.js] Error in history_context_assessment function:", error);
   }
@@ -2101,4 +2266,5 @@ export {
   history_Respiration_Rate,
   history_threshold_triggers,
   history_context_assessment_2,
+  history_vital_notification_2,
 };

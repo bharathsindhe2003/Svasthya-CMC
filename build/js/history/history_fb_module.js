@@ -9,6 +9,7 @@ import {
   history_Respiration_Rate,
   history_threshold_triggers,
   history_context_assessment_2,
+  history_vital_notification_2,
 } from "./history_UI_module.js";
 // import { showToast } from "../backend/toastmsg.js";
 import { fb } from "../livepage/database_function.js";
@@ -41,6 +42,8 @@ export function firebase(min_time, max_time, localarray, trim) {
     const EWS = fb.database().ref().child("EWS").child(id).orderByKey().startAt(start_index).endAt(end_index);
     var ews_score = [];
 
+    var vital_notification_2 = fb.database().ref().child("vital_trigger").child(id).orderByKey().startAt(start_index).endAt(end_index);
+    const vital_notification_2_timestamps = [];
     function init_echarts() {
       if (typeof echarts === "undefined") {
         return;
@@ -196,6 +199,23 @@ export function firebase(min_time, max_time, localarray, trim) {
             console.log("[history_fb_module.js] context_timestamp", context_timestamp);
             // history_context_assessment(min_time, max_time, id, context_timestamp);
             history_context_assessment_2(min_time, max_time, id, context_timestamp);
+          })
+          .catch((error) => {
+            console.error("[history_fb_module.js] Error fetching Firebase data:", error);
+          }),
+        vital_notification_2
+          .once("value", function (snapshot) {
+            if (snapshot.val() != null) {
+              snapshot.forEach((data) => {
+                var tme_in_ms = data.key * 1000;
+                vital_notification_2_timestamps.push([parseInt(tme_in_ms), parseInt(5)]);
+              });
+            } else {
+              console.log("[history_fb_module.js] No Context Assessment data available for the given time range.");
+            }
+            console.log("[history_fb_module.js] vital_notification_2_timestamps", vital_notification_2_timestamps);
+            // history_context_assessment(min_time, max_time, id, context_timestamp);
+            history_vital_notification_2(min_time, max_time, id, vital_notification_2_timestamps);
           })
           .catch((error) => {
             console.error("[history_fb_module.js] Error fetching Firebase data:", error);
