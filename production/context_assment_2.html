@@ -1,0 +1,156 @@
+<!-- <!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> -->
+<!-- Meta, title, CSS, favicons, etc. -->
+<!-- <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" /> -->
+<!--<link rel="icon" href="images/favicon.ico" type="image/ico" />-->
+<!-- <link rel="icon" href="images/svasthyaicon2.ico" type="image/ico" /> -->
+
+<!-- <title>Svasthya | ContextAssesment</title> -->
+
+<!-- Bootstrap -->
+<!-- <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" /> -->
+<!-- Font Awesome -->
+<!-- <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" /> -->
+<!-- NProgress -->
+<!-- <link href="../vendors/nprogress/nprogress.css" rel="stylesheet" /> -->
+<!-- iCheck -->
+<!-- <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet" /> -->
+<!-- <link href="../build/css/lightbox.css" rel="stylesheet" /> -->
+<!-- bootstrap-progressbar -->
+<!-- <link href="../vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet" /> -->
+<!-- JQVMap -->
+<!-- <link href="../vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet" /> -->
+<!-- bootstrap-daterangepicker -->
+<!-- <link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" /> -->
+
+<!-- Custom Theme Style -->
+
+<!-- <link href="../build/css/context_assment_LeftandTopNavigation.css" rel="stylesheet" /> -->
+<!-- <link href="../build/css/context_assment_LiveRightColomn.css" rel="stylesheet" /> -->
+
+<!-- Layout overrides for compact popup in iframe -->
+<!-- <style> -->
+/* Let the popup page shrink to fit its content instead of filling the viewport */
+<!-- .nav-md .container.body .right_col {
+        height: auto;
+        min-height: 0;
+        padding: 10px 10px 20px;
+      }
+
+      /* Make the inner panel wrap its content instead of stretching */
+      .right_col .x_panel {
+        height: auto;
+      }
+
+      /* Remove forced vertical centering so graph starts near the top */
+      .right_col .LiveSpecification > .container {
+        justify-content: flex-start;
+        min-height: 0;
+      }
+    </style>
+  </head>
+
+  <body class="nav-md">
+    <div class="container body">
+      <div class="main_container">
+        <div
+          id="loader"
+          style="
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+            z-index: 9999;
+          "></div>
+      </div>
+      <div class="right_col" role="main">
+        <div class="LiveSpecification">
+          <div class="Live_context_assessment">
+            <p id="ContextSymptomName"></p>
+          </div>
+
+          <div class="container" style="display: flex; flex-direction: column; width: 100%; align-items: center; justify-content: flex-start"> -->
+<!-- Top area: Min/Max Context Date & Time on a single line -->
+
+<!-- Below: Graph panel -->
+<!-- <div class="x_panel" style="width: 100%; margin: 0 auto">
+              <div class="x_title">
+                <h2 class="context_header" id="context_header"></h2>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content"><div id="context_graph" style="width: 100%; height: 200px"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="lightboxcontext">
+      <div id="lightboxcontainercontext"></div>
+      <div id="closebuttoncontext">&times;</div>
+    </div> -->
+<!-- jQuery -->
+<!-- <script src="../vendors/jquery/dist/jquery.min.js"></script> -->
+<!-- Bootstrap -->
+<!-- <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script> -->
+<!-- FastClick -->
+<!-- <script src="../vendors/fastclick/lib/fastclick.js"></script> -->
+<!-- NProgress -->
+<!-- <script src="../vendors/nprogress/nprogress.js"></script> -->
+<!-- Chart.js -->
+<!-- <script src="../vendors/Chart.js/dist/Chart.min.js"></script> -->
+<!-- gauge.js -->
+<!-- <script src="../vendors/gauge.js/dist/gauge.min.js"></script> -->
+<!-- bootstrap-progressbar -->
+<!-- <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script> -->
+<!-- iCheck -->
+<!-- <script src="../vendors/iCheck/icheck.min.js"></script> -->
+<!-- Skycons -->
+<!-- <script src="../vendors/skycons/skycons.js"></script> -->
+<!-- Flot -->
+<!-- <script src="../vendors/Flot/jquery.flot.js"></script>
+    <script src="../vendors/Flot/jquery.flot.pie.js"></script>
+    <script src="../vendors/Flot/jquery.flot.time.js"></script>
+    <script src="../vendors/Flot/jquery.flot.stack.js"></script>
+    <script src="../vendors/Flot/jquery.flot.resize.js"></script> -->
+<!-- Flot plugins -->
+<!-- <script src="../vendors/flot.orderbars/js/jquery.flot.orderBars.js"></script>
+    <script src="../vendors/flot-spline/js/jquery.flot.spline.min.js"></script>
+    <script src="../vendors/flot.curvedlines/curvedLines.js"></script> -->
+<!-- DateJS -->
+<!-- <script src="../vendors/DateJS/build/date.js"></script> -->
+<!-- JQVMap -->
+<!-- <script src="../vendors/jqvmap/dist/jquery.vmap.js"></script> -->
+<!-- <script src="../vendors/jqvmap/dist/maps/jquery.vmap.world.js"></script> -->
+<!-- <script src="../vendors/jqvmap/examples/js/jquery.vmap.sampledata.js"></script> -->
+<!-- bootstrap-daterangepicker -->
+<!-- <script src="../vendors/moment/min/moment.min.js"></script>
+    <script src="../vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <script src="../vendors/echarts/dist/echarts.min.js"></script> -->
+<!-- <script src="../vendors/echarts/map/js/world.js"></script> -->
+<!-- <script src="../vendors/jquery-sparkline/dist/jquery.sparkline.min.js"></script> -->
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+          https://firebase.google.com/docs/web/setup#available-libraries -->
+<!-- <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-analytics.js"></script> -->
+<!-- Custom Theme Scripts -->
+<!-- <script type="module" src="../build/js/context_assessment_2/context_assessment_UI_2.js"></script>
+    <script type="module" src="../build/js/LeftandTopNavigation/LeftandTopNavigation.js"></script> -->
+
+<!-- easy-pie-chart -->
+<!-- <script src="../vendors/jquery.easy-pie-chart/dist/jquery.easypiechart.min.js"></script>
+  </body>
+</html> -->

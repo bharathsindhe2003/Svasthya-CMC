@@ -1,0 +1,30 @@
+Application: Svasthya Playstore Respiration (CMC)
+
+Company: TANTRAGYAAN — Unit of TANTROTTOLAN SOLUTIONS LLP.
+
+<hr>
+
+# Version Control
+
+1. Version Update: 0.1.0
+
+   Features:
+   - Used the Svasthya Playstore Respiration as base Version
+   - Added blinking effect and sound effect for a patients card if his/her vital cross threshold values
+   - Redsigned the Congiration tab
+
+RELEASE DATE: 17-04-2026
+
+<hr>
+
+2. Version Update: 0.1.1
+
+   Features:
+   - Removed double click for all charts in HIstory tab
+   - Rounded the Tempratuere to 2 digit after decimal in History Tab
+   - Resolved the issue for flickring in dashborad page
+   - Resolved issue with battery icon not showing.
+   - Redsigned the patient card in dashborad page
+   - Redsigned the history tab
+
+RELEASE DATE: 18-04-2026

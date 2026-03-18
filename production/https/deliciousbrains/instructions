@@ -1,0 +1,64 @@
+
+1.
+        openssl genrsa -des3 -out myCA.key 2048
+
+2.
+openssl req -x509 -new -nodes -key myCA.key -sha256 -days 1825 -out myCA.pem
+
+
+3.
+winpty openssl genrsa -des3 -out myCA.key 2048
+
+
+4.
+sudo cp /home/trainee/Documents/svasthya\ web\ app/2023/April\ 2023/10-04-2023/svasthya/production/https/deliciousbrains/myCA.pem /usr/local/share/ca-certificates/
+
+
+# Adding the Root Certificate to Linux
+
+# If it isn’t already installed, install the ca-certificates package. 
+sudo apt-get install -y ca-certificates
+
+# Copy the myCA.pem file to the /usr/local/share/ca-certificates directory as a myCA.crt file. 
+        sudo cp ~/certs/myCA.pem /usr/local/share/ca-certificates/myCA.crt
+
+# Update the certificate store 
+sudo update-ca-certificates
+
+
+
+# Creating CA-Signed Certificates for Your Dev Sites
+
+openssl genrsa -out svasthya.test.key 2048
+
+# Then we create a CSR:
+
+openssl req -new -key svasthya.test.key -out svasthya.test.csr
+
+
+# create an X509 V3 certificate extension config file,
+# which is used to define the Subject Alternative Name (SAN) for the certificate. 
+# In our case, we’ll create a configuration file called svasthya.test.ext containing the following text:
+
+
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = svasthya.test
+
+
+
+
+# We’ll be running openssl x509 because the x509 command allows us to edit certificate trust settings.
+# In this case we’re using it to sign the certificate in conjunction with the config file, which allows us to set the Subject Alternative Name. I originally found this answer on Stack Overflow.
+
+# Now we run the command to create the certificate: using our CSR, the CA private key,
+# the CA certificate, and the config file:
+
+openssl x509 -req -in svasthya.test.csr -CA myCA.pem -CAkey myCA.key \
+-CAcreateserial -out svasthya.test.crt -days 825 -sha256 -extfile svasthya.test.ext
+
+

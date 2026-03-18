@@ -1,0 +1,971 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="images/svasthyaicon2.ico" type="image/ico" />
+
+    <title>Svasthya | Live and History</title>
+    <script type="module" src="../build/js/livepage/database_function.js"></script>
+    <script type="module" src="../build/js/videoCall/index.js"></script>
+    <script type="module" src="../build/js/LeftandTopNavigation/LeftandTopNavigation.js"></script>
+    <script type="module" src="../build/js/backend/notification.js"></script>
+    <script type="module" src="../build/js/vitals/vitals_module.js"></script>
+    <!-- Bootstrap -->
+    <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../build/js/videoCall/index.css" />
+    <!-- NProgress -->
+    <link href="../vendors/nprogress/nprogress.css" rel="stylesheet" />
+    <!-- iCheck -->
+    <link href="../vendors/iCheck/skins/flat/green.css" rel="stylesheet" />
+    <link href="../build/css/incomingDialogbox.css" rel="stylesheet" />
+    <link href="../build/css/lightbox.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.2.1/css/all.css" />
+    <!-- bootstrap-progressbar -->
+    <link href="../vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet" />
+    <!-- JQVMap -->
+    <link href="../vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet" />
+    <!-- bootstrap-daterangepicker -->
+    <link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
+
+    <!-- Custom Theme Style -->
+    <script type="module" src="../build/js/history/option-module.js"></script>
+
+    <!-- <link href="../build/css/custom.min.css" rel="stylesheet"> -->
+    <link href="../build/css/LeftandTopNavigation.css" rel="stylesheet" />
+    <link href="../build/css/LiveRightColomn.css" rel="stylesheet" />
+    <link href="../build/css/vital.css" rel="stylesheet" />
+    <!-- Final unified layout overrides to eliminate gap between sidebar and content -->
+    <link href="../build/css/layout-fix.css" rel="stylesheet" />
+    <script src="https://cdn.firebase.com/js/client/2.2.1/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-messaging.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script type="module" src="../build/js/backend/incomingpopup.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  </head>
+  <body class="nav-md">
+    <div class="container body">
+      <div class="main_container">
+        <div class="left_col scroll-view">
+          <div class="nav_title">
+            <a onclick="dashboardclick()" class="site_title"><img src="images/svasthyaicon.png" width="55" height="55" /> <span id="SvasthyaTitle">SVASTHYA &trade;</span></a>
+          </div>
+
+          <!-- <div class="clearfix"></div> -->
+
+          <!-- menu profile quick info -->
+          <div id="left_colomn_details" class="left_colomn_details">
+            <div class="profile clearfix">
+              <div class="profile_pic">
+                <!-- <img src="images/${gender}.jpg" alt="..." width="50" height="70" class="img-circle profile_img"> -->
+                <img id="PatientImg" alt="..." class="img-circle profile_img" />
+              </div>
+              <div id="profile_info" class="profile_info">
+                <h2 id="PatientName"></h2>
+                <h2 id="PatientGender"></h2>
+                <h2 id="PatientAge"></h2>
+                <h2 id="PatientHeight"></h2>
+                <h2 id="PatientWeight"></h2>
+              </div>
+              <div class="profile_info2">
+                <h2 id="PatientAilments"></h2>
+                <h2 id="PatientMob"></h2>
+                <h2 id="PatientEmail"></h2>
+              </div>
+            </div>
+          </div>
+          <br />
+
+          <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+            <div class="menu_section">
+              <!-- <h3></h3> -->
+              <ul class="nav side-menu">
+                <li>
+                  <a id="sidebarToggle" class="tablink" title="Toggle Sidebar"><i class="fa fa-bars"></i>&nbsp; </a>
+                </li>
+                <li>
+                  <a class="tablink" id="defaultOpen" title="Live"><i class="fa fa-desktop"></i><span class="menu-text">&nbsp; Live</span></a>
+                </li>
+                <li>
+                  <a class="tablink" id="openhistory" title="History"><i class="fa fa-bar-chart-o"></i><span class="menu-text">&nbsp; History</span></a>
+                </li>
+                <li>
+                  <a class="tablink" id="openvitals" title="Configuration"><i class="fa fa-heart"></i><span class="menu-text">&nbsp; Configuration</span></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- top navigation -->
+        <div class="top_nav">
+          <div class="nav_menu">
+            <div class="Righthand">
+              <!-- <a id="joinclick"><i class="fa-solid fa-video"></i>&nbsp; &nbsp;</a> -->
+              <span id="battery-percentage" style="color: white"></span>&nbsp; &nbsp;
+              <a onclick="dashboardclick()"><i class="fa fa-home"></i> Dashboard &nbsp;</a>
+              <span
+                ><a id="logout"><i class="fa fa-power-off"></i> Logout</a></span
+              >
+            </div>
+            <script>
+              function dashboardclick() {
+                localStorage.removeItem("patient_unique_id");
+                location.replace("dashboard.html");
+              }
+            </script>
+            <div class="Lefthand"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="LiveComponents" class="right_col" role="main">
+        <div id="LiveSpecification" class="LiveSpecification">
+          <p id="SymptomMsg"></p>
+          <!-- ECG-->
+          <!-- Ews card -->
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div id="ews_id" class="ews_card_js">
+              <div class="ews_card">
+                <div class="animated flipInY col-lg-12 col-md-12 col-sm-12">
+                  <div id="ews_color1" class="ews_bar" style="padding-top: 5px">
+                    <p class="ews_no" id="ews_id1"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /Ews card -->
+          <!-- new code start -->
+          <!-- End of first column -->
+
+          <!-- Main content row with 70-30 split -->
+          <div class="row">
+            <!-- Left column - 70% width for charts -->
+            <div class="col-md-8 col-sm-8 col-lg-8">
+              <!-- ECG Chart -->
+              <div class="animated flipInY col-lg-6 col-md-6 col-sm-2">
+                <div style="display: flex; gap: 12px; flex-wrap: nowrap; align-items: center; white-space: nowrap">
+                  <span style="color: black">ECG Date : <label id="ecgdate"></label></span>
+                  <span style="text-align: justify; color: black">&nbsp;ECG Time : <label id="ecgtime"></label></span>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-12 col-sm-12 col-lg-12">
+                  <div class="x_panel live-chart-panel">
+                    <div class="x_title">
+                      <h2>Electrocardiogram (ECG)</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div id="LiveECGId" style="width: 100%"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="animated flipInY col-lg-6 col-md-6 col-sm-6">
+                <div style="display: flex; gap: 12px; flex-wrap: nowrap; align-items: center; white-space: nowrap">
+                  <span style="color: black">PPG Date : <label id="ppgdate"></label></span>
+                  <span style="text-align: justify; color: black">&nbsp;PPG Time : <label id="ppgtime"></label></span>
+                </div>
+              </div>
+              <!-- PPG Chart -->
+              <div class="row">
+                <div class="col-md-12 col-sm-12 col-lg-12">
+                  <div class="x_panel live-chart-panel">
+                    <div class="x_title">
+                      <h2>Photoplethysmogram (PPG)</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div id="LivePPGId" style="width: 100%"></div>
+                  </div>
+                </div>
+              </div>
+              <!-- Respiration Rate Chart -->
+
+              <div class="animated flipInY col-lg-6 col-md-6 col-sm-6">
+                <div style="display: flex; gap: 12px; flex-wrap: nowrap; align-items: center; white-space: nowrap">
+                  <span style="color: black">RR Date : <label id="rrdate"></label></span>
+                  <span style="text-align: justify; color: black">&nbsp;RR Time : <label id="rrtime"></label></span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 col-sm-12 col-lg-12">
+                  <div class="x_panel live-chart-panel">
+                    <div class="x_title">
+                      <h2>Respiration Rate (RR)</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div id="LiveRRId" style="width: 100%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right column - 30% width for vital signs gauges -->
+            <div class="col-md-4 col-sm-4 col-lg-4">
+              <div class="row">
+                <div class="col-md-12 col-sm-12 col-lg-12">
+                  <span style="color: black">Vital Date : <label id="sensordate"></label></span>
+                  <span style="text-align: justify; color: black">&nbsp;Vital Time : <label id="sensortime"></label></span>
+                </div>
+              </div>
+
+              <!-- Vital Signs in 2x3 Grid Layout -->
+              <div class="row">
+                <!-- First Row -->
+                <div class="col-md-6 col-sm-6 col-lg-6">
+                  <div class="x_panel fixed_height_310 gauge-inline">
+                    <div class="x_content">
+                      <div id="LiveHeartRateId" class="echartsgauges1"></div>
+                    </div>
+                    <h4 class="name_title">Heart Rate</h4>
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-sm-6 col-lg-6">
+                  <div class="x_panel fixed_height_310 gauge-inline">
+                    <div class="x_content">
+                      <div id="LiveBloodOxygenId" class="echartsgauges1"></div>
+                    </div>
+                    <h4 class="name_title">Blood Oxygen</h4>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <!-- Second Row -->
+                <div class="col-md-6 col-sm-6 col-lg-6">
+                  <div class="x_panel fixed_height_310 gauge-inline">
+                    <div class="x_content">
+                      <div id="LiveTemperatureId" class="echartsgauges1"></div>
+                    </div>
+                    <h4 class="name_title">Temperature</h4>
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-sm-6 col-lg-6">
+                  <div class="x_panel fixed_height_310 gauge-inline">
+                    <div class="x_content">
+                      <div id="LiveAccelrationId" class="echartsgauges1"></div>
+                    </div>
+                    <h4 class="name_title">Activity</h4>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <!-- Third Row -->
+                <div class="col-md-6 col-sm-6 col-lg-6">
+                  <div class="x_panel fixed_height_310 gauge-inline">
+                    <div class="x_content">
+                      <div id="LiveBloodPressureId" class="echartsgauges1"></div>
+                    </div>
+                    <h4 class="name_title">Blood Pressure</h4>
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-sm-6 col-lg-6">
+                  <div class="x_panel ui-ribbon-container fixed_height_310 gauge-inline">
+                    <div class="x_content">
+                      <div id="LiveRespirationRateId" class="echartsgauges1"></div>
+                    </div>
+                    <h4 class="name_title">Respiration Rate</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div style="position: absolute; top: 10px; right: 50px; color: black">
+      <span>Date:<label id="sensordate"></label></span>
+      <span style="text-align: justify; margin-right: 10px; color: black"></span>
+      <span>Time:<label id="sensortime"></label></span>
+    </div> -->
+
+    <div id="HistoryComponents" class="right_col" role="main">
+      <div class="Historyspecification">
+        <div class="history-shell">
+          <!-- <div class="history-hero">
+            <div class="history-hero__copy">
+              <p class="history-hero__eyebrow">Trend Explorer</p>
+              <h1 class="history-hero__title">History Overview</h1>
+              <p class="history-hero__text">Review vitals, waveforms, and notification activity across the selected patient timeline.</p>
+            </div>
+            <div class="history-hero__meta" aria-hidden="true">
+              <div class="history-hero__stat">
+                <span>Views</span>
+                <strong>Signals + alerts</strong>
+              </div>
+              <div class="history-hero__stat">
+                <span>Range</span>
+                <strong>1 hour to 7 days</strong>
+              </div>
+            </div>
+          </div> -->
+
+          <div class="history-toolbar">
+            <div class="history-toolbar__group">
+              <span class="history-toolbar__label">Time Range</span>
+              <div class="Horizontalclick" role="tablist" aria-label="History time range">
+                <button id="onehourbutton" class="Horizontaltablink" onclick="HorizontalNavigationBar('Hour', this, 'white')">Hour</button>
+                <button id="onedaybutton" class="Horizontaltablink" onclick="HorizontalNavigationBar('Day', this, 'white')">Day</button>
+                <button id="oneweekbutton" class="Horizontaltablink" onclick="HorizontalNavigationBar('Week', this, 'white')">Week</button>
+                <button id="custombutton" class="Horizontaltablink" onclick="HorizontalNavigationBar('Custom', this, 'white')">Custom</button>
+              </div>
+            </div>
+
+            <div class="history-toolbar__group history-toolbar__group--compact">
+              <span class="history-toolbar__label">View Mode</span>
+              <div class="HistoryChartclick" role="tablist" aria-label="History chart group">
+                <button
+                  id="historyEightChartButton"
+                  class="HistoryCharttablink"
+                  type="button"
+                  aria-label="Vitals and Signals"
+                  title="Vitals and Signals"
+                  style="height: 25px; width: 100px"
+                  onclick="HistoryChartNavigationBar('HistoryPrimaryCharts', this, 'white')"></button>
+                <button
+                  id="historyTwoChartButton"
+                  class="HistoryCharttablink"
+                  type="button"
+                  style="height: 25px; width: 100px"
+                  aria-label="Notifications"
+                  title="Notifications"
+                  onclick="HistoryChartNavigationBar('HistoryNotificationCharts', this, 'white')"></button>
+              </div>
+            </div>
+          </div>
+
+          <script>
+            function setHistoryButtonState(buttons, activeButton) {
+              for (var index = 0; index < buttons.length; index++) {
+                buttons[index].classList.remove("is-active");
+                buttons[index].setAttribute("aria-pressed", "false");
+              }
+
+              activeButton.classList.add("is-active");
+              activeButton.setAttribute("aria-pressed", "true");
+            }
+
+            function HorizontalNavigationBar(pageName, elmnt, color) {
+              var i, tabcontent, tablinks;
+              tabcontent = document.getElementsByClassName("tabcontent");
+              for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+              }
+              tablinks = document.getElementsByClassName("Horizontaltablink");
+              document.getElementById(pageName).style.display = "block";
+              setHistoryButtonState(tablinks, elmnt);
+            }
+
+            function HistoryChartNavigationBar(pageName, elmnt, color) {
+              var i, chartcontent, chartlinks;
+              chartcontent = document.getElementsByClassName("history-chart-content");
+              for (i = 0; i < chartcontent.length; i++) {
+                chartcontent[i].style.display = "none";
+              }
+              chartlinks = document.getElementsByClassName("HistoryCharttablink");
+              document.getElementById(pageName).style.display = "block";
+              setHistoryButtonState(chartlinks, elmnt);
+
+              try {
+                window.dispatchEvent(new Event("resize"));
+                setTimeout(function () {
+                  window.dispatchEvent(new Event("resize"));
+                }, 150);
+              } catch {
+                // ignore
+              }
+            }
+
+            // Get the element with id="defaultOpen" and click on it
+          </script>
+
+          <!--one hour selection -->
+          <div id="Hour" class="tabcontent history-tabcontent"></div>
+          <!--/one hour selection -->
+
+          <!--one day selection -->
+          <div id="Day" class="tabcontent history-tabcontent"></div>
+          <!--/one day selection -->
+
+          <!--one week  selection -->
+          <div id="Week" class="tabcontent history-tabcontent"></div>
+          <!--/one week  selection -->
+
+          <!--custom Date setting bar -->
+          <div id="Custom" class="tabcontent history-tabcontent history-tabcontent--custom">
+            <div class="DateRangePicker">
+              <form class="history-date-form">
+                <label class="history-field">
+                  <span>From Date</span>
+                  <input type="date" id="fromdate" name="fromdate" />
+                </label>
+                <label class="history-field">
+                  <span>To Date</span>
+                  <input type="date" id="todate" name="todate" />
+                </label>
+                <div class="history-date-actions">
+                  <button id="apply" class="buttonbar buttonbar--primary" type="button">Apply</button>
+                  <button id="cancel" class="buttonbar" type="button">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div id="loader"></div>
+
+          <div id="graphs" class="history-graphs">
+            <div id="HistoryPrimaryCharts" class="history-chart-content">
+              <div class="row" style="margin-bottom: 10px">
+                <!-- EWS Score echart_context -->
+                <div class="col-md-4 col-sm-6 col-xs-12 Graphcard">
+                  <div class="x_panel">
+                    <div class="x_title">
+                      <h2>EWS Score</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                      <div id="ews_score_echart_context" style="width: 95%; height: 250px"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Context Assessment echart_context -->
+                <div class="col-md-4 col-sm-6 col-xs-12 Graphcard">
+                  <div class="x_panel">
+                    <div class="x_title">
+                      <h2>Vitals Data</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                      <div id="context_assessment_echart_context" style="width: 95%; height: 250px"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ECG echart_content -->
+                <div class="col-md-4 col-sm-6 col-xs-12 Graphcard">
+                  <div class="x_panel">
+                    <div class="x_title">
+                      <h2>ECG</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                      <div id="ecg_echart_content" style="width: 95%; height: 250px"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row" style="margin-bottom: 10px">
+                <!-- Heart Rate echart_content -->
+                <div class="col-md-4 col-sm-6 col-xs-12 Graphcard">
+                  <div class="x_panel">
+                    <div class="x_title">
+                      <h2>Heart Rate</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                      <div id="heart_rate_echart_content" style="width: 95%; height: 250px"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Blood Pressure echart_content -->
+                <div class="col-md-4 col-sm-6 col-xs-12 Graphcard">
+                  <div class="x_panel">
+                    <div class="x_title">
+                      <h2>Blood Pressure</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                      <div id="blood_pressure_echart_content" style="width: 95%; height: 250px"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SPO2 echart_content -->
+                <div class="col-md-4 col-sm-6 col-xs-12 Graphcard">
+                  <div class="x_panel">
+                    <div class="x_title">
+                      <h2>SPO2</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                      <div id="spo2_echart_content" style="width: 95%; height: 250px"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row" style="margin-bottom: 10px">
+                <!-- Temperature echart_content -->
+                <div class="col-md-6 col-sm-6 col-xs-12 Graphcard">
+                  <div class="x_panel">
+                    <div class="x_title">
+                      <h2>Temperature</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                      <div id="temperature_echart_content" style="width: 95%; height: 250px"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Respiration Rate echart_content -->
+                <div class="col-md-6 col-sm-6 col-xs-12 Graphcard">
+                  <div class="x_panel">
+                    <div class="x_title">
+                      <h2>Respiration Rate</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                      <div id="respiration_rate_echart_content" style="width: 95%; height: 250px"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="HistoryNotificationCharts" class="history-chart-content">
+              <div class="row" style="margin-bottom: 10px">
+                <!-- Vital Notifications echart_content -->
+                <div class="col-md-6 col-sm-6 col-xs-12 Graphcard">
+                  <div class="x_panel">
+                    <div class="x_title">
+                      <h2>Vital Notifications</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                      <div id="vital_notifications_echart_content" style="width: 95%; height: 250px"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Threshold Notifications echart_content -->
+                <div class="col-md-6 col-sm-6 col-xs-12 Graphcard">
+                  <div class="x_panel">
+                    <div class="x_title">
+                      <h2>Threshold Notifications</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                      <div id="threshold_notifications_echart_content" style="width: 95%; height: 250px"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="VitalsComponents"
+      class="right_col"
+      role="main"
+      style="padding: 2rem; background: radial-gradient(circle at top left, rgba(79, 195, 217, 0.18), transparent 30%), linear-gradient(180deg, #f2f9fd 0%, #edf5fb 45%, #f8fbfd 100%)">
+      <section class="vitals-shell">
+        <div class="vitals-hero">
+          <div>
+            <p class="vitals-hero__eyebrow">Threshold Configuration</p>
+          </div>
+          <div class="vitals-hero__actions">
+            <span id="vitalsSaveStatus" class="vitals-save-status" aria-live="polite"></span>
+            <button id="saveVitalsConfig" class="vitals-save-button" type="button">Save Configuration</button>
+          </div>
+        </div>
+
+        <div class="configuration vitals-grid">
+          <article class="vital-card" data-vital-key="spo2">
+            <div class="vital-card__header">
+              <div>
+                <p class="vital-card__eyebrow">Oxygen Threshold</p>
+                <h4>SpO2</h4>
+              </div>
+              <label class="vital-switch" for="spo2toggle">
+                <input id="spo2toggle" class="vital-toggle" type="checkbox" />
+                <span class="vital-switch__track"></span>
+                <span id="spo2togglelabel" class="vital-switch__label">Off</span>
+              </label>
+            </div>
+            <div class="vital-rule is-hidden" id="spo2rule">
+              <label class="vital-field">
+                <select id="spo2condition" class="vital-condition">
+                  <option value="lt">Less than</option>
+                  <option value="gt">Greater than</option>
+                  <option value="between">In between</option>
+                </select>
+              </label>
+              <div class="vital-values" data-vital-values="spo2">
+                <label class="vital-field vital-field--single">
+                  <span>Value</span>
+                  <input id="spo2value" type="number" inputmode="numeric" step="1" placeholder="Enter value" />
+                </label>
+                <label class="vital-field vital-field--min">
+                  <span>Min</span>
+                  <input id="spo2min" type="number" inputmode="numeric" step="1" placeholder="Minimum" />
+                </label>
+                <label class="vital-field vital-field--max">
+                  <span>Max</span>
+                  <input id="spo2max" type="number" inputmode="numeric" step="1" placeholder="Maximum" />
+                </label>
+              </div>
+            </div>
+          </article>
+
+          <article class="vital-card" data-vital-key="hr">
+            <div class="vital-card__header">
+              <div>
+                <p class="vital-card__eyebrow">Pulse Threshold</p>
+                <h4>Heart Rate</h4>
+              </div>
+              <label class="vital-switch" for="hrtoggle">
+                <input id="hrtoggle" class="vital-toggle" type="checkbox" />
+                <span class="vital-switch__track"></span>
+                <span id="hrtogglelabel" class="vital-switch__label">Off</span>
+              </label>
+            </div>
+            <div class="vital-rule is-hidden" id="hrrule">
+              <label class="vital-field">
+                <select id="hrcondition" class="vital-condition">
+                  <option value="lt">Less than</option>
+                  <option value="gt">Greater than</option>
+                  <option value="between">In between</option>
+                </select>
+              </label>
+              <div class="vital-values" data-vital-values="hr">
+                <label class="vital-field vital-field--single">
+                  <span>Value</span>
+                  <input id="hrvalue" type="number" inputmode="numeric" step="1" placeholder="Enter value" />
+                </label>
+                <label class="vital-field vital-field--min">
+                  <span>Min</span>
+                  <input id="hrmin" type="number" inputmode="numeric" step="1" placeholder="Minimum" />
+                </label>
+                <label class="vital-field vital-field--max">
+                  <span>Max</span>
+                  <input id="hrmax" type="number" inputmode="numeric" step="1" placeholder="Maximum" />
+                </label>
+              </div>
+            </div>
+          </article>
+
+          <article class="vital-card" data-vital-key="temp">
+            <div class="vital-card__header">
+              <div>
+                <p class="vital-card__eyebrow">Temperature Threshold</p>
+                <h4>Temperature</h4>
+              </div>
+              <label class="vital-switch" for="temptoggle">
+                <input id="temptoggle" class="vital-toggle" type="checkbox" />
+                <span class="vital-switch__track"></span>
+                <span id="temptogglelabel" class="vital-switch__label">Off</span>
+              </label>
+            </div>
+            <div class="vital-rule is-hidden" id="temprule">
+              <label class="vital-field">
+                <select id="tempcondition" class="vital-condition">
+                  <option value="lt">Less than</option>
+                  <option value="gt">Greater than</option>
+                  <option value="between">In between</option>
+                </select>
+              </label>
+              <div class="vital-values" data-vital-values="temp">
+                <label class="vital-field vital-field--single">
+                  <span>Value</span>
+                  <input id="tempvalue" type="number" inputmode="decimal" step="0.1" placeholder="Enter value" />
+                </label>
+                <label class="vital-field vital-field--min">
+                  <span>Min</span>
+                  <input id="tempmin" type="number" inputmode="decimal" step="0.1" placeholder="Minimum" />
+                </label>
+                <label class="vital-field vital-field--max">
+                  <span>Max</span>
+                  <input id="tempmax" type="number" inputmode="decimal" step="0.1" placeholder="Maximum" />
+                </label>
+              </div>
+            </div>
+          </article>
+
+          <article class="vital-card" data-vital-key="rr">
+            <div class="vital-card__header">
+              <div>
+                <p class="vital-card__eyebrow">Breathing Threshold</p>
+                <h4>Respiratory Rate</h4>
+              </div>
+              <label class="vital-switch" for="rrtoggle">
+                <input id="rrtoggle" class="vital-toggle" type="checkbox" />
+                <span class="vital-switch__track"></span>
+                <span id="rrtogglelabel" class="vital-switch__label">Off</span>
+              </label>
+            </div>
+            <!-- <p class="vital-card__hint">Set a single rule or a breathing range.</p> -->
+            <!-- <div class="vital-off-state" id="rroffstate">NTG</div> -->
+            <div class="vital-rule is-hidden" id="rrrule">
+              <label class="vital-field">
+                <!-- <span>Condition</span> -->
+                <select id="rrcondition" class="vital-condition">
+                  <option value="lt">Less than</option>
+                  <!-- <option value="eq">Equal to</option> -->
+                  <option value="gt">Greater than</option>
+                  <option value="between">In between</option>
+                </select>
+              </label>
+              <div class="vital-values" data-vital-values="rr">
+                <label class="vital-field vital-field--single">
+                  <span>Value</span>
+                  <input id="rrvalue" type="number" inputmode="numeric" step="1" placeholder="Enter value" />
+                </label>
+                <label class="vital-field vital-field--min">
+                  <span>Min</span>
+                  <input id="rrmin" type="number" inputmode="numeric" step="1" placeholder="Minimum" />
+                </label>
+                <label class="vital-field vital-field--max">
+                  <span>Max</span>
+                  <input id="rrmax" type="number" inputmode="numeric" step="1" placeholder="Maximum" />
+                </label>
+              </div>
+            </div>
+          </article>
+
+          <article class="vital-card" data-vital-key="sbp">
+            <div class="vital-card__header">
+              <div>
+                <p class="vital-card__eyebrow">Pressure Threshold</p>
+                <h4>Systolic Blood Pressure</h4>
+              </div>
+              <label class="vital-switch" for="sbptoggle">
+                <input id="sbptoggle" class="vital-toggle" type="checkbox" />
+                <span class="vital-switch__track"></span>
+                <span id="sbptogglelabel" class="vital-switch__label">Off</span>
+              </label>
+            </div>
+            <!-- <p class="vital-card__hint">Configure systolic pressure on its own rule.</p> -->
+            <!-- <div class="vital-off-state" id="sbpoffstate">NTG</div> -->
+            <div class="vital-rule is-hidden" id="sbprule">
+              <label class="vital-field">
+                <!-- <span>Condition</span> -->
+                <select id="sbpcondition" class="vital-condition">
+                  <option value="lt">Less than</option>
+                  <!-- <option value="eq">Equal to</option> -->
+                  <option value="gt">Greater than</option>
+                  <option value="between">In between</option>
+                </select>
+              </label>
+              <div class="vital-values" data-vital-values="sbp">
+                <label class="vital-field vital-field--single">
+                  <span>Value</span>
+                  <input id="sbpvalue" type="number" inputmode="numeric" step="1" placeholder="Enter value" />
+                </label>
+                <label class="vital-field vital-field--min">
+                  <span>Min</span>
+                  <input id="sbpmin" type="number" inputmode="numeric" step="1" placeholder="Minimum" />
+                </label>
+                <label class="vital-field vital-field--max">
+                  <span>Max</span>
+                  <input id="sbpmax" type="number" inputmode="numeric" step="1" placeholder="Maximum" />
+                </label>
+              </div>
+            </div>
+          </article>
+
+          <article class="vital-card" data-vital-key="dbp">
+            <div class="vital-card__header">
+              <div>
+                <p class="vital-card__eyebrow">Pressure Threshold</p>
+                <h4>Diastolic Blood Pressure</h4>
+              </div>
+              <label class="vital-switch" for="dbptoggle">
+                <input id="dbptoggle" class="vital-toggle" type="checkbox" />
+                <span class="vital-switch__track"></span>
+                <span id="dbptogglelabel" class="vital-switch__label">Off</span>
+              </label>
+            </div>
+            <!-- <p class="vital-card__hint">Configure diastolic pressure independently.</p> -->
+            <!-- <div class="vital-off-state" id="dbpoffstate">NTG</div> -->
+            <div class="vital-rule is-hidden" id="dbprule">
+              <label class="vital-field">
+                <!-- <span>Condition</span> -->
+                <select id="dbpcondition" class="vital-condition">
+                  <option value="lt">Less than</option>
+                  <!-- <option value="eq">Equal to</option> -->
+                  <option value="gt">Greater than</option>
+                  <option value="between">In between</option>
+                </select>
+              </label>
+              <div class="vital-values" data-vital-values="dbp">
+                <label class="vital-field vital-field--single">
+                  <span>Value</span>
+                  <input id="dbpvalue" type="number" inputmode="numeric" step="1" placeholder="Enter value" />
+                </label>
+                <label class="vital-field vital-field--min">
+                  <span>Min</span>
+                  <input id="dbpmin" type="number" inputmode="numeric" step="1" placeholder="Minimum" />
+                </label>
+                <label class="vital-field vital-field--max">
+                  <span>Max</span>
+                  <input id="dbpmax" type="number" inputmode="numeric" step="1" placeholder="Maximum" />
+                </label>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <div id="incoming" class="right_col outgoing down" role="main"></div>
+
+    <!-- <div id="myModal" class="modal"> -->
+    <!-- Modal content -->
+    <!-- <div class="modal-content" style="width: 98dvw; height: 70dvh; top: 20%; overflow: hidden">
+        <span class="close">&times;</span>
+        <iframe id="iframeContent"></iframe>
+      </div>
+    </div> -->
+    <div id="myModal_3" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content" style="width: 98dvw; height: 65dvh; top: 20%; overflow: hidden">
+        <span class="close">&times;</span>
+        <iframe id="iframeContent_3"></iframe>
+      </div>
+    </div>
+    <div id="myModal_2" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <iframe id="iframeContent_2"></iframe>
+      </div>
+    </div>
+    <div id="lightbox">
+      <div id="lightboxcontainer"></div>
+      <div id="closebutton">&times;</div>
+    </div>
+    <div id="lightboxcontext">
+      <div id="lightboxcontainercontext"></div>
+      <div id="closebuttoncontext">&times;</div>
+    </div>
+
+    <link href="../build/css/HistoryRightColomn.css" rel="stylesheet" />
+
+    <!-- jQuery -->
+    <script src="../vendors/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- FastClick -->
+    <script src="../vendors/fastclick/lib/fastclick.js"></script>
+    <!-- NProgress -->
+    <script src="../vendors/nprogress/nprogress.js"></script>
+    <!-- Chart.js -->
+    <script src="../vendors/Chart.js/dist/Chart.min.js"></script>
+    <!-- gauge.js -->
+    <script src="../vendors/gauge.js/dist/gauge.min.js"></script>
+    <!-- bootstrap-progressbar -->
+    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <!-- iCheck -->
+    <script src="../vendors/iCheck/icheck.min.js"></script>
+    <!-- Skycons -->
+    <script src="../vendors/skycons/skycons.js"></script>
+    <!-- Flot -->
+    <script src="../vendors/Flot/jquery.flot.js"></script>
+    <script src="../vendors/Flot/jquery.flot.pie.js"></script>
+    <script src="../vendors/Flot/jquery.flot.time.js"></script>
+    <script src="../vendors/Flot/jquery.flot.stack.js"></script>
+    <script src="../vendors/Flot/jquery.flot.resize.js"></script>
+    <!-- Flot plugins -->
+    <script src="../vendors/flot.orderbars/js/jquery.flot.orderBars.js"></script>
+    <script src="../vendors/flot-spline/js/jquery.flot.spline.min.js"></script>
+    <script src="../vendors/flot.curvedlines/curvedLines.js"></script>
+    <!-- DateJS -->
+    <script src="../vendors/DateJS/build/date.js"></script>
+    <!-- JQVMap -->
+    <script src="../vendors/jqvmap/dist/jquery.vmap.js"></script>
+    <!-- <script src="../vendors/jqvmap/dist/maps/jquery.vmap.world.js"></script> -->
+    <script src="../vendors/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
+    <!-- bootstrap-daterangepicker -->
+    <script src="../vendors/moment/min/moment.min.js"></script>
+    <script src="../vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
+    <script src="../vendors/echarts/dist/echarts.min.js"></script>
+    <!-- <script src="../vendors/echarts/map/js/world.js"></script> -->
+    <script src="../vendors/jquery-sparkline/dist/jquery.sparkline.min.js"></script>
+
+    <!-- Custom Theme Scripts -->
+
+    <!-- <script type="module" src="../build/js/videoCall/AgoraRTC_N-4.16.0.js"></script>-->
+
+    <script src="../build/js/videoCall/AgoraRTC_N-4.16.0.js"></script>
+    <!-- easy-pie-chart -->
+    <script src="../vendors/jquery.easy-pie-chart/dist/jquery.easypiechart.min.js"></script>
+
+    <script>
+      // Show the Vitals section by default
+      // console.log("Window Inner Width:", window.innerWidth);
+      // console.log("Window Inner Height:", window.innerHeight);
+
+      document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("openvitals").click();
+        document.getElementById("historyEightChartButton")?.click();
+      });
+    </script>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <div class="version-badge">Version 0.1.1</div>
+  </body>
+  <script>
+    (function () {
+      const body = document.body;
+      const stored = localStorage.getItem("sidebarCollapsed") === "1";
+      if (stored) {
+        body.classList.remove("nav-md");
+        body.classList.add("nav-sm");
+      }
+
+      // Ensure charts reflow after restoring sidebar state.
+      try {
+        window.dispatchEvent(new Event("sidebar:toggled"));
+        window.dispatchEvent(new Event("resize"));
+        setTimeout(() => window.dispatchEvent(new Event("resize")), 250);
+      } catch {
+        // ignore
+      }
+
+      const btn = document.getElementById("sidebarToggle");
+      btn?.addEventListener("click", () => {
+        const collapsed = body.classList.contains("nav-sm");
+        if (collapsed) {
+          body.classList.remove("nav-sm");
+          body.classList.add("nav-md");
+          localStorage.setItem("sidebarCollapsed", "0");
+        } else {
+          body.classList.remove("nav-md");
+          body.classList.add("nav-sm");
+          localStorage.setItem("sidebarCollapsed", "1");
+        }
+
+        // Notify chart resize handlers (ECharts, etc).
+        try {
+          window.dispatchEvent(new Event("sidebar:toggled"));
+          window.dispatchEvent(new Event("resize"));
+          setTimeout(() => window.dispatchEvent(new Event("resize")), 150);
+          setTimeout(() => window.dispatchEvent(new Event("resize")), 350);
+        } catch {
+          // ignore
+        }
+      });
+    })();
+  </script>
+</html>

@@ -1,0 +1,11 @@
+.vscode
+.vscode/*
+reference files
+reference files/*
+src
+src/*
+.htaccess
+bower.json
+changelog.md
+gulpfile.js
+localhost.key

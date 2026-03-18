@@ -1,0 +1,122 @@
+:root {
+  --sidebar-width-expanded: 280px;
+  --sidebar-width-collapsed: 70px;
+  --top-nav-height: 56px;
+}
+
+body.nav-md .left_col {
+  width: var(--sidebar-width-expanded) !important;
+}
+body.nav-sm .left_col {
+  width: var(--sidebar-width-collapsed) !important;
+}
+
+body.nav-md .container.body .right_col {
+  margin-left: var(--sidebar-width-expanded) !important;
+  width: calc(100% - var(--sidebar-width-expanded)) !important;
+}
+body.nav-sm .container.body .right_col {
+  margin-left: var(--sidebar-width-collapsed) !important;
+  width: calc(100% - var(--sidebar-width-collapsed)) !important;
+}
+
+/* Ensure collapsed sidebar elements also shrink correctly */
+body.nav-sm .left_col {
+  overflow: visible;
+}
+
+body.nav-sm .nav_title {
+  width: var(--sidebar-width-collapsed) !important;
+}
+
+body.nav-sm .nav_title span {
+  display: none;
+}
+
+body.nav-sm #left_colomn_details {
+  display: none !important;
+}
+
+body.nav-sm #sidebar-menu {
+  width: var(--sidebar-width-collapsed) !important;
+}
+
+/* Also apply the same responsive layout to right_col sections that are outside `.container body` */
+body.nav-md #HistoryComponents.right_col,
+body.nav-md #VitalsComponents.right_col,
+body.nav-md #incoming.right_col {
+  margin-left: var(--sidebar-width-expanded) !important;
+  width: calc(100% - var(--sidebar-width-expanded)) !important;
+}
+body.nav-sm #HistoryComponents.right_col,
+body.nav-sm #VitalsComponents.right_col,
+body.nav-sm #incoming.right_col {
+  margin-left: var(--sidebar-width-collapsed) !important;
+  width: calc(100% - var(--sidebar-width-collapsed)) !important;
+}
+
+body.nav-md .main_container .top_nav {
+  position: fixed !important;
+  top: 0;
+  left: var(--sidebar-width-expanded) !important;
+  margin-left: 0 !important;
+  right: 0;
+  height: var(--top-nav-height);
+  z-index: 1000;
+}
+body.nav-sm .main_container .top_nav {
+  position: fixed !important;
+  top: 0;
+  left: var(--sidebar-width-collapsed) !important;
+  margin-left: 0 !important;
+  right: 0;
+  height: var(--top-nav-height);
+  z-index: 1000;
+}
+
+body.nav-md .container.body .right_col,
+body.nav-sm .container.body .right_col {
+  padding-top: calc(var(--top-nav-height) + 8px) !important;
+}
+
+/* Ensure consistent top padding and positioning for out-of-container right_col sections */
+body.nav-md #HistoryComponents.right_col,
+body.nav-sm #HistoryComponents.right_col,
+body.nav-md #VitalsComponents.right_col,
+body.nav-sm #VitalsComponents.right_col,
+body.nav-md #incoming.right_col,
+body.nav-sm #incoming.right_col {
+  padding-top: calc(var(--top-nav-height)) !important;
+  position: relative !important;
+}
+
+body .container.body .right_col {
+  position: relative !important;
+}
+
+@media (min-width: 1000px) and (max-width: 1100px) {
+  :root {
+    --sidebar-width-expanded: 200px;
+  }
+  body.nav-md .left_col {
+    width: var(--sidebar-width-expanded) !important;
+  }
+  body.nav-md .main_container .top_nav,
+  body.nav-md .container.body .right_col {
+    margin-left: var(--sidebar-width-expanded) !important;
+    width: calc(100% - var(--sidebar-width-expanded)) !important;
+  }
+
+  body.nav-md .main_container .top_nav {
+    left: var(--sidebar-width-expanded) !important;
+    margin-left: 0 !important;
+  }
+}
+
+.left_col,
+body.nav-md .container.body .right_col,
+body.nav-sm .container.body .right_col,
+body.nav-md .main_container .top_nav,
+body.nav-sm .main_container .top_nav {
+  transition: width 0.25s ease, margin-left 0.25s ease;
+}
