@@ -36,7 +36,7 @@ console.log("[context_assessment_UI.js] page", page, "timestamp", timestamp);
 var patients = fb.database().ref().child("patients").child(id);
 
 patients.once("value", function (snapshot) {
-  console.log("[context_assessment_UI.js] Fetching patient data...");
+  // console.log("[context_assessment_UI.js] Fetching patient data...");
   let patient_data = snapshot.val() || {};
   username = patient_data.username;
 });

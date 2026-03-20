@@ -638,9 +638,18 @@ input:checked + .slider:before {
 }
 
 #HistoryComponents .history-toolbar__group--compact .HistoryCharttablink.is-active {
-  background: #ffffff;
-  border-color: #d7e2e9;
-  box-shadow: 0 2px 8px rgba(32, 77, 104, 0.12);
+  background: linear-gradient(135deg, #1083b1 0%, #0d6284 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 12px 24px rgba(16, 131, 177, 0.28);
+}
+
+#HistoryComponents .history-toolbar__group--compact .HistoryCharttablink.is-active:hover {
+  background: linear-gradient(135deg, #1083b1 0%, #0d6284 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 12px 24px rgba(16, 131, 177, 0.28);
+  transform: none;
 }
 
 #HistoryComponents .history-tabcontent {

@@ -10,11 +10,11 @@ var Respiration_opt;
 var vital_notifications_opt;
 var vital_notifications_2_opt;
 
-const ews_score_echart_context_graph = echarts.init(document.getElementById("ews_score_echart_context"));
-const context_assment_graph = echarts.init(document.getElementById("context_assessment_echart_context"));
+// const ews_score_echart_context_graph = echarts.init(document.getElementById("ews_score_echart_context"));
+// const context_assment_graph = echarts.init(document.getElementById("context_assessment_echart_context"));
 const threshold_notifications_graph = echarts.init(document.getElementById("threshold_notifications_echart_content"));
 const vital_notifications_graph = echarts.init(document.getElementById("vital_notifications_echart_content"));
-const vital_notifications_2_graph = echarts.init(document.getElementById("vital_notifications_2_echart_content"));
+// const vital_notifications_2_graph = echarts.init(document.getElementById("vital_notifications_2_echart_content"));
 const ECG_scatter_graph = echarts.init(document.getElementById("ecg_echart_content"));
 const Heart_rate_graph = echarts.init(document.getElementById("heart_rate_echart_content"));
 const blood_oxygen_graph = echarts.init(document.getElementById("spo2_echart_content"));
@@ -191,192 +191,192 @@ function formatTooltipWithValues(params) {
   }
 }
 
-function history_context_assessment(min_time, max_time, id, context_timestamp) {
-  try {
-    if (!$("#context_assessment_echart_context").length) {
-      return;
-    }
+// function history_context_assessment(min_time, max_time, id, context_timestamp) {
+//   try {
+//     if (!$("#context_assessment_echart_context").length) {
+//       return;
+//     }
 
-    var context_data = context_timestamp || [];
+//     var context_data = context_timestamp || [];
 
-    context_data.unshift([min_time * 1000, null]);
-    context_data.push([max_time * 1000, null]);
+//     context_data.unshift([min_time * 1000, null]);
+//     context_data.push([max_time * 1000, null]);
 
-    context_assment_opt = {
-      grid: {
-        top: 30,
-        left: 30,
-        right: 30,
-        bottom: 80,
-      },
-      dataZoom: [
-        {
-          type: "inside",
-          xAxisIndex: [0],
-          zoomOnMouseWheel: "ctrl",
-          moveOnMouseMove: true,
-          moveOnMouseWheel: true,
-          filterMode: "none",
-          realtime: true,
-          start: 0,
-          end: 100,
-          minSpan: 0.1,
-        },
-        {
-          type: "slider",
-          xAxisIndex: [0],
-          handleIcon: "pin",
-          show: true,
-          showDetail: false,
-          handleSize: "100%",
-          height: 25,
-          handleStyle: {
-            color: "#0865C1",
-            borderColor: "#ACB8D1",
-            borderWidth: 1,
-          },
-          start: 0,
-          end: 100,
-        },
-      ],
+//     context_assment_opt = {
+//       grid: {
+//         top: 30,
+//         left: 30,
+//         right: 30,
+//         bottom: 80,
+//       },
+//       dataZoom: [
+//         {
+//           type: "inside",
+//           xAxisIndex: [0],
+//           zoomOnMouseWheel: "ctrl",
+//           moveOnMouseMove: true,
+//           moveOnMouseWheel: true,
+//           filterMode: "none",
+//           realtime: true,
+//           start: 0,
+//           end: 100,
+//           minSpan: 0.1,
+//         },
+//         {
+//           type: "slider",
+//           xAxisIndex: [0],
+//           handleIcon: "pin",
+//           show: true,
+//           showDetail: false,
+//           handleSize: "100%",
+//           height: 25,
+//           handleStyle: {
+//             color: "#0865C1",
+//             borderColor: "#ACB8D1",
+//             borderWidth: 1,
+//           },
+//           start: 0,
+//           end: 100,
+//         },
+//       ],
 
-      xAxis: {
-        name: "Time",
-        nameLocation: "end",
-        nameGap: 1,
-        type: "time",
-        boundaryGap: true,
-        scale: true,
-        min: "dataMin",
-        max: "dataMax",
-        axisTick: {
-          show: false,
-        },
-        axisLabel: {
-          rotate: 40,
-          show: true,
-          margin: 12,
-          hideOverlap: true,
-          fontStyle: "oblique",
-          fontSize: 10,
-          formatter: "{d}-{MM}" + "\n" + "{HH}:{mm}",
-          textStyle: {
-            color: "#ffffff",
-          },
-        },
-        splitLine: {
-          show: false,
-          opacity: 1,
-          lineStyle: {
-            color: "#0277ada9",
-            width: 1,
-          },
-        },
-        splitArea: {
-          interval: "auto",
-          show: false,
-        },
-      },
+//       xAxis: {
+//         name: "Time",
+//         nameLocation: "end",
+//         nameGap: 1,
+//         type: "time",
+//         boundaryGap: true,
+//         scale: true,
+//         min: "dataMin",
+//         max: "dataMax",
+//         axisTick: {
+//           show: false,
+//         },
+//         axisLabel: {
+//           rotate: 40,
+//           show: true,
+//           margin: 12,
+//           hideOverlap: true,
+//           fontStyle: "oblique",
+//           fontSize: 10,
+//           formatter: "{d}-{MM}" + "\n" + "{HH}:{mm}",
+//           textStyle: {
+//             color: "#ffffff",
+//           },
+//         },
+//         splitLine: {
+//           show: false,
+//           opacity: 1,
+//           lineStyle: {
+//             color: "#0277ada9",
+//             width: 1,
+//           },
+//         },
+//         splitArea: {
+//           interval: "auto",
+//           show: false,
+//         },
+//       },
 
-      yAxis: {
-        type: "value",
-        boundaryGap: [0, "100%"],
-        min: function (finaldata) {
-          return finaldata.min - 5;
-        },
-        max: function (finaldata) {
-          return finaldata.max + 5;
-        },
-        splitLine: {
-          show: false,
-          lineStyle: {
-            color: "#0277ada9",
-            width: 1,
-          },
-        },
-        axisLine: {
-          show: true,
-        },
-        axisLabel: {
-          show: false,
-        },
-        axisTick: {
-          show: false,
-        },
-        minorSplitLine: {
-          show: false,
-          lineStyle: {
-            color: "#2178a049",
-          },
-        },
-      },
-      tooltip: {
-        trigger: "axis",
-        formatter: "Time : {dd}/{MM}/{yy}" + "\n" + "{HH}:{mm}",
-        axisPointer: {
-          show: false,
-        },
-        textStyle: {
-          color: "#4C5964",
-          fontSize: 12,
-        },
-      },
+//       yAxis: {
+//         type: "value",
+//         boundaryGap: [0, "100%"],
+//         min: function (finaldata) {
+//           return finaldata.min - 5;
+//         },
+//         max: function (finaldata) {
+//           return finaldata.max + 5;
+//         },
+//         splitLine: {
+//           show: false,
+//           lineStyle: {
+//             color: "#0277ada9",
+//             width: 1,
+//           },
+//         },
+//         axisLine: {
+//           show: true,
+//         },
+//         axisLabel: {
+//           show: false,
+//         },
+//         axisTick: {
+//           show: false,
+//         },
+//         minorSplitLine: {
+//           show: false,
+//           lineStyle: {
+//             color: "#2178a049",
+//           },
+//         },
+//       },
+//       tooltip: {
+//         trigger: "axis",
+//         formatter: "Time : {dd}/{MM}/{yy}" + "\n" + "{HH}:{mm}",
+//         axisPointer: {
+//           show: false,
+//         },
+//         textStyle: {
+//           color: "#4C5964",
+//           fontSize: 12,
+//         },
+//       },
 
-      series: [
-        {
-          name: "Time:",
-          type: "scatter",
-          showSymbol: false,
-          data: context_data,
-          symbol: "circle",
-          symbolSize: 10,
-        },
-      ],
-    };
+//       series: [
+//         {
+//           name: "Time:",
+//           type: "scatter",
+//           showSymbol: false,
+//           data: context_data,
+//           symbol: "circle",
+//           symbolSize: 10,
+//         },
+//       ],
+//     };
 
-    context_assment_graph.clear();
-    context_assment_graph.setOption(context_assment_opt);
+//     context_assment_graph.clear();
+//     context_assment_graph.setOption(context_assment_opt);
 
-    if (typeof context_assment_graph.off === "function") {
-      context_assment_graph.off("click");
-    }
+//     if (typeof context_assment_graph.off === "function") {
+//       context_assment_graph.off("click");
+//     }
 
-    context_assment_graph.on("click", function (param) {
-      var timestamp = param.data[0];
-      var param1 = btoa(timestamp / 1000);
-      var param2 = btoa(id);
-      var param3 = btoa("1");
+//     context_assment_graph.on("click", function (param) {
+//       var timestamp = param.data[0];
+//       var param1 = btoa(timestamp / 1000);
+//       var param2 = btoa(id);
+//       var param3 = btoa("1");
 
-      var url = "context_assment.html" + "?param1=" + param1 + "&param2=" + param2 + "&param3=" + param3;
-      openModal(url);
-    });
-    // // Use a graph-level (ZR) click so any click inside the chart area works,
-    // // not only on individual data points.
-    // if (typeof context_assment_graph.getZr === "function") {
-    //   var zr = context_assment_graph.getZr();
-    //   zr.off("click");
-    //   zr.on("click", function (params) {
-    //     var pointInPixel = [params.offsetX, params.offsetY];
+//       var url = "context_assment.html" + "?param1=" + param1 + "&param2=" + param2 + "&param3=" + param3;
+//       openModal(url);
+//     });
+//     // // Use a graph-level (ZR) click so any click inside the chart area works,
+//     // // not only on individual data points.
+//     // if (typeof context_assment_graph.getZr === "function") {
+//     //   var zr = context_assment_graph.getZr();
+//     //   zr.off("click");
+//     //   zr.on("click", function (params) {
+//     //     var pointInPixel = [params.offsetX, params.offsetY];
 
-    //     // Only react to clicks inside the plotting grid
-    //     if (!context_assment_graph.containPixel({ gridIndex: 0 }, pointInPixel)) {
-    //       return;
-    //     }
+//     //     // Only react to clicks inside the plotting grid
+//     //     if (!context_assment_graph.containPixel({ gridIndex: 0 }, pointInPixel)) {
+//     //       return;
+//     //     }
 
-    //     var param1 = btoa(min_time);
-    //     var param2 = btoa(max_time);
-    //     var param3 = btoa(id);
-    //     var param4 = btoa("3");
-    //     var param5 = btoa("Context Assessment");
+//     //     var param1 = btoa(min_time);
+//     //     var param2 = btoa(max_time);
+//     //     var param3 = btoa(id);
+//     //     var param4 = btoa("3");
+//     //     var param5 = btoa("Context Assessment");
 
-    //     var url = "context_assment_2.html" + "?param1=" + param1 + "&param2=" + param2 + "&param3=" + param3 + "&param4=" + param4 + "&param5=" + param5;
-    //     openModal(url);
-    //   });
-    // }
-  } catch (error) {
-    console.error(" [history_UI_module.js] Error in history_context_assessment function:", error);
-  }
-}
+//     //     var url = "context_assment_2.html" + "?param1=" + param1 + "&param2=" + param2 + "&param3=" + param3 + "&param4=" + param4 + "&param5=" + param5;
+//     //     openModal(url);
+//     //   });
+//     // }
+//   } catch (error) {
+//     console.error(" [history_UI_module.js] Error in history_context_assessment function:", error);
+//   }
+// }
 function history_context_assessment_2(min_time, max_time, id, context_timestamp) {
   try {
     if (!$("#vital_notifications_echart_content").length) {
@@ -564,169 +564,169 @@ function history_context_assessment_2(min_time, max_time, id, context_timestamp)
     console.error(" [history_UI_module.js] Error in history_context_assessment function:", error);
   }
 }
-function history_vital_notification_2(min_time, max_time, id, context_timestamp) {
-  try {
-    if (!$("#vital_notifications_2_echart_content").length) {
-      return;
-    }
+// function history_vital_notification_2(min_time, max_time, id, context_timestamp) {
+//   try {
+//     if (!$("#vital_notifications_2_echart_content").length) {
+//       return;
+//     }
 
-    var context_data = context_timestamp || [];
+//     var context_data = context_timestamp || [];
 
-    context_data.unshift([min_time * 1000, null]);
-    context_data.push([max_time * 1000, null]);
+//     context_data.unshift([min_time * 1000, null]);
+//     context_data.push([max_time * 1000, null]);
 
-    vital_notifications_2_opt = {
-      grid: {
-        top: 30,
-        left: 30,
-        right: 30,
-        bottom: 80,
-      },
-      dataZoom: [
-        {
-          type: "inside",
-          xAxisIndex: [0],
-          zoomOnMouseWheel: "ctrl",
-          moveOnMouseMove: true,
-          moveOnMouseWheel: true,
-          filterMode: "none",
-          realtime: true,
-          start: 0,
-          end: 100,
-          minSpan: 0.1,
-        },
-        {
-          type: "slider",
-          xAxisIndex: [0],
-          handleIcon: "pin",
-          show: true,
-          showDetail: false,
-          handleSize: "100%",
-          height: 25,
-          handleStyle: {
-            color: "#0865C1",
-            borderColor: "#ACB8D1",
-            borderWidth: 1,
-          },
-          start: 0,
-          end: 100,
-        },
-      ],
+//     vital_notifications_2_opt = {
+//       grid: {
+//         top: 30,
+//         left: 30,
+//         right: 30,
+//         bottom: 80,
+//       },
+//       dataZoom: [
+//         {
+//           type: "inside",
+//           xAxisIndex: [0],
+//           zoomOnMouseWheel: "ctrl",
+//           moveOnMouseMove: true,
+//           moveOnMouseWheel: true,
+//           filterMode: "none",
+//           realtime: true,
+//           start: 0,
+//           end: 100,
+//           minSpan: 0.1,
+//         },
+//         {
+//           type: "slider",
+//           xAxisIndex: [0],
+//           handleIcon: "pin",
+//           show: true,
+//           showDetail: false,
+//           handleSize: "100%",
+//           height: 25,
+//           handleStyle: {
+//             color: "#0865C1",
+//             borderColor: "#ACB8D1",
+//             borderWidth: 1,
+//           },
+//           start: 0,
+//           end: 100,
+//         },
+//       ],
 
-      xAxis: {
-        name: "Time",
-        nameLocation: "end",
-        nameGap: 1,
-        type: "time",
-        boundaryGap: true,
-        scale: true,
-        min: "dataMin",
-        max: "dataMax",
-        axisTick: {
-          show: false,
-        },
-        axisLabel: {
-          rotate: 40,
-          show: true,
-          margin: 12,
-          hideOverlap: true,
-          fontStyle: "oblique",
-          fontSize: 10,
-          formatter: "{d}-{MM}" + "\n" + "{HH}:{mm}",
-          textStyle: {
-            color: "#ffffff",
-          },
-        },
-        splitLine: {
-          show: false,
-          opacity: 1,
-          lineStyle: {
-            color: "#0277ada9",
-            width: 1,
-          },
-        },
-        splitArea: {
-          interval: "auto",
-          show: false,
-        },
-      },
+//       xAxis: {
+//         name: "Time",
+//         nameLocation: "end",
+//         nameGap: 1,
+//         type: "time",
+//         boundaryGap: true,
+//         scale: true,
+//         min: "dataMin",
+//         max: "dataMax",
+//         axisTick: {
+//           show: false,
+//         },
+//         axisLabel: {
+//           rotate: 40,
+//           show: true,
+//           margin: 12,
+//           hideOverlap: true,
+//           fontStyle: "oblique",
+//           fontSize: 10,
+//           formatter: "{d}-{MM}" + "\n" + "{HH}:{mm}",
+//           textStyle: {
+//             color: "#ffffff",
+//           },
+//         },
+//         splitLine: {
+//           show: false,
+//           opacity: 1,
+//           lineStyle: {
+//             color: "#0277ada9",
+//             width: 1,
+//           },
+//         },
+//         splitArea: {
+//           interval: "auto",
+//           show: false,
+//         },
+//       },
 
-      yAxis: {
-        type: "value",
-        boundaryGap: [0, "100%"],
-        min: function (finaldata) {
-          return finaldata.min - 5;
-        },
-        max: function (finaldata) {
-          return finaldata.max + 5;
-        },
-        splitLine: {
-          show: false,
-          lineStyle: {
-            color: "#0277ada9",
-            width: 1,
-          },
-        },
-        axisLine: {
-          show: true,
-        },
-        axisLabel: {
-          show: false,
-        },
-        axisTick: {
-          show: false,
-        },
-        minorSplitLine: {
-          show: false,
-          lineStyle: {
-            color: "#2178a049",
-          },
-        },
-      },
-      tooltip: {
-        trigger: "axis",
-        formatter: "Time : {dd}/{MM}/{yy}" + "\n" + "{HH}:{mm}",
-        axisPointer: {
-          show: false,
-        },
-        textStyle: {
-          color: "#4C5964",
-          fontSize: 12,
-        },
-      },
+//       yAxis: {
+//         type: "value",
+//         boundaryGap: [0, "100%"],
+//         min: function (finaldata) {
+//           return finaldata.min - 5;
+//         },
+//         max: function (finaldata) {
+//           return finaldata.max + 5;
+//         },
+//         splitLine: {
+//           show: false,
+//           lineStyle: {
+//             color: "#0277ada9",
+//             width: 1,
+//           },
+//         },
+//         axisLine: {
+//           show: true,
+//         },
+//         axisLabel: {
+//           show: false,
+//         },
+//         axisTick: {
+//           show: false,
+//         },
+//         minorSplitLine: {
+//           show: false,
+//           lineStyle: {
+//             color: "#2178a049",
+//           },
+//         },
+//       },
+//       tooltip: {
+//         trigger: "axis",
+//         formatter: "Time : {dd}/{MM}/{yy}" + "\n" + "{HH}:{mm}",
+//         axisPointer: {
+//           show: false,
+//         },
+//         textStyle: {
+//           color: "#4C5964",
+//           fontSize: 12,
+//         },
+//       },
 
-      series: [
-        {
-          name: "Time:",
-          type: "scatter",
-          showSymbol: false,
-          data: context_data,
-          symbol: "circle",
-          symbolSize: 10,
-        },
-      ],
-    };
+//       series: [
+//         {
+//           name: "Time:",
+//           type: "scatter",
+//           showSymbol: false,
+//           data: context_data,
+//           symbol: "circle",
+//           symbolSize: 10,
+//         },
+//       ],
+//     };
 
-    vital_notifications_2_graph.clear();
-    vital_notifications_2_graph.setOption(vital_notifications_2_opt);
+//     vital_notifications_2_graph.clear();
+//     vital_notifications_2_graph.setOption(vital_notifications_2_opt);
 
-    if (typeof vital_notifications_2_graph.off === "function") {
-      vital_notifications_2_graph.off("click");
-    }
+//     if (typeof vital_notifications_2_graph.off === "function") {
+//       vital_notifications_2_graph.off("click");
+//     }
 
-    vital_notifications_2_graph.on("click", function (param) {
-      var timestamp = param.data[0];
-      var param1 = btoa(timestamp / 1000);
-      var param2 = btoa(id);
-      var param3 = btoa("1");
+//     vital_notifications_2_graph.on("click", function (param) {
+//       var timestamp = param.data[0];
+//       var param1 = btoa(timestamp / 1000);
+//       var param2 = btoa(id);
+//       var param3 = btoa("1");
 
-      var url = "context_assment.html" + "?param1=" + param1 + "&param2=" + param2 + "&param3=" + param3;
-      openModal(url);
-    });
-  } catch (error) {
-    console.error(" [history_UI_module.js] Error in history_context_assessment function:", error);
-  }
-}
+//       var url = "context_assment.html" + "?param1=" + param1 + "&param2=" + param2 + "&param3=" + param3;
+//       openModal(url);
+//     });
+//   } catch (error) {
+//     console.error(" [history_UI_module.js] Error in history_context_assessment function:", error);
+//   }
+// }
 
 function history_ECG(min_time, max_time, ecg_timestamp, id) {
   try {
@@ -1804,184 +1804,184 @@ function history_Respiration_Rate(min_time, max_time, respiration_rate, id) {
   }
 }
 
-function history_ews(min_time, max_time, ews_score, id) {
-  try {
-    if (!$("#ews_score_echart_context").length) {
-      return;
-    }
+// function history_ews(min_time, max_time, ews_score, id) {
+//   try {
+//     if (!$("#ews_score_echart_context").length) {
+//       return;
+//     }
 
-    var ews_data = ews_score || [];
-    if (!Array.isArray(ews_data)) {
-      ews_data = [];
-    }
+//     var ews_data = ews_score || [];
+//     if (!Array.isArray(ews_data)) {
+//       ews_data = [];
+//     }
 
-    // Insert nulls where any minute is missing so continuous
-    // per-minute data becomes a line and isolated points stay
-    // disconnected.
-    var ews_series_data = Array.isArray(ews_data) ? addTimeGapsForMissingData(ews_data, 1.0) : [];
+//     // Insert nulls where any minute is missing so continuous
+//     // per-minute data becomes a line and isolated points stay
+//     // disconnected.
+//     var ews_series_data = Array.isArray(ews_data) ? addTimeGapsForMissingData(ews_data, 1.0) : [];
 
-    if (Array.isArray(ews_series_data)) {
-      ews_series_data.unshift([min_time * 1000, null]);
-      ews_series_data.push([max_time * 1000, null]);
-    }
+//     if (Array.isArray(ews_series_data)) {
+//       ews_series_data.unshift([min_time * 1000, null]);
+//       ews_series_data.push([max_time * 1000, null]);
+//     }
 
-    console.log("[history_UI_module.js] display ews_series_data", ews_series_data);
+//     console.log("[history_UI_module.js] display ews_series_data", ews_series_data);
 
-    EWS_Score_opt = {
-      grid: {
-        top: 30,
-        left: 30,
-        right: 30,
-        bottom: 80,
-      },
-      tooltip: {
-        trigger: "axis",
-        formatter: formatTooltipWithValues,
-        axisPointer: {
-          show: false,
-        },
-        textStyle: {
-          color: "#4C5964",
-          fontSize: 12,
-        },
-      },
-      dataZoom: [
-        {
-          type: "inside",
-          xAxisIndex: [0],
-          zoomOnMouseWheel: "ctrl",
-          moveOnMouseMove: true,
-          moveOnMouseWheel: true,
-          filterMode: "none",
-          realtime: true,
-          start: 0,
-          end: 100,
-          minSpan: 0.1,
-        },
-        {
-          type: "slider",
-          xAxisIndex: [0],
-          handleIcon: "pin",
-          show: true,
-          showDetail: false,
-          handleSize: "100%",
-          height: 25,
-          handleStyle: {
-            color: "#0865C1",
-            borderColor: "#ACB8D1",
-            borderWidth: 1,
-          },
-          start: 0,
-          end: 100,
-        },
-      ],
-      xAxis: {
-        name: "Time",
-        nameLocation: "end",
-        nameGap: 3,
-        type: "time",
-        min: "dataMin",
-        max: "dataMax",
-        axisLabel: {
-          rotate: 40,
-          show: true,
-          margin: 12,
-          hideOverlap: true,
-          fontStyle: "oblique",
-          fontSize: 10,
-          formatter: "{d}-{MM}" + "\n" + "{HH}:{mm}",
-          textStyle: {
-            color: "#ffffff",
-          },
-        },
-        splitLine: {
-          show: false,
-          opacity: 1,
-          lineStyle: {
-            color: "#0277ada9",
-            width: 1,
-          },
-        },
-        splitArea: {
-          interval: "auto",
-          show: false,
-        },
-      },
-      yAxis: {
-        type: "value",
-        splitNumber: 8,
-        boundaryGap: [0, "100%"],
-        min: function (range) {
-          return range.min - 5 < 0 ? 0 : range.min - 5;
-        },
-        max: function (range) {
-          return range.max + 5;
-        },
-        axisLine: {
-          show: true,
-        },
-        axisLabel: {
-          show: true,
-          formatter: "{value}",
-          textStyle: {
-            color: "#ffffff",
-          },
-        },
-        splitLine: {
-          show: false,
-          lineStyle: {
-            color: "#0277ada9",
-            width: 1,
-          },
-        },
-      },
-      series: [
-        {
-          name: "EWS Score",
-          type: "line",
-          showSymbol: true,
-          connectNulls: false,
-          symbolSize: 6,
-          data: ews_series_data,
-          lineStyle: {
-            color: "#ff7043",
-            width: 1.5,
-          },
-          itemStyle: {
-            color: "#ff7043",
-          },
-        },
-      ],
-    };
+//     EWS_Score_opt = {
+//       grid: {
+//         top: 30,
+//         left: 30,
+//         right: 30,
+//         bottom: 80,
+//       },
+//       tooltip: {
+//         trigger: "axis",
+//         formatter: formatTooltipWithValues,
+//         axisPointer: {
+//           show: false,
+//         },
+//         textStyle: {
+//           color: "#4C5964",
+//           fontSize: 12,
+//         },
+//       },
+//       dataZoom: [
+//         {
+//           type: "inside",
+//           xAxisIndex: [0],
+//           zoomOnMouseWheel: "ctrl",
+//           moveOnMouseMove: true,
+//           moveOnMouseWheel: true,
+//           filterMode: "none",
+//           realtime: true,
+//           start: 0,
+//           end: 100,
+//           minSpan: 0.1,
+//         },
+//         {
+//           type: "slider",
+//           xAxisIndex: [0],
+//           handleIcon: "pin",
+//           show: true,
+//           showDetail: false,
+//           handleSize: "100%",
+//           height: 25,
+//           handleStyle: {
+//             color: "#0865C1",
+//             borderColor: "#ACB8D1",
+//             borderWidth: 1,
+//           },
+//           start: 0,
+//           end: 100,
+//         },
+//       ],
+//       xAxis: {
+//         name: "Time",
+//         nameLocation: "end",
+//         nameGap: 3,
+//         type: "time",
+//         min: "dataMin",
+//         max: "dataMax",
+//         axisLabel: {
+//           rotate: 40,
+//           show: true,
+//           margin: 12,
+//           hideOverlap: true,
+//           fontStyle: "oblique",
+//           fontSize: 10,
+//           formatter: "{d}-{MM}" + "\n" + "{HH}:{mm}",
+//           textStyle: {
+//             color: "#ffffff",
+//           },
+//         },
+//         splitLine: {
+//           show: false,
+//           opacity: 1,
+//           lineStyle: {
+//             color: "#0277ada9",
+//             width: 1,
+//           },
+//         },
+//         splitArea: {
+//           interval: "auto",
+//           show: false,
+//         },
+//       },
+//       yAxis: {
+//         type: "value",
+//         splitNumber: 8,
+//         boundaryGap: [0, "100%"],
+//         min: function (range) {
+//           return range.min - 5 < 0 ? 0 : range.min - 5;
+//         },
+//         max: function (range) {
+//           return range.max + 5;
+//         },
+//         axisLine: {
+//           show: true,
+//         },
+//         axisLabel: {
+//           show: true,
+//           formatter: "{value}",
+//           textStyle: {
+//             color: "#ffffff",
+//           },
+//         },
+//         splitLine: {
+//           show: false,
+//           lineStyle: {
+//             color: "#0277ada9",
+//             width: 1,
+//           },
+//         },
+//       },
+//       series: [
+//         {
+//           name: "EWS Score",
+//           type: "line",
+//           showSymbol: true,
+//           connectNulls: false,
+//           symbolSize: 6,
+//           data: ews_series_data,
+//           lineStyle: {
+//             color: "#ff7043",
+//             width: 1.5,
+//           },
+//           itemStyle: {
+//             color: "#ff7043",
+//           },
+//         },
+//       ],
+//     };
 
-    ews_score_echart_context_graph.clear();
-    ews_score_echart_context_graph.setOption(EWS_Score_opt);
+//     ews_score_echart_context_graph.clear();
+//     ews_score_echart_context_graph.setOption(EWS_Score_opt);
 
-    // // Graph-level click: any click inside the EWS chart area opens the modal
-    // if (typeof ews_score_echart_context_graph.getZr === "function") {
-    //   var zrEWS = ews_score_echart_context_graph.getZr();
-    //   zrEWS.off("click");
-    //   zrEWS.on("click", function (params) {
-    //     var pointInPixel = [params.offsetX, params.offsetY];
-    //     if (!ews_score_echart_context_graph.containPixel({ gridIndex: 0 }, pointInPixel)) {
-    //       return;
-    //     }
+//     // // Graph-level click: any click inside the EWS chart area opens the modal
+//     // if (typeof ews_score_echart_context_graph.getZr === "function") {
+//     //   var zrEWS = ews_score_echart_context_graph.getZr();
+//     //   zrEWS.off("click");
+//     //   zrEWS.on("click", function (params) {
+//     //     var pointInPixel = [params.offsetX, params.offsetY];
+//     //     if (!ews_score_echart_context_graph.containPixel({ gridIndex: 0 }, pointInPixel)) {
+//     //       return;
+//     //     }
 
-    //     var param1 = btoa(min_time);
-    //     var param2 = btoa(max_time);
-    //     var param3 = btoa(id);
-    //     var param4 = btoa("3");
-    //     var param5 = btoa("EWS Score");
+//     //     var param1 = btoa(min_time);
+//     //     var param2 = btoa(max_time);
+//     //     var param3 = btoa(id);
+//     //     var param4 = btoa("3");
+//     //     var param5 = btoa("EWS Score");
 
-    //     var url = "context_assment_2.html" + "?param1=" + param1 + "&param2=" + param2 + "&param3=" + param3 + "&param4=" + param4 + "&param5=" + param5;
-    //     openModal(url);
-    //   });
-    // }
-    console.log(" [history_UI_module.js] Completed EWS Score Graph ");
-  } catch (error) {
-    console.error(" [history_UI_module.js] Error in history_ews function:", error);
-  }
-}
+//     //     var url = "context_assment_2.html" + "?param1=" + param1 + "&param2=" + param2 + "&param3=" + param3 + "&param4=" + param4 + "&param5=" + param5;
+//     //     openModal(url);
+//     //   });
+//     // }
+//     console.log(" [history_UI_module.js] Completed EWS Score Graph ");
+//   } catch (error) {
+//     console.error(" [history_UI_module.js] Error in history_ews function:", error);
+//   }
+// }
 
 function history_threshold_triggers(min_time, max_time, threshold_triggers, id) {
   try {
@@ -2256,8 +2256,8 @@ if (window.parent) {
 }
 
 export {
-  history_ews,
-  history_context_assessment,
+  // history_ews,
+  // history_context_assessment,
   history_ECG,
   history_Heart_Rate,
   history_Blood_Oxygen,
@@ -2266,5 +2266,5 @@ export {
   history_Respiration_Rate,
   history_threshold_triggers,
   history_context_assessment_2,
-  history_vital_notification_2,
+  // history_vital_notification_2,
 };

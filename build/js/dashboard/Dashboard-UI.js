@@ -1,37 +1,42 @@
 export async function patient_details(patient_info) {
   console.log("[Dashboard-UI.js] patient_info before in array: ", patient_info.length);
-  var d = [];
+  const normalizedPatientInfo = Array.isArray(patient_info)
+    ? patient_info.map((patient) => {
+        const nextPatient = patient.slice(0, 7);
+        let sortOrder = 6;
 
-  for (var j = 0; j < patient_info.length; j++) {
-    console.log("[Dashboard-UI.js] after :", patient_info[j][6]);
-    switch (patient_info[j][6]) {
-      case "#EE4B2B":
-        patient_info[j].push(1);
-        break;
+        switch (nextPatient[6]) {
+          case "#EE4B2B":
+            sortOrder = 1;
+            break;
 
-      case "#ff781f":
-        patient_info[j].push(2);
-        break;
+          case "#ff781f":
+            sortOrder = 2;
+            break;
 
-      case "#ffaf7a":
-        patient_info[j].push(3);
-        break;
+          case "#ffaf7a":
+            sortOrder = 3;
+            break;
 
-      case "#76B947":
-        patient_info[j].push(4);
-        break;
+          case "#76B947":
+            sortOrder = 4;
+            break;
 
-      case "#d4d4d3":
-        patient_info[j].push(5);
-        break;
+          case "#d4d4d3":
+            sortOrder = 5;
+            break;
 
-      default:
-        patient_info[j].push(6);
-        break;
-    }
-  }
-  console.log("[Dashboard-UI.js] patient_info before in array: ", patient_info);
-  patient_info.sort(sortFunction);
+          default:
+            break;
+        }
+
+        nextPatient.push(sortOrder);
+        return nextPatient;
+      })
+    : [];
+
+  console.log("[Dashboard-UI.js] patient_info before in array: ", normalizedPatientInfo);
+  normalizedPatientInfo.sort(sortFunction);
 
   function sortFunction(a, b) {
     if (a[7] === b[7]) {
@@ -40,9 +45,9 @@ export async function patient_details(patient_info) {
       return a[7] < b[7] ? -1 : 1;
     }
   }
-  console.log("[Dashboard-UI.js] patient_info after in array: ", patient_info);
+  console.log("[Dashboard-UI.js] patient_info after in array: ", normalizedPatientInfo);
 
-  console.log("[Dashboard-UI.js] Data before creating charts:", patient_info);
+  console.log("[Dashboard-UI.js] Data before creating charts:", normalizedPatientInfo);
 
   var modal = document.getElementById("myModal");
 
@@ -55,32 +60,36 @@ export async function patient_details(patient_info) {
   };
 
   if ($("#p_details").length) {
-    const products = document.querySelector(".patient_details");
+    const products = document.getElementById("p_details");
 
-    const bg = document.querySelector(".ews_card_js");
+    if (!products) {
+      return;
+    }
 
-    for (var i = 0; i < patient_info.length; i++) {
-      console.log("[Dashboard-UI.js] Creating card for:", patient_info[i]);
-      let LiveECGId = "chart" + patient_info[i][4];
-      let LivePPGId = "ppgchart" + patient_info[i][4];
-      let LiveRRId = "rrchart" + patient_info[i][4];
-      let hrId = "hr" + patient_info[i][4];
-      let spoId = "spo" + patient_info[i][4];
-      let bpId = "bp" + patient_info[i][4];
-      let rrId = "rr" + patient_info[i][4];
-      let tempId = "temp" + patient_info[i][4];
-      let ewsvId = "ewsv" + patient_info[i][4];
-      let ewscId = "ewsc" + patient_info[i][4];
-      let borderId = "border" + patient_info[i][4];
-      let hrBorderId = "hrBorder" + patient_info[i][4];
-      let spo2BorderId = "spo2Border" + patient_info[i][4];
-      let tempBorderId = "tempBorder" + patient_info[i][4];
-      let rrBorderId = "rrBorder" + patient_info[i][4];
-      let bpBorderId = "bpBorder" + patient_info[i][4];
+    products.innerHTML = "";
 
-      createCard(patient_info[i], LiveECGId, LivePPGId, LiveRRId, hrId, spoId, bpId, rrId, tempId, ewsvId, ewscId, borderId, hrBorderId, spo2BorderId, tempBorderId, rrBorderId, bpBorderId);
+    for (var i = 0; i < normalizedPatientInfo.length; i++) {
+      console.log("[Dashboard-UI.js] Creating card for:", normalizedPatientInfo[i]);
+      let LiveECGId = "chart" + normalizedPatientInfo[i][4];
+      let LivePPGId = "ppgchart" + normalizedPatientInfo[i][4];
+      let LiveRRId = "rrchart" + normalizedPatientInfo[i][4];
+      let hrId = "hr" + normalizedPatientInfo[i][4];
+      let spoId = "spo" + normalizedPatientInfo[i][4];
+      let bpId = "bp" + normalizedPatientInfo[i][4];
+      let rrId = "rr" + normalizedPatientInfo[i][4];
+      let tempId = "temp" + normalizedPatientInfo[i][4];
+      let ewsvId = "ewsv" + normalizedPatientInfo[i][4];
+      let ewscId = "ewsc" + normalizedPatientInfo[i][4];
+      let borderId = "border" + normalizedPatientInfo[i][4];
+      let hrBorderId = "hrBorder" + normalizedPatientInfo[i][4];
+      let spo2BorderId = "spo2Border" + normalizedPatientInfo[i][4];
+      let tempBorderId = "tempBorder" + normalizedPatientInfo[i][4];
+      let rrBorderId = "rrBorder" + normalizedPatientInfo[i][4];
+      let bpBorderId = "bpBorder" + normalizedPatientInfo[i][4];
 
-      console.log("[Dashboard-UI.js] Created card for:", patient_info[i]);
+      createCard(normalizedPatientInfo[i], LiveECGId, LivePPGId, LiveRRId, hrId, spoId, bpId, rrId, tempId, ewsvId, ewscId, borderId, hrBorderId, spo2BorderId, tempBorderId, rrBorderId, bpBorderId);
+
+      console.log("[Dashboard-UI.js] Created card for:", normalizedPatientInfo[i]);
     }
 
     function createCard(patientDetails, LiveECGId, LivePPGId, LiveRRId, hrId, spoId, bpId, rrId, tempId, ewsvId, ewscId, borderId, hrBorderId, spo2BorderId, tempBorderId, rrBorderId, bpBorderId) {
@@ -154,7 +163,7 @@ export async function patient_details(patient_info) {
           </div>
           `;
 
-      products.innerHTML += code;
+      products.insertAdjacentHTML("beforeend", code);
     }
 
     const items = products.children;
@@ -162,14 +171,14 @@ export async function patient_details(patient_info) {
       const item = items[i];
 
       item.addEventListener("click", function (index) {
-        console.log("[Dashboard-UI.js] Clicked on " + i, patient_info[i][4]);
+        console.log("[Dashboard-UI.js] Clicked on " + i, normalizedPatientInfo[i][4]);
         history.pushState({ page: "index" }, "Title", "../production/index.html");
-        cardclick(patient_info[i][4]);
+        cardclick(normalizedPatientInfo[i][4]);
       });
     }
-    for (let i = 0; i < patient_info.length; i++) {
+    for (let i = 0; i < normalizedPatientInfo.length; i++) {
       // patient_info[i][4] = patient_id, [5] = ews value, [6] = color
-      refreshews(patient_info[i][5], patient_info[i][6], patient_info[i][4]);
+      refreshews(normalizedPatientInfo[i][5], normalizedPatientInfo[i][6], normalizedPatientInfo[i][4]);
     }
 
     if (typeof window.flushPendingBlinkAlerts === "function") {

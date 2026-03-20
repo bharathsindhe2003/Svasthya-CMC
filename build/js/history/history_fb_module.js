@@ -1,6 +1,6 @@
 import {
-  history_ews,
-  history_context_assessment,
+  // history_ews,
+  // history_context_assessment,
   history_ECG,
   history_Heart_Rate,
   history_Blood_Oxygen,
@@ -9,12 +9,10 @@ import {
   history_Respiration_Rate,
   history_threshold_triggers,
   history_context_assessment_2,
-  history_vital_notification_2,
+  // history_vital_notification_2,
 } from "./history_UI_module.js";
 // import { showToast } from "../backend/toastmsg.js";
 import { fb } from "../livepage/database_function.js";
-
-// var button_clicked = "want_hour";
 
 export function firebase(min_time, max_time, localarray, trim) {
   try {
@@ -39,33 +37,33 @@ export function firebase(min_time, max_time, localarray, trim) {
     var threshold_triggers = fb.database().ref().child("threshold_triggers").child(id).orderByKey().startAt(start_index).endAt(end_index);
     const threshold_triggers_timestamps = [];
 
-    const EWS = fb.database().ref().child("EWS").child(id).orderByKey().startAt(start_index).endAt(end_index);
-    var ews_score = [];
+    // const EWS = fb.database().ref().child("EWS").child(id).orderByKey().startAt(start_index).endAt(end_index);
+    // var ews_score = [];
 
-    var vital_notification_2 = fb.database().ref().child("vital_trigger").child(id).orderByKey().startAt(start_index).endAt(end_index);
-    const vital_notification_2_timestamps = [];
+    // var vital_notification_2 = fb.database().ref().child("vital_trigger").child(id).orderByKey().startAt(start_index).endAt(end_index);
+    // const vital_notification_2_timestamps = [];
     function init_echarts() {
       if (typeof echarts === "undefined") {
         return;
       }
       Promise.all([
         // For History Context Assessment for 1st Tab
-        context_assessment
-          .once("value", function (snapshot) {
-            if (snapshot.val() != null) {
-              snapshot.forEach((data) => {
-                var tme_in_ms = data.key * 1000;
-                context_timestamp.push([parseInt(tme_in_ms), parseInt(5)]);
-              });
-            } else {
-              console.log("[history_fb_module.js] No Context Assessment data available for the given time range.");
-            }
-            console.log("[history_fb_module.js] context_timestamp", context_timestamp);
-            history_context_assessment(min_time, max_time, id, context_timestamp);
-          })
-          .catch((error) => {
-            console.error("[history_fb_module.js] Error fetching Firebase data:", error);
-          }),
+        // context_assessment
+        //   .once("value", function (snapshot) {
+        //     if (snapshot.val() != null) {
+        //       snapshot.forEach((data) => {
+        //         var tme_in_ms = data.key * 1000;
+        //         context_timestamp.push([parseInt(tme_in_ms), parseInt(5)]);
+        //       });
+        //     } else {
+        //       console.log("[history_fb_module.js] No Context Assessment data available for the given time range.");
+        //     }
+        //     console.log("[history_fb_module.js] context_timestamp", context_timestamp);
+        //     history_context_assessment(min_time, max_time, id, context_timestamp);
+        //   })
+        //   .catch((error) => {
+        //     console.error("[history_fb_module.js] Error fetching Firebase data:", error);
+        //   }),
         // For History ECG Data
         patientecgdata
           .once("value", function (snapshot) {
@@ -166,25 +164,25 @@ export function firebase(min_time, max_time, localarray, trim) {
             // Handle any errors that occur during the fetch operation
             console.error("[history_fb_module.js] Error fetching Firebase data:", error);
           }),
-        EWS.once("value", function (snapshot) {
-          if (snapshot.val() != null) {
-            snapshot.forEach((data) => {
-              var tme_in_ms = data.key * 1000;
-              const dataValue = data.val();
-              const rawEWS = dataValue.ews_score;
-              const ewsValue = rawEWS && rawEWS !== "--" ? Number(rawEWS) : null;
-              if (ewsValue && ewsValue !== null && !Number.isNaN(ewsValue)) ews_score.push([parseInt(tme_in_ms), ewsValue]);
-            });
-          } else {
-            console.log("[history_fb_module.js] No EWS data available for the given time range.");
-          }
-          console.log("[history_fb_module.js] ews_score", ews_score);
-          history_ews(min_time, max_time, ews_score, id);
-        }).catch((error) => {
-          // showToast("Error fetching Firebase data");
-          // Handle any errors that occur during the fetch operation
-          console.error("[history_fb_module.js] Error fetching Firebase data:", error);
-        }),
+        // EWS.once("value", function (snapshot) {
+        //   if (snapshot.val() != null) {
+        //     snapshot.forEach((data) => {
+        //       var tme_in_ms = data.key * 1000;
+        //       const dataValue = data.val();
+        //       const rawEWS = dataValue.ews_score;
+        //       const ewsValue = rawEWS && rawEWS !== "--" ? Number(rawEWS) : null;
+        //       if (ewsValue && ewsValue !== null && !Number.isNaN(ewsValue)) ews_score.push([parseInt(tme_in_ms), ewsValue]);
+        //     });
+        //   } else {
+        //     console.log("[history_fb_module.js] No EWS data available for the given time range.");
+        //   }
+        //   console.log("[history_fb_module.js] ews_score", ews_score);
+        //   history_ews(min_time, max_time, ews_score, id);
+        // }).catch((error) => {
+        //   // showToast("Error fetching Firebase data");
+        //   // Handle any errors that occur during the fetch operation
+        //   console.error("[history_fb_module.js] Error fetching Firebase data:", error);
+        // }),
         // For History Context Assessment for 2nd Tab
         context_assessment
           .once("value", function (snapshot) {
@@ -203,23 +201,23 @@ export function firebase(min_time, max_time, localarray, trim) {
           .catch((error) => {
             console.error("[history_fb_module.js] Error fetching Firebase data:", error);
           }),
-        vital_notification_2
-          .once("value", function (snapshot) {
-            if (snapshot.val() != null) {
-              snapshot.forEach((data) => {
-                var tme_in_ms = data.key * 1000;
-                vital_notification_2_timestamps.push([parseInt(tme_in_ms), parseInt(5)]);
-              });
-            } else {
-              console.log("[history_fb_module.js] No Context Assessment data available for the given time range.");
-            }
-            console.log("[history_fb_module.js] vital_notification_2_timestamps", vital_notification_2_timestamps);
-            // history_context_assessment(min_time, max_time, id, context_timestamp);
-            history_vital_notification_2(min_time, max_time, id, vital_notification_2_timestamps);
-          })
-          .catch((error) => {
-            console.error("[history_fb_module.js] Error fetching Firebase data:", error);
-          }),
+        // vital_notification_2
+        //   .once("value", function (snapshot) {
+        //     if (snapshot.val() != null) {
+        //       snapshot.forEach((data) => {
+        //         var tme_in_ms = data.key * 1000;
+        //         vital_notification_2_timestamps.push([parseInt(tme_in_ms), parseInt(5)]);
+        //       });
+        //     } else {
+        //       console.log("[history_fb_module.js] No Context Assessment data available for the given time range.");
+        //     }
+        //     console.log("[history_fb_module.js] vital_notification_2_timestamps", vital_notification_2_timestamps);
+        //     // history_context_assessment(min_time, max_time, id, context_timestamp);
+        //     history_vital_notification_2(min_time, max_time, id, vital_notification_2_timestamps);
+        //   })
+        //   .catch((error) => {
+        //     console.error("[history_fb_module.js] Error fetching Firebase data:", error);
+        //   }),
         threshold_triggers.once("value", function (snapshot) {
           if (snapshot.val() != null) {
             snapshot.forEach((data) => {

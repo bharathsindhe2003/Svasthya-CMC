@@ -23,7 +23,7 @@ export function loadIncoming(payload) {
       pname.innerHTML = parsedpayload.name;
 
       $("#liftcall").on("click", function () {
-        console.log("notification [incomingpopup.js] in click event");
+        // console.log("notification [incomingpopup.js] in click event");
 
         localStorage.setItem("incomingchannel_id", parsedpayload.channel_id);
         localStorage.setItem("patient_unique_id", parsedpayload.from);

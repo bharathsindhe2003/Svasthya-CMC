@@ -96,7 +96,7 @@ if (id != null && id != undefined) {
   patients.once("value", function (snapshot) {
     let patient_data = JSON.stringify(snapshot.val(), null, 2);
     let patient_data1 = JSON.parse(patient_data);
-    console.log(document.getElementById("PatientImg"));
+    // console.log(document.getElementById("PatientImg"));
     patientname = patient_data1.username;
 
     gender = patient_data1.gender == "" ? (gender = "--") : (gender = patient_data1.gender);

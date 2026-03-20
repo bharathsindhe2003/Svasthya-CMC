@@ -36,11 +36,11 @@ function ECG_data_passing(LiveEcgValues, ecgdate, ecgtime, option1, value, ecgda
   var value1;
   var echartLinecontext;
   if ($("#LiveECGId").length) {
-    console.log("Live  in echarts");
+    // console.log("Live  in echarts");
     echartLine = echarts.init(document.getElementById("LiveECGId"));
     EcgData = LiveEcgValues;
   }
-  console.log("[live-custom.js] EcgData received:", EcgData ? EcgData.length : "null/undefined");
+  // console.log("[live-custom.js] EcgData received:", EcgData ? EcgData.length : "null/undefined");
 
   var reference_data = [
     [-20, 100],
@@ -317,13 +317,11 @@ function ECG_data_passing(LiveEcgValues, ecgdate, ecgtime, option1, value, ecgda
         }
       }
       echartLine.on("dataZoom", function (params) {
-        console.log(params.start, params.end);
+        // console.log(params.start, params.end);
         if (params.start !== 0 || params.end !== undefined) {
-          console.log("in if");
           isZoomed = true;
           plot.toolbox.feature.myTool1.show = isZoomed;
           echartLine.setOption(plot);
-          console.log(plot);
         } else {
           isZoomed = false;
           plot.toolbox.feature.myTool1.show = isZoomed;
@@ -345,22 +343,23 @@ function ECG_data_passing(LiveEcgValues, ecgdate, ecgtime, option1, value, ecgda
 function PPG_data_passing(LivePpgValues, ecgdate, ecgtime, option1, value, ppgdata, endzoom) {
   if (window.location.pathname.includes("context_assment.html")) return;
 
-  var PpgData;
+  var PpgData = [];
   var echartLine;
   var echartLinecontext;
   var value1;
   var ppgOption; // Renamed to avoid conflict with parameter
   var counter = 0;
+  var minValidPpgPoints = 120;
 
   if ($("#context_ppg").length) {
     echartLinecontext = echarts.init(document.getElementById("context_ppg"));
-    PpgData = ppgdata;
+    PpgData = Array.isArray(ppgdata) ? ppgdata : [];
   } else if ($("#LivePPGId").length) {
-    console.log("ppg in live", PpgData);
     echartLine = echarts.init(document.getElementById("LivePPGId"));
-    PpgData = LivePpgValues;
+    PpgData = Array.isArray(LivePpgValues) ? LivePpgValues : [];
   }
-  console.log("[live-custom.js] PpgData received:", PpgData ? PpgData.length : "null/undefined");
+  // console.log("ppg in live", PpgData);
+  // console.log("[live-custom.js] PpgData received:", PpgData ? PpgData.length : "null/undefined");
   function randomData() {
     if (PpgData.length === 0) return { value: [0, 0] };
     value1 = PpgData[counter % PpgData.length];
@@ -379,9 +378,7 @@ function PPG_data_passing(LivePpgValues, ecgdate, ecgtime, option1, value, ppgda
   }
 
   try {
-    // Check if we have insufficient data (less than 500) OR if this is initial load (endzoom == 0)
-    // For your case with 599 data points, this should go to the else block
-    if (PpgData.length < 501) {
+    if (PpgData.length < minValidPpgPoints) {
       ppgOption = {
         title: {
           text: "WAITING FOR VALID PPG",
@@ -429,11 +426,9 @@ function PPG_data_passing(LivePpgValues, ecgdate, ecgtime, option1, value, ppgda
       };
 
       if ($("#context_ppg").length && echartLinecontext) {
-        echartLinecontext.clear();
-        echartLinecontext.setOption(ppgOption);
+        echartLinecontext.setOption(ppgOption, true);
       } else if ($("#LivePPGId").length) {
-        echartLine.clear();
-        echartLine.setOption(ppgOption);
+        echartLine.setOption(ppgOption, true);
       }
     } else {
       ppgOption = {
@@ -573,7 +568,7 @@ function PPG_data_passing(LivePpgValues, ecgdate, ecgtime, option1, value, ppgda
             //hoverAnimation: false,
             data: data,
             animation: false,
-            smooth: false,
+            smooth: true,
             lineStyle: {
               color: "#FFFFFF",
               width: 1.6,
@@ -587,9 +582,8 @@ function PPG_data_passing(LivePpgValues, ecgdate, ecgtime, option1, value, ppgda
         ],
       };
       if ($("#context_ppg").length && echartLinecontext) {
-        console.log("[live-custom.js] Setting option for context PPG");
-        echartLinecontext.clear();
-        echartLinecontext.setOption(ppgOption);
+        // console.log("[live-custom.js] Setting option for context PPG");
+        echartLinecontext.setOption(ppgOption, true);
         if (endzoom !== 0) {
           echartLinecontext.dispatchAction({
             type: "dataZoom",
@@ -597,9 +591,8 @@ function PPG_data_passing(LivePpgValues, ecgdate, ecgtime, option1, value, ppgda
           });
         }
       } else if ($("#LivePPGId").length) {
-        console.log("[live-custom.js] Setting option for Live PPG");
-        echartLine.clear();
-        echartLine.setOption(ppgOption);
+        // console.log("[live-custom.js] Setting option for Live PPG");
+        echartLine.setOption(ppgOption, true);
         if (endzoom !== 0) {
           echartLine.dispatchAction({
             type: "dataZoom",
@@ -631,23 +624,7 @@ function RR_data_passing(LiveRrValues) {
 
     const endzoom = Math.max(data.length - 1, 0);
     let option;
-    if (data.length === 0) {
-      option = {
-        title: {
-          text: "NO RR DATA",
-          textStyle: {
-            fontSize: "18",
-            fontFamily: "Verdana",
-            color: "#0686AF",
-          },
-          left: "center",
-          top: "middle",
-        },
-        xAxis: { show: false },
-        yAxis: { show: false },
-        series: [],
-      };
-    } else if (data.length < 120) {
+    if (data.length < 120) {
       option = {
         title: {
           text: "WAITING FOR VALID RR",
@@ -733,7 +710,7 @@ function RR_data_passing(LiveRrValues) {
 /**************************** Heart Rate ******************************/
 
 function heartrate_data(LiveHeartrate, ContextHeartrate) {
-  console.log("[live-custom.js] Calling Heart rate *******88", ContextHeartrate);
+  // console.log("[live-custom.js] Calling Heart rate *******88", ContextHeartrate);
   var LiveHRId;
   var ContextHRId;
 
@@ -823,7 +800,6 @@ function heartrate_data(LiveHeartrate, ContextHeartrate) {
     ContextHRId = echarts.init(document.getElementById("ContextHeartRateId"));
     if (ContextHeartrate !== "") {
       var echartGauge1 = RawechartGauge;
-      console.log("d1 data is :", d1);
       var d1 = ContextHeartrate;
       echartGauge1.series[0].data[0].value[0] = d1;
 
@@ -949,7 +925,7 @@ function blood_oxygen_data(LiveBloodOxygen, ContextBloodOxygen) {
     LiveBloodOxygenId = echarts.init(document.getElementById("LiveBloodOxygenId"));
     var echartGauge2 = RawechartGauge;
     var d = LiveBloodOxygen;
-    console.log("[live-custom.js] LiveBloodOxygen", LiveBloodOxygen);
+    // console.log("[live-custom.js] LiveBloodOxygen", LiveBloodOxygen);
     if (isNaN(d) || d == 0 || d === undefined || d === "" || d === null) {
       echartGauge2.series[0].pointer.show = false;
     } else {
@@ -964,8 +940,8 @@ function blood_oxygen_data(LiveBloodOxygen, ContextBloodOxygen) {
 /************************ Temperature  ********************************/
 function temperature_data(LiveTemperature, ContextTemperature) {
   // Convert inputs to strings if they are not already
-  console.log("[live-custom.js] LiveTemperature 1", LiveTemperature);
-  console.log("[live-custom.js] Calling temperature_data", ContextTemperature);
+  // console.log("[live-custom.js] LiveTemperature 1", LiveTemperature);
+  // console.log("[live-custom.js] Calling temperature_data", ContextTemperature);
 
   LiveTemperature = String(LiveTemperature);
   ContextTemperature = String(ContextTemperature);
@@ -1049,19 +1025,19 @@ function temperature_data(LiveTemperature, ContextTemperature) {
 
   if ($("#ContextTemperatureId").length) {
     ContextTemperatureId = echarts.init(document.getElementById("ContextTemperatureId"));
-    console.log("[live-custom.js] the ContextTemperature ** is: ", ContextTemperature);
+    // console.log("[live-custom.js] the ContextTemperature ** is: ", ContextTemperature);
     if (ContextTemperature !== "") {
       var echartGauge1 = RawechartGauge;
       var d1 = parseFloat(ContextTemperature);
       // var d1 = ContextTemperature;
-      console.log("[live-custom.js] ContextTemperature (C)", d1);
+      // console.log("[live-custom.js] ContextTemperature (C)", d1);
       if (d1 === null || isNaN(d1) || d1 == 0 || d1 === undefined || d1 === "" || d1 === null) {
         echartGauge1.series[0].pointer.show = false;
         d1 = 0; //if the data one is NaN or 0.00 or undefined or "" or a null, then setting to 0
       } else {
         echartGauge1.series[0].pointer.show = true;
       }
-      console.log("d1", d1);
+      // console.log("d1", d1);
       // Assign numeric value directly (ECharts gauge expects a number)
       echartGauge1.series[0].data[0].value = d1;
       ContextTemperatureId.setOption(echartGauge1);
@@ -1085,118 +1061,118 @@ function temperature_data(LiveTemperature, ContextTemperature) {
 /*********************** EOF of Temperature  ****************************/
 
 /************************  Activity Monitor ****************************/
-function acceleration_data(LiveAcc, ContextAcc) {
-  console.log("[live-custom.js] Calling acceleration_data", ContextAcc);
+// function acceleration_data(LiveAcc, ContextAcc) {
+//   // console.log("[live-custom.js] Calling acceleration_data", ContextAcc);
 
-  var LiveAccId;
-  var ContextAccId;
+//   var LiveAccId;
+//   var ContextAccId;
 
-  var RawechartGauge = {
-    series: [
-      {
-        type: "gauge",
-        startAngle: 180,
-        endAngle: 0,
-        center: ["50%", "58%"],
-        radius: "100%",
-        min: 4000,
-        max: 15000,
-        splitNumber: 8,
-        axisLine: {
-          lineStyle: {
-            width: 10,
-            color: [
-              [0.09095, "#D56868"], //red
-              [0.3181, "#FFB601"], //orange
-              [0.5454, "#F5DB00"], //yello
-              [1.0, "#98BF64"], //green
-              //[0.63, '#F9F107'],//yello
-              //[0.95,'#FFB601'],//orange
-              //[1, '#F20000'],//150-red
-            ],
-          },
-        },
-        pointer: {
-          show: true,
-          icon: "path://M12.8,0.7l12,40.1H0.7L12.8,0.7z",
-          length: "15%",
-          width: 10,
-          offsetCenter: [0, "-60%"],
-          itemStyle: {
-            color: "auto",
-          },
-        },
-        axisTick: {
-          length: 12,
-          lineStyle: {
-            color: "auto",
-            width: 0,
-          },
-        },
-        splitLine: {
-          length: 0,
-          lineStyle: {
-            color: "auto",
-            width: 0,
-          },
-        },
-        axisLabel: {
-          show: false,
-        },
-        title: {
-          offsetCenter: [0, "-10%"],
-          fontSize: 0,
-        },
-        detail: {
-          fontSize: 15,
-          offsetCenter: [0, "10%"],
-          valueAnimation: true,
-          color: "white",
-          formatter: function (value) {
-            // console.log("value",value);
-            return (value = value == 0 || isNaN(value) ? "--" : value);
-          },
-        },
-        data: [
-          {
-            value: [],
-            name: "RR",
-          },
-        ],
-      },
-    ],
-  };
+//   var RawechartGauge = {
+//     series: [
+//       {
+//         type: "gauge",
+//         startAngle: 180,
+//         endAngle: 0,
+//         center: ["50%", "58%"],
+//         radius: "100%",
+//         min: 4000,
+//         max: 15000,
+//         splitNumber: 8,
+//         axisLine: {
+//           lineStyle: {
+//             width: 10,
+//             color: [
+//               [0.09095, "#D56868"], //red
+//               [0.3181, "#FFB601"], //orange
+//               [0.5454, "#F5DB00"], //yello
+//               [1.0, "#98BF64"], //green
+//               //[0.63, '#F9F107'],//yello
+//               //[0.95,'#FFB601'],//orange
+//               //[1, '#F20000'],//150-red
+//             ],
+//           },
+//         },
+//         pointer: {
+//           show: true,
+//           icon: "path://M12.8,0.7l12,40.1H0.7L12.8,0.7z",
+//           length: "15%",
+//           width: 10,
+//           offsetCenter: [0, "-60%"],
+//           itemStyle: {
+//             color: "auto",
+//           },
+//         },
+//         axisTick: {
+//           length: 12,
+//           lineStyle: {
+//             color: "auto",
+//             width: 0,
+//           },
+//         },
+//         splitLine: {
+//           length: 0,
+//           lineStyle: {
+//             color: "auto",
+//             width: 0,
+//           },
+//         },
+//         axisLabel: {
+//           show: false,
+//         },
+//         title: {
+//           offsetCenter: [0, "-10%"],
+//           fontSize: 0,
+//         },
+//         detail: {
+//           fontSize: 15,
+//           offsetCenter: [0, "10%"],
+//           valueAnimation: true,
+//           color: "white",
+//           formatter: function (value) {
+//             // console.log("value",value);
+//             return (value = value == 0 || isNaN(value) ? "--" : value);
+//           },
+//         },
+//         data: [
+//           {
+//             value: [],
+//             name: "RR",
+//           },
+//         ],
+//       },
+//     ],
+//   };
 
-  if ($("#ContextAccelrationId").length) {
-    ContextAccId = echarts.init(document.getElementById("ContextAccelrationId"));
-    if (ContextAcc != "") {
-      var echartGauge1 = RawechartGauge;
-      var d1 = ContextAcc;
-      console.log("ContextAcc", ContextAcc);
-      if (isNaN(d1) || d1 == 0 || d1 === undefined || d1 === "" || d1 === null) {
-        echartGauge1.series[0].pointer.show = false;
-        d1 = "- -";
-      } else {
-        echartGauge1.series[0].pointer.show = true;
-      }
-      echartGauge1.series[0].data[0].value[0] = d1;
-      ContextAccId.setOption(echartGauge1);
-    }
-  } else if ($("#LiveAccelrationId").length) {
-    LiveAccId = echarts.init(document.getElementById("LiveAccelrationId"));
-    var echartGauge2 = RawechartGauge;
-    var d = LiveAcc;
-    console.log("[live-custom.js] activity", d);
-    if (isNaN(d) || d == 0 || d === undefined || d === "" || d === null) {
-      echartGauge2.series[0].pointer.show = false;
-      d = "- -";
-    } else {
-      echartGauge2.series[0].pointer.show = true;
-    }
-    echartGauge2.series[0].data[0].value[0] = d;
-    LiveAccId.setOption(echartGauge2);
-  }
-}
+//   if ($("#ContextAccelrationId").length) {
+//     ContextAccId = echarts.init(document.getElementById("ContextAccelrationId"));
+//     if (ContextAcc != "") {
+//       var echartGauge1 = RawechartGauge;
+//       var d1 = ContextAcc;
+//       // console.log("ContextAcc", ContextAcc);
+//       if (isNaN(d1) || d1 == 0 || d1 === undefined || d1 === "" || d1 === null) {
+//         echartGauge1.series[0].pointer.show = false;
+//         d1 = "- -";
+//       } else {
+//         echartGauge1.series[0].pointer.show = true;
+//       }
+//       echartGauge1.series[0].data[0].value[0] = d1;
+//       ContextAccId.setOption(echartGauge1);
+//     }
+//   } else if ($("#LiveAccelrationId").length) {
+//     LiveAccId = echarts.init(document.getElementById("LiveAccelrationId"));
+//     var echartGauge2 = RawechartGauge;
+//     var d = LiveAcc;
+//     // console.log("[live-custom.js] activity", d);
+//     if (isNaN(d) || d == 0 || d === undefined || d === "" || d === null) {
+//       echartGauge2.series[0].pointer.show = false;
+//       d = "- -";
+//     } else {
+//       echartGauge2.series[0].pointer.show = true;
+//     }
+//     echartGauge2.series[0].data[0].value[0] = d;
+//     LiveAccId.setOption(echartGauge2);
+//   }
+// }
 /*********************EOF of Activity Monitor ************************/
 
 function blood_pressure_data(LiveSBP, LiveDBP, ContextSBP, ContextDBP) {
@@ -1288,7 +1264,7 @@ function blood_pressure_data(LiveSBP, LiveDBP, ContextSBP, ContextDBP) {
       var echartGauge1 = RawechartGauge;
       var d1 = ContextSBP;
       dbp = ContextDBP;
-      console.log("ContextBloodPressureId", d1, dbp);
+      // console.log("ContextBloodPressureId", d1, dbp);
       if (isNaN(d1) || d1 == 0 || d1 === undefined || d1 === "" || d1 === null) {
         echartGauge1.series[0].pointer.show = false;
       } else {
@@ -1315,7 +1291,7 @@ function blood_pressure_data(LiveSBP, LiveDBP, ContextSBP, ContextDBP) {
 
 /**************************** Respiration Rate *************************/
 function respiration_rate_data(LiveRRData, contextRRData) {
-  console.log("[live-custom.js] Calling LiveRRData in live page", LiveRRData, contextRRData);
+  // console.log("[live-custom.js] Calling LiveRRData in live page", LiveRRData, contextRRData);
   var LiveHRId;
   var ContextHRId;
 
@@ -1424,4 +1400,15 @@ function respiration_rate_data(LiveRRData, contextRRData) {
   }
 }
 /**************************** EOF of Respiration Rate *************************/
-export { heartrate_data, blood_pressure_data, respiration_rate_data, acceleration_data, blood_oxygen_data, temperature_data, PPG_data_passing, RR_data_passing, ECG_data_passing, ews_value_passing };
+export {
+  heartrate_data,
+  blood_pressure_data,
+  respiration_rate_data,
+  //  acceleration_data,
+  blood_oxygen_data,
+  temperature_data,
+  PPG_data_passing,
+  RR_data_passing,
+  ECG_data_passing,
+  ews_value_passing,
+};
