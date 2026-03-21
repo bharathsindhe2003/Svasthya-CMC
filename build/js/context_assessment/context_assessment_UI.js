@@ -1,5 +1,5 @@
 import { fb } from "../livepage/database_function.js";
-import { heartrate_data, blood_pressure_data, respiration_rate_data, acceleration_data, blood_oxygen_data, temperature_data, ews_value_passing } from "../livepage/live-custom.js";
+import { heartrate_data, blood_pressure_data, respiration_rate_data, acceleration_data, blood_oxygen_data_context, temperature_data, ews_value_passing } from "../livepage/live-custom.js";
 import { NoEcgData, NoPpgData, NoRRData, NoData } from "../livepage/EchartGraphs.js";
 
 var username;
@@ -151,7 +151,8 @@ try {
           heart_rate = patientData.hr !== undefined && patientData.hr !== null && patientData.hr !== "" ? parseFloat(patientData.hr) / 100 : null;
           console.log("[context_assessment_UI.js] heart_rate:", heart_rate);
 
-          spo2 = patientData.spo !== undefined && patientData.spo !== null && patientData.spo !== "" ? parseFloat(patientData.spo) / 100 : null;
+          spo2 = patientData.spo !== undefined && patientData.spo !== null && patientData.spo !== "" ? Number(patientData.spo) : null;
+          console.log("[context_assessment_UI.js] raw spo2:", patientData.spo);
           console.log("[context_assessment_UI.js] spo2:", spo2);
 
           temp = patientData.temp !== undefined && patientData.temp !== null && patientData.temp !== "" ? parseFloat(patientData.temp) : null;
@@ -173,7 +174,7 @@ try {
           heart_rate = Number.isFinite(heart_rate) ? heart_rate : "-";
           respiration_rate = Number.isFinite(Number(respiration_rate)) ? Number(respiration_rate) : "-";
           temp = Number.isFinite(temp) ? temp : "-";
-          spo2 = Number.isFinite(spo2) ? spo2 : "-";
+          spo2 = Number.isFinite(spo2) ? spo2.toString() : "-";
           bp = bp !== undefined && bp !== null && bp !== "" ? bp : "-/-";
           acc = acc !== undefined && acc !== null && acc !== "" ? acc : "-";
 
@@ -182,7 +183,7 @@ try {
           heartrate_data("", heart_rate);
           respiration_rate_data("", respiration_rate);
           temperature_data("", temp);
-          blood_oxygen_data("", spo2);
+          blood_oxygen_data_context(spo2);
           blood_pressure_data("", "", contextsbp, contextdbp);
           acceleration_data("", acc);
 

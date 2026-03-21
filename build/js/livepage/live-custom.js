@@ -828,11 +828,30 @@ function heartrate_data(LiveHeartrate, ContextHeartrate) {
 /*********************** EOF of Heart Rate ****************************/
 
 /***************************  BloodOxygen(spo2) ***********************/
-function blood_oxygen_data(LiveBloodOxygen, ContextBloodOxygen) {
-  console.log("[live-custom.js] Calling blood_oxygen_data", ContextBloodOxygen);
+// Shared normalizer so both live and context SPO2 can reuse it.
+function normalizeSpO2(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n <= 0) {
+    return NaN;
+  }
+
+  // If value looks like a percentage (e.g. 90–100), convert to 0–1.
+  if (n > 1.5) {
+    return n / 100;
+  }
+
+  return n;
+}
+
+// Live-page SPO2 gauge (used on main live/history page)
+function blood_oxygen_data(LiveBloodOxygen) {
+  console.log("[live-custom.js] Calling blood_oxygen_data (live)", {
+    LiveBloodOxygen,
+    // ContextBloodOxygen,
+  });
 
   var LiveBloodOxygenId;
-  var ContextBloodOxygenId;
+  // var ContextBloodOxygenId;
 
   var RawechartGauge = {
     series: [
@@ -909,23 +928,24 @@ function blood_oxygen_data(LiveBloodOxygen, ContextBloodOxygen) {
     ],
   };
   //console.log("ContextBloodOxygen data is :",ContextBloodOxygen);
-  if ($("#ContextBloodOxygenId").length) {
-    ContextBloodOxygenId = echarts.init(document.getElementById("ContextBloodOxygenId"));
-    var echartGauge1 = RawechartGauge;
-    var d1 = ContextBloodOxygen;
-    if (isNaN(d1) || d1 == 0 || d1 === undefined || d1 === "" || d1 === null) {
-      echartGauge1.series[0].pointer.show = false;
-    } else {
-      echartGauge1.series[0].pointer.show = true;
-    }
-    echartGauge1.series[0].data[0].value[0] = d1;
-    ContextBloodOxygenId.setOption(echartGauge1);
-  } else if ($("#LiveBloodOxygenId").length) {
+  // if ($("#ContextBloodOxygenId").length) {
+  //   ContextBloodOxygenId = echarts.init(document.getElementById("ContextBloodOxygenId"));
+  //   var echartGauge1 = RawechartGauge;
+  //   var d1 = normalizeSpO2(ContextBloodOxygen);
+  //   if (isNaN(d1) || d1 === 0 || d1 === undefined || d1 === "" || d1 === null) {
+  //     echartGauge1.series[0].pointer.show = false;
+  //   } else {
+  //     echartGauge1.series[0].pointer.show = true;
+  //   }
+  //   echartGauge1.series[0].data[0].value[0] = d1;
+  //   ContextBloodOxygenId.setOption(echartGauge1);
+  // } else
+  if ($("#LiveBloodOxygenId").length) {
     LiveBloodOxygenId = echarts.init(document.getElementById("LiveBloodOxygenId"));
     var echartGauge2 = RawechartGauge;
-    var d = LiveBloodOxygen;
-    // console.log("[live-custom.js] LiveBloodOxygen", LiveBloodOxygen);
-    if (isNaN(d) || d == 0 || d === undefined || d === "" || d === null) {
+    var d = normalizeSpO2(LiveBloodOxygen);
+    // console.log("[live-custom.js] LiveBloodOxygen (normalized)", d);
+    if (isNaN(d) || d === 0 || d === undefined || d === "" || d === null) {
       echartGauge2.series[0].pointer.show = false;
     } else {
       echartGauge2.series[0].pointer.show = true;
@@ -933,6 +953,102 @@ function blood_oxygen_data(LiveBloodOxygen, ContextBloodOxygen) {
     echartGauge2.series[0].data[0].value[0] = d;
     LiveBloodOxygenId.setOption(echartGauge2);
   }
+}
+/***************************  BloodOxygen(spo2) for Context Assessment only ***********************/
+function blood_oxygen_data_context(ContextBloodOxygen) {
+  console.log("[live-custom.js] Calling blood_oxygen_data_context", {
+    ContextBloodOxygen,
+  });
+
+  if (!$("#ContextBloodOxygenId").length) {
+    return;
+  }
+
+  var ContextBloodOxygenId = echarts.init(document.getElementById("ContextBloodOxygenId"));
+
+  var RawechartGauge = {
+    series: [
+      {
+        type: "gauge",
+        startAngle: 180,
+        endAngle: 0,
+        center: ["49%", "51%"],
+        radius: "100%",
+        min: 0.9,
+        max: 0.96,
+        splitNumber: 4,
+        axisLine: {
+          lineStyle: {
+            width: 10,
+            color: [
+              [0.2, "#D56868"],
+              [0.55, "#FFB601"],
+              [0.85, "#F5DB00"],
+              [1.05, "#98BF64"],
+            ],
+          },
+        },
+        pointer: {
+          icon: "path://M12.8,0.7l12,40.1H0.7L12.8,0.7z",
+          length: "15%",
+          width: 10,
+          offsetCenter: [0, "-60%"],
+          itemStyle: {
+            color: "auto",
+          },
+        },
+        axisTick: {
+          length: 12,
+          lineStyle: {
+            color: "auto",
+            width: 0,
+          },
+        },
+        splitLine: {
+          length: 0,
+          lineStyle: {
+            color: "auto",
+            width: 0,
+          },
+        },
+        axisLabel: {
+          show: false,
+        },
+        title: {
+          offsetCenter: [0, "-10%"],
+          fontSize: 0,
+        },
+        detail: {
+          fontSize: 15,
+          offsetCenter: [0, "10%"],
+          valueAnimation: true,
+          formatter: function (value) {
+            var data = Math.round(value * 100);
+            return (data = data == 0 || isNaN(data) ? "- -" : data + " %");
+          },
+          color: "white",
+        },
+        data: [
+          {
+            value: [],
+            name: "SPO2",
+          },
+        ],
+      },
+    ],
+  };
+
+  var echartGauge = RawechartGauge;
+  var d = normalizeSpO2(ContextBloodOxygen);
+  if (isNaN(d) || d === 0 || d === undefined || d === "" || d === null) {
+    echartGauge.series[0].pointer.show = false;
+  } else {
+    echartGauge.series[0].pointer.show = true;
+  }
+  // ECharts gauge expects a numeric value; use direct assignment
+  // instead of value[0] to avoid undefined behavior.
+  echartGauge.series[0].data[0].value = d;
+  ContextBloodOxygenId.setOption(echartGauge);
 }
 /************************* EOF of BloodOxygen(spo2) ********************/
 
@@ -1399,4 +1515,16 @@ function respiration_rate_data(LiveRRData, contextRRData) {
   }
 }
 /**************************** EOF of Respiration Rate *************************/
-export { heartrate_data, blood_pressure_data, respiration_rate_data, acceleration_data, blood_oxygen_data, temperature_data, PPG_data_passing, RR_data_passing, ECG_data_passing, ews_value_passing };
+export {
+  heartrate_data,
+  blood_pressure_data,
+  respiration_rate_data,
+  acceleration_data,
+  blood_oxygen_data,
+  blood_oxygen_data_context,
+  temperature_data,
+  PPG_data_passing,
+  RR_data_passing,
+  ECG_data_passing,
+  ews_value_passing,
+};
