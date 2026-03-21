@@ -1,6 +1,9 @@
 import { fb } from "../livepage/database_function.js";
-import { heartrate_data, blood_pressure_data, respiration_rate_data, acceleration_data, blood_oxygen_data, temperature_data, ews_value_passing } from "../livepage/live-custom.js";
-import { NoEcgData, NoPpgData } from "../livepage/EchartGraphs.js";
+// import { heartrate_data, blood_pressure_data, respiration_rate_data, acceleration_data, blood_oxygen_data, temperature_data, ews_value_passing } from "../livepage/live-custom.js";
+import {
+  NoEcgData,
+  //  NoPpgData
+} from "../livepage/EchartGraphs.js";
 
 var username;
 var heart_rate;
