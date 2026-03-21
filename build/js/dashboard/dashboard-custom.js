@@ -109,68 +109,54 @@ function firebase_Data_retrieval(ref_doc_id) {
             }
           });
           var ID;
-          // let validTimestamp = {};
           const Obtain_vitals = new Promise((resolve, reject) => {
             var ID;
             var vitalinfo = [];
             const nowSec = Date.now() / 1000;
             for (let i = 0; i < patient_info.length; i++) {
-              vital_list
-                .child(patient_info[i][4])
-                // .limitToLast(1)
-                .on("value", (snapshot) => {
-                  if (snapshot.val() != null) {
-                    // validTimestamp[patient_info[i][4]] = Math.floor(snapshot.val().timestamp / 60) * 60;
-                    // console.log("validTimestamp:", patient_info[i][4], Math.floor(snapshot.val().timestamp / 60) * 60);
-                    ID = snapshot.val().userId;
-                    obj[ID] = snapshot.val().userId;
-                    // const latest = latest5secHR.find((entry) => entry.patientId === ID);
-                    // const latestPatHr = latest ? latest.HR : null;
-                    // const latestPatHrTs = latest ? latest.timestamps : null;
-                    // console.log("[dashboard-custom.js] retrieving vitals for ID:", ID, "with latestPatHr:", latestPatHr, "at ts:", latestPatHrTs, snapshot.val().hr);
+              vital_list.child(patient_info[i][4]).on("value", (snapshot) => {
+                if (snapshot.val() != null) {
+                  ID = snapshot.val().userId;
+                  obj[ID] = snapshot.val().userId;
 
-                    // if (latestPatHr !== null && typeof latestPatHrTs === "number" && Number.isFinite(latestPatHrTs) && !isNaN(latestPatHrTs) && nowSec - latestPatHrTs < 10) {
-                    //   obj[ID + "hr"] = latestPatHr;
-                    // } else {
-                    obj[ID + "hr"] = snapshot.val().hr === "00" || snapshot.val().hr === "0" || snapshot.val().hr === 0 ? "--" : snapshot.val().hr;
-                    // }
-                    if (snapshot.val().bp == "0/0") {
-                      obj[ID + "bp"] = "--/--";
-                    } else {
-                      obj[ID + "bp"] = snapshot.val().bp;
-                    }
-                    if (snapshot.val().spo == "00") {
-                      obj[ID + "spo"] = "--";
-                    } else {
-                      obj[ID + "spo"] = snapshot.val().spo;
-                    }
-                    if (parseFloat(snapshot.val().temp) == 0.0 || parseFloat(snapshot.val().temp) >= 238.48) {
-                      obj[ID + "temp"] = "--";
-                    } else {
-                      obj[ID + "temp"] = parseFloat(snapshot.val().temp).toFixed(2);
-                    }
-                    if (snapshot.val().rr == "0") {
-                      obj[ID + "rr"] = "--";
-                    } else {
-                      obj[ID + "rr"] = snapshot.val().rr;
-                    }
-                    console.log("[dashboard-custom.js] retrieved bp", snapshot.val());
-                  } else {
-                    obj[ID + "hr"] = "--";
+                  obj[ID + "hr"] = snapshot.val().hr === "00" || snapshot.val().hr === "0" || snapshot.val().hr === 0 ? "--" : snapshot.val().hr;
+                  if (snapshot.val().bp == "0/0") {
                     obj[ID + "bp"] = "--/--";
+                  } else {
+                    obj[ID + "bp"] = snapshot.val().bp;
+                  }
+                  if (snapshot.val().spo == "00") {
                     obj[ID + "spo"] = "--";
+                  } else {
+                    obj[ID + "spo"] = snapshot.val().spo;
+                  }
+                  if (parseFloat(snapshot.val().temp) == 0.0 || parseFloat(snapshot.val().temp) >= 238.48) {
                     obj[ID + "temp"] = "--";
+                  } else {
+                    obj[ID + "temp"] = parseFloat(snapshot.val().temp).toFixed(2);
+                  }
+                  if (snapshot.val().rr == "0") {
                     obj[ID + "rr"] = "--";
-                    vitalinfo.push([obj[ID + "hr"], obj[ID + "rr"], obj[ID + "temp"], obj[ID + "spo"], obj[ID + "bp"]]);
-                    validTimestamp[patient_info[i][4]] = null;
+                  } else {
+                    obj[ID + "rr"] = snapshot.val().rr;
                   }
+                  console.log("[dashboard-custom.js] retrieved bp", snapshot.val());
+                } else {
+                  obj[ID + "hr"] = "--";
+                  obj[ID + "bp"] = "--/--";
+                  obj[ID + "spo"] = "--";
+                  obj[ID + "temp"] = "--";
+                  obj[ID + "rr"] = "--";
+                  vitalinfo.push([obj[ID + "hr"], obj[ID + "rr"], obj[ID + "temp"], obj[ID + "spo"], obj[ID + "bp"]]);
+                  validTimestamp[patient_info[i][4]] = null;
+                }
 
-                  refreshvitals(obj[ID + "hr"], obj[ID + "bp"], obj[ID + "temp"], obj[ID + "rr"], obj[ID + "spo"], obj[ID]);
+                refreshvitals(obj[ID + "hr"], obj[ID + "bp"], obj[ID + "temp"], obj[ID + "rr"], obj[ID + "spo"], obj[ID]);
 
-                  if (i == vitalinfo.length - 1) {
-                    resolve(vitalinfo);
-                  }
-                });
+                if (i == vitalinfo.length - 1) {
+                  resolve(vitalinfo);
+                }
+              });
             }
           });
           var ecg_info = [];
@@ -458,6 +444,9 @@ function firebase_Data_retrieval(ref_doc_id) {
                 console.log("LOOPING ECG", patientId, final_min_ecg);
                 console.log("[dashboard-custom.js] validTimestamp ECG", patientId, ECGkey, shouldRenderWaveform(validTimestamp, ECGkey));
                 if (shouldRenderWaveform(validTimestamp, ECGkey)) {
+                  if (final_min_ecg.length > 625) {
+                    final_min_ecg = final_min_ecg.slice(-625);
+                  }
                   createECGchart(final_min_ecg, patientId);
                 } else {
                   createECGchart([], patientId);
@@ -481,6 +470,9 @@ function firebase_Data_retrieval(ref_doc_id) {
                 console.log("LOOPING PPG", final_ppg);
                 console.log("[dashboard-custom.js] validTimestamp PPG", patientId, PPGkey, shouldRenderWaveform(validTimestamp, PPGkey));
                 if (shouldRenderWaveform(validTimestamp, PPGkey)) {
+                  if (final_ppg.length > 500) {
+                    final_ppg = final_ppg.slice(-500);
+                  }
                   createPPGchart(final_ppg, patientId);
                 } else {
                   createPPGchart([], patientId);
@@ -491,7 +483,7 @@ function firebase_Data_retrieval(ref_doc_id) {
                 const latestRREntry = getLatestSnapshotEntry(rrDataValue);
                 const RRkey = latestRREntry.key;
                 const latestRR = latestRREntry.value;
-                const rrdata = latestRR ? latestRR.res : undefined;
+                const rrdata = latestRR ? latestRR.payload : undefined;
                 let final_rr = [];
 
                 if (typeof rrdata === "string") {
@@ -522,6 +514,9 @@ function firebase_Data_retrieval(ref_doc_id) {
                 console.log("LOOPING RR", patientId, final_rr);
                 console.log("[dashboard-custom.js] validTimestamp RR", patientId, RRkey, shouldRenderWaveform(validTimestamp, RRkey));
                 if (shouldRenderWaveform(validTimestamp, RRkey)) {
+                  if (final_rr.length > 125) {
+                    final_rr = final_rr.slice(-125);
+                  }
                   createRRchart(final_rr, patientId);
                 } else {
                   createRRchart([], patientId);
@@ -920,7 +915,7 @@ function createPPGchart(ppg, ID) {
   } catch (e) {
     console.log("[dashboard-custom.js] EcgData.length:", e.message);
   }
-  if (ppgData.length < 501) {
+  if (ppgData.length < 500) {
     chart.clear();
 
     option1 = {
@@ -1164,7 +1159,7 @@ function createRRchart(rr, ID) {
   }
   let option;
   chart.clear();
-  if (rrData.length < 120) {
+  if (rrData.length < 125) {
     option = {
       title: {
         text: "WAITING FOR VALID RR",

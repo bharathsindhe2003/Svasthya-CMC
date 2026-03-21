@@ -609,7 +609,7 @@ function PPG_data_passing(LivePpgValues, ecgdate, ecgtime, option1, value, ppgda
 
 /**************************** Respiration Rate ******************************/
 
-function RR_data_passing(LiveRrValues) {
+function RR_data_passing(LiveRrValues, rrdate, rrtime, option1, value, rrdata, endzoom) {
   if (!$("#LiveRRId").length) return;
   try {
     const echartLine = echarts.init(document.getElementById("LiveRRId"));
@@ -622,7 +622,6 @@ function RR_data_passing(LiveRrValues) {
     const yMax = RrData.length ? Math.max(...RrData) : 1;
     const pad = Math.max((yMax - yMin) * 0.05, 1);
 
-    const endzoom = Math.max(data.length - 1, 0);
     let option;
     if (data.length < 120) {
       option = {
@@ -1009,7 +1008,7 @@ function temperature_data(LiveTemperature, ContextTemperature) {
           formatter: function (value) {
             const v = Number(value);
             if (!isFinite(v) || v <= 0) return "--";
-            return v.toFixed(2) + "\u2103";
+            return v + "\u2103";
           },
           color: "white",
         },

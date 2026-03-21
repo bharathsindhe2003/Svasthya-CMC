@@ -260,6 +260,9 @@ function init_echarts() {
     var patients;
     sensor_flag = 0;
     var ecg_flag = 0;
+    var ppg_flag = 0;
+    var rr_flag = 0;
+    var live_vitals_flag = 0;
     var ppg_ref;
     var rr_ref;
     // var pat_bp_5sec_ref;
@@ -322,14 +325,14 @@ function init_echarts() {
             }
 
             const type = record.type;
-            const waveform = type === "noise" || type === "flat" ? [] : parseEcgPayload(record.payload ?? record.ecg);
+            const waveform = type === "noise" || type === "flat" ? [] : parseEcgPayload(record.payload);
             if (!waveform.length) {
               showNoDataChart("LiveECGId", NoEcgData, "ecgdate", "ecgtime");
               return;
             }
 
             updateChartDateTime("ecgdate", "ecgtime", record.timestamp ?? timestamp);
-            ECG_data_passing(waveform, "", "", option1, value, "", 690);
+            ECG_data_passing(waveform, "", "", option1, value, "", 625);
           })
           .catch(function (error) {
             console.error("[database_function.js] Unable to load ECG for timestamp", timestamp, error);
@@ -346,7 +349,7 @@ function init_echarts() {
               return;
             }
 
-            const waveform = parseSpaceSeparatedWaveform(record.payload ?? record.ppg);
+            const waveform = parseSpaceSeparatedWaveform(record.payload);
             if (!waveform.length) {
               showNoDataChart("LivePPGId", NoPpgData, "ppgdate", "ppgtime");
               return;
@@ -370,14 +373,14 @@ function init_echarts() {
               return;
             }
 
-            const waveform = parseSpaceSeparatedWaveform(record.payload ?? record.res);
+            const waveform = parseSpaceSeparatedWaveform(record.payload);
             if (!waveform.length) {
               showNoDataChart("LiveRRId", NoRRData, "rrdate", "rrtime");
               return;
             }
 
             updateChartDateTime("rrdate", "rrtime", record.timestamp ?? timestamp);
-            RR_data_passing(waveform);
+            RR_data_passing(waveform, "", "", "", "", "", 125);
           })
           .catch(function (error) {
             console.error("[database_function.js] Unable to load RR for timestamp", timestamp, error);
@@ -388,12 +391,18 @@ function init_echarts() {
       let listener = ref.on("value", function (snapshot) {
         const live = snapshot.val();
         if (live != null) {
-          counter++;
+          if (live_vitals_flag === 1) {
+            counter++;
 
-          const data1 = live;
-          console.log("[database_function.js] Live data:", data1);
-          activeVitalsTimestamp = Number(data1.timestamp) || activeVitalsTimestamp;
-          applyVitalsToUi(data1);
+            const data1 = live;
+            console.log("[database_function.js] Live data:", data1);
+            activeVitalsTimestamp = Number(data1.timestamp) || activeVitalsTimestamp;
+            applyVitalsToUi(data1);
+          } else {
+            // First snapshot from live vitals stream – treat as baseline.
+            // Subsequent changes will override the default/ref_valid data.
+            live_vitals_flag = 1;
+          }
         }
       });
 
@@ -403,7 +412,7 @@ function init_echarts() {
             const chart_json = snapshot.val();
             let type = chart_json.type;
             const signalTimestamp = Number(chart_json.timestamp);
-            const final_ecg = type == "noise" || type == "flat" ? [] : parseEcgPayload(chart_json.ecg ?? chart_json.payload);
+            const final_ecg = type == "noise" || type == "flat" ? [] : parseEcgPayload(chart_json.ecg);
 
             if (!shouldRenderForActiveTimestamp(signalTimestamp, activeVitalsTimestamp)) {
               return;
@@ -422,44 +431,58 @@ function init_echarts() {
         }
       });
       let listener2 = ppg_ref.on("value", function (snapshot) {
-        if (snapshot.val() !== null) {
-          const ppg_json = snapshot.val();
-          const signalTimestamp = Number(ppg_json.timestamp);
-          const final_ppg = parseSpaceSeparatedWaveform(ppg_json.ppg ?? ppg_json.payload);
+        const raw = snapshot.val();
+        if (raw !== null) {
+          if (ppg_flag === 1) {
+            const ppg_json = raw;
+            const signalTimestamp = Number(ppg_json.timestamp);
+            const final_ppg = parseSpaceSeparatedWaveform(ppg_json.ppg);
 
-          if (!shouldRenderForActiveTimestamp(signalTimestamp, activeVitalsTimestamp)) {
-            return;
+            if (!shouldRenderForActiveTimestamp(signalTimestamp, activeVitalsTimestamp)) {
+              return;
+            }
+
+            if (!final_ppg.length) {
+              showNoDataChart("LivePPGId", NoPpgData, "ppgdate", "ppgtime");
+              return;
+            }
+
+            updateChartDateTime("ppgdate", "ppgtime", signalTimestamp);
+            PPG_data_passing(final_ppg, "", "", "", "", "", 0);
+          } else {
+            // First snapshot from live PPG stream – use as baseline.
+            // Subsequent changes will override the default/historical data.
+            ppg_flag = 1;
           }
-
-          if (!final_ppg.length) {
-            showNoDataChart("LivePPGId", NoPpgData, "ppgdate", "ppgtime");
-            return;
-          }
-
-          updateChartDateTime("ppgdate", "ppgtime", signalTimestamp);
-          PPG_data_passing(final_ppg, "", "", "", "", "", 0);
         } else {
           showNoDataChart("LivePPGId", NoPpgData, "ppgdate", "ppgtime");
         }
       });
 
       let listener4 = rr_ref.on("value", function (snapshot) {
-        if (snapshot.val() != null) {
-          const rr_json = snapshot.val();
-          const signalTimestamp = Number(rr_json.timestamp);
-          const final_rr = parseSpaceSeparatedWaveform(rr_json.res ?? rr_json.payload);
+        const raw = snapshot.val();
+        if (raw != null) {
+          if (rr_flag === 1) {
+            const rr_json = raw;
+            const signalTimestamp = Number(rr_json.timestamp);
+            const final_rr = parseSpaceSeparatedWaveform(rr_json.res);
 
-          if (!shouldRenderForActiveTimestamp(signalTimestamp, activeVitalsTimestamp)) {
-            return;
+            if (!shouldRenderForActiveTimestamp(signalTimestamp, activeVitalsTimestamp)) {
+              return;
+            }
+
+            if (!final_rr.length) {
+              showNoDataChart("LiveRRId", NoRRData, "rrdate", "rrtime");
+              return;
+            }
+
+            updateChartDateTime("rrdate", "rrtime", signalTimestamp);
+            RR_data_passing(final_rr, "", "", "", "", "", 0);
+          } else {
+            // First snapshot from live RR stream – use as baseline.
+            // Subsequent changes will override the default/historical data.
+            rr_flag = 1;
           }
-
-          if (!final_rr.length) {
-            showNoDataChart("LiveRRId", NoRRData, "rrdate", "rrtime");
-            return;
-          }
-
-          updateChartDateTime("rrdate", "rrtime", signalTimestamp);
-          RR_data_passing(final_rr);
         }
       });
 
@@ -478,9 +501,9 @@ function init_echarts() {
       });
       var list = ref_valid.once("value", function (snapshot) {
         if (snapshot.val() != null) {
-          console.log("[database_function.js] in validapatientdata");
+          // console.log("[database_function.js] in validapatientdata");
           let data = snapshot.val();
-          console.log("[database_function.js] in validapatientdata", data);
+          // console.log("[database_function.js] in validapatientdata", data);
           const latestEntry = getLatestSnapshotEntry(data);
           activeVitalsTimestamp = latestEntry.timestamp;
 
@@ -488,6 +511,7 @@ function init_echarts() {
             console.log("[database_function.js] in validapatientdata", latestEntry.record);
             applyVitalsToUi(latestEntry.record);
           }
+          console.log("[database_function.js] Applying data from last timestamp from patientlivedata:", activeVitalsTimestamp);
 
           loadHistoricalWaveforms(activeVitalsTimestamp);
         } else {
