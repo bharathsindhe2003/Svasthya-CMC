@@ -61,7 +61,7 @@ export function firebase(min_time, max_time, localarray, trim) {
                 const timestamp = parseInt(data.key) * 1000; // Convert to milliseconds
                 const patientData = data.val();
 
-                context_timestamp.push([parseInt(tme_in_ms), parseInt(5)]);
+                context_timestamp.push([parseInt(timestamp), parseInt(5)]);
                 // Heart rate
                 const rawHR = patientData.hr;
                 if (rawHR && rawHR !== "--") {
