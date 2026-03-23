@@ -1,12 +1,11 @@
 import { fb } from "../livepage/database_function.js";
-import { heartrate_data, blood_pressure_data, respiration_rate_data, acceleration_data, blood_oxygen_data_context, temperature_data, ews_value_passing } from "../livepage/live-custom.js";
+import { heartrate_data, blood_pressure_data, respiration_rate_data, blood_oxygen_data_context, temperature_data, ews_value_passing } from "../livepage/live-custom.js";
 import { NoEcgData, NoPpgData, NoRRData, NoData } from "../livepage/EchartGraphs.js";
 
 var username;
 var heart_rate;
 var bp;
 var respiration_rate;
-// var acc;
 var spo2;
 var temp;
 
@@ -158,9 +157,6 @@ try {
           temp = patientData.temp !== undefined && patientData.temp !== null && patientData.temp !== "" ? parseFloat(patientData.temp) : null;
           console.log("[context_assessment_UI.js] temp:", temp);
 
-          // acc = patientData.acc ? patientData.acc : null;
-          // console.log("[context_assessment_UI.js] acc:", acc);
-
           bp = patientData.bp ? patientData.bp : null;
           console.log("[context_assessment_UI.js] bp:", bp);
 
@@ -176,7 +172,6 @@ try {
           temp = Number.isFinite(temp) ? temp : "-";
           spo2 = Number.isFinite(spo2) ? spo2.toString() : "-";
           bp = bp !== undefined && bp !== null && bp !== "" ? bp : "-/-";
-          // acc = acc !== undefined && acc !== null && acc !== "" ? acc : "-";
 
           console.log("[context_assessment_UI.js] Processed patient data: ", {
             heart_rate,
@@ -185,7 +180,6 @@ try {
             spo2,
             contextsbp,
             contextdbp,
-            // acc
           });
 
           heartrate_data("", heart_rate);
@@ -193,7 +187,6 @@ try {
           temperature_data("", temp);
           blood_oxygen_data_context(spo2);
           blood_pressure_data("", "", contextsbp, contextdbp);
-          // acceleration_data("", acc);
 
           console.log("[context_assessment_UI.js] Live patient data processed and passed successfully.");
 
@@ -210,8 +203,6 @@ try {
 
             const scale_array = patientData.scale ? patientData.scale.split(",").map((s) => s.trim()) : [];
             const symptoms_array = symptoms.split(",").map((symptom) => symptom.trim().replace(/_/g, " "));
-
-            // remove /
             pain_spot = patientData.pain_spot ? patientData.pain_spot.split(",").map((s) => s.trim().replace(/\//g, "")) : [];
             // Build symptom text with severity based on scale values
             const painSymptoms = {

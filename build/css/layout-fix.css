@@ -118,5 +118,7 @@ body.nav-md .container.body .right_col,
 body.nav-sm .container.body .right_col,
 body.nav-md .main_container .top_nav,
 body.nav-sm .main_container .top_nav {
-  transition: width 0.25s ease, margin-left 0.25s ease;
+  transition:
+    width 0.25s ease,
+    margin-left 0.25s ease;
 }

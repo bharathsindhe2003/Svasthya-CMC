@@ -41,3 +41,12 @@ Features:
 - Resolved 2 UI Changes
 
 RELEASE DATE: 23-03-2026
+
+4. Version Update: 0.1.7
+
+Features:
+
+- Removed activity from history.
+- Remove notification and video files and code from codebase
+
+RELEASE DATE: 23-03-2026

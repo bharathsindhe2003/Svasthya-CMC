@@ -1175,121 +1175,6 @@ function temperature_data(LiveTemperature, ContextTemperature) {
 }
 /*********************** EOF of Temperature  ****************************/
 
-/************************  Activity Monitor ****************************/
-function acceleration_data(LiveAcc, ContextAcc) {
-  // console.log("[live-custom.js] Calling acceleration_data", ContextAcc);
-
-  var LiveAccId;
-  var ContextAccId;
-
-  var RawechartGauge = {
-    series: [
-      {
-        type: "gauge",
-        startAngle: 180,
-        endAngle: 0,
-        center: ["50%", "58%"],
-        radius: "100%",
-        min: 4000,
-        max: 15000,
-        splitNumber: 8,
-        axisLine: {
-          lineStyle: {
-            width: 10,
-            color: [
-              [0.09095, "#D56868"], //red
-              [0.3181, "#FFB601"], //orange
-              [0.5454, "#F5DB00"], //yello
-              [1.0, "#98BF64"], //green
-              //[0.63, '#F9F107'],//yello
-              //[0.95,'#FFB601'],//orange
-              //[1, '#F20000'],//150-red
-            ],
-          },
-        },
-        pointer: {
-          show: true,
-          icon: "path://M12.8,0.7l12,40.1H0.7L12.8,0.7z",
-          length: "15%",
-          width: 10,
-          offsetCenter: [0, "-60%"],
-          itemStyle: {
-            color: "auto",
-          },
-        },
-        axisTick: {
-          length: 12,
-          lineStyle: {
-            color: "auto",
-            width: 0,
-          },
-        },
-        splitLine: {
-          length: 0,
-          lineStyle: {
-            color: "auto",
-            width: 0,
-          },
-        },
-        axisLabel: {
-          show: false,
-        },
-        title: {
-          offsetCenter: [0, "-10%"],
-          fontSize: 0,
-        },
-        detail: {
-          fontSize: 15,
-          offsetCenter: [0, "10%"],
-          valueAnimation: true,
-          color: "white",
-          formatter: function (value) {
-            // console.log("value",value);
-            return (value = value == 0 || isNaN(value) ? "--" : value);
-          },
-        },
-        data: [
-          {
-            value: [],
-            name: "RR",
-          },
-        ],
-      },
-    ],
-  };
-
-  if ($("#ContextAccelrationId").length) {
-    ContextAccId = echarts.init(document.getElementById("ContextAccelrationId"));
-    if (ContextAcc != "") {
-      var echartGauge1 = RawechartGauge;
-      var d1 = ContextAcc;
-      // console.log("ContextAcc", ContextAcc);
-      if (isNaN(d1) || d1 == 0 || d1 === undefined || d1 === "" || d1 === null) {
-        echartGauge1.series[0].pointer.show = false;
-        d1 = "- -";
-      } else {
-        echartGauge1.series[0].pointer.show = true;
-      }
-      echartGauge1.series[0].data[0].value = d1;
-      ContextAccId.setOption(echartGauge1);
-    }
-  } else if ($("#LiveAccelrationId").length) {
-    LiveAccId = echarts.init(document.getElementById("LiveAccelrationId"));
-    var echartGauge2 = RawechartGauge;
-    var d = LiveAcc;
-    // console.log("[live-custom.js] activity", d);
-    if (isNaN(d) || d == 0 || d === undefined || d === "" || d === null) {
-      echartGauge2.series[0].pointer.show = false;
-      d = "- -";
-    } else {
-      echartGauge2.series[0].pointer.show = true;
-    }
-    echartGauge2.series[0].data[0].value = d;
-    LiveAccId.setOption(echartGauge2);
-  }
-}
-/*********************EOF of Activity Monitor ************************/
-
 function blood_pressure_data(LiveSBP, LiveDBP, ContextSBP, ContextDBP) {
   //var echartGauge;
   //var sbp;
@@ -1519,7 +1404,6 @@ export {
   heartrate_data,
   blood_pressure_data,
   respiration_rate_data,
-  acceleration_data,
   blood_oxygen_data,
   blood_oxygen_data_context,
   temperature_data,

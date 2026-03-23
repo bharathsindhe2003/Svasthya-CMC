@@ -1,9 +1,7 @@
-/* import of echarts from live-custom */
 import {
   heartrate_data,
   blood_pressure_data,
   respiration_rate_data,
-  // acceleration_data,
   blood_oxygen_data,
   temperature_data,
   ECG_data_passing,
@@ -11,17 +9,12 @@ import {
   PPG_data_passing,
   RR_data_passing,
 } from "./live-custom.js";
-// import { SymptomMsg } from "../context_assessment/ContextAssessmentTrim.js";
 import { NoEcgData, NoData, NoRRData, NoPpgData } from "./EchartGraphs.js";
-// import { joincall, userjoin, leave } from "../videoCall/index.js";
-// import { showToast } from "../backend/toastmsg.js";
 import { installGlobalEchartsAutoResize } from "../utils/echarts-auto-resize.js";
 
-// Keep ECharts charts responsive when components are shown/hidden,
-// the sidebar toggles, or the viewport/container resizes.
 installGlobalEchartsAutoResize();
 
-export let firebaseConfig = {
+const firebaseConfig = {
   // apiKey: "AIzaSyApKpSVyxHwdN5wjJxXy0tuf0nKKWTrjn4",
   // authDomain: "custom-query-staging.firebaseapp.com",
   // databaseURL: "https://custom-query-staging-default-rtdb.firebaseio.com",
@@ -43,36 +36,10 @@ export let firebaseConfig = {
 
 export let sensor_flag;
 
-export var fb = firebase.initializeApp(firebaseConfig);
-// var ongoing_val = 0;
-// var call_decline_val;
-// var docId = localStorage.getItem("doctor_id");
+const existingFirebaseApp = Array.isArray(firebase.apps) && firebase.apps.length > 0 ? firebase.app() : null;
 
-// if (fb !== undefined && docId !== null) {
-//   var vc2 = fb.database().ref().child("video_call").child(docId);
-//   vc2.on("value", function (snapshot) {
-//     ongoing_val = snapshot.child("ongoing").val();
-//     if (ongoing_val == 0) {
-//       // closeLightbox();
-//     }
-//     call_decline_val = snapshot.child("call_decline").val();
-//     if (ongoing_val == 0 && userjoin == true && call_decline_val == 1) {
-//       // console.log("Leave function line:", 86);
-//       // console.log("ongoing_val", ongoing_val);
-//       showToast("call end");
-//       leave();
-//       userjoin = false;
-//     }
-//     if (call_decline_val == 1 && ongoing_val == 0) {
-//       leave();
-//       showToast("call declined");
-//       fb.database().ref("/video_call_initiator").remove();
-//       fb.database().ref().child("video_call").child(docId).child("ongoing").set("0");
-//     }
-//   });
-// }
-
-export var vct;
+export const fb = existingFirebaseApp || firebase.initializeApp(firebaseConfig);
+// export var vct;
 
 function formatDateTime(unixTimestamp) {
   if (!Number.isFinite(Number(unixTimestamp))) {
@@ -266,8 +233,8 @@ function init_echarts() {
     var ppg_ref;
     var rr_ref;
     // var pat_bp_5sec_ref;
-    let latestPatHr = null;
-    let latestPatHrTs = 0;
+    // let latestPatHr = null;
+    // let latestPatHrTs = 0;
     let activeVitalsTimestamp = null;
     let latestVitalsRecord = null;
     if (id != null || id != undefined) {
@@ -565,24 +532,7 @@ function getBatteryIcon(batteryPercentage) {
 }
 
 window.onload = () => {
-  // console.log("[database_function.js] inside onload");
   init_echarts();
 };
-// window.onchange = () => {
-//   console.log("[database_function.js] switching off listeners");
-//   //sensor_flag = 2;
-// };
-
-// window.onblur = () => {
-//   console.log("[database_function.js] switching off listeners");
-//   // ref.off("value", listener)
-//   // ecg_ref.off("value",listener1)
-//   // ppg_ref.off("value",listener2)
-//   // ews.off("value",listener3)
-//   // ref_valid.off("value",list)
-//   // ecg_min.off("value",list2)
-//   // ppg_min.off("value",list3)
-//   //sensor_flag = 2;
-// };
 
 export { init_echarts };
