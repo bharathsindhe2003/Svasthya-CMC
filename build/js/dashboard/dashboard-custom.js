@@ -10,33 +10,40 @@ let ppg_list = fb.database().ref().child("PPG_plot");
 let rr_list = fb.database().ref().child("RR_plot");
 let vital_list = fb.database().ref().child("patientlivedata7s");
 
-var obj = {};
 const waveformCache = {
   ECG: new Map(),
   PPG: new Map(),
   RR: new Map(),
 };
 const chartRegistry = new Map();
+const PATIENT_ID_INDEX = 4;
+const PATIENT_EWS_VALUE_INDEX = 5;
+const PATIENT_EWS_COLOR_INDEX = 6;
+const PATIENT_HR_INDEX = 7;
+const PATIENT_BP_INDEX = 8;
+const PATIENT_SPO2_INDEX = 9;
+const PATIENT_TEMP_INDEX = 10;
+const PATIENT_RR_INDEX = 11;
+const PATIENT_ECG_INDEX = 12;
+const PATIENT_ECG_TIMESTAMP_INDEX = 13;
+const PATIENT_PPG_INDEX = 14;
+const PATIENT_PPG_TIMESTAMP_INDEX = 15;
+const PATIENT_RR_WAVE_INDEX = 16;
+const PATIENT_RR_TIMESTAMP_INDEX = 17;
+const thresholdListenerPatients = new Set();
 
 // let pat_bp_5sec_ref = fb.database().ref().child("PAT_BP_5s_tree");
 var doctor_id = localStorage.getItem("doctor_id");
-var doctor = fb.database().ref().child("doctors").child(doctor_id);
+var doctor_name = localStorage.getItem("docname");
+var ref_doc_id = localStorage.getItem("doc_registerId");
 
 var DoctorNameElement = document.getElementById("DoctorName");
-try {
-  doctor.on("value", function (snapshot) {
-    let doctor_data = snapshot.val();
-    var ref_doc_id = doctor_data.registerId;
 
-    if (DoctorNameElement) {
-      DoctorNameElement.innerHTML = "Dr. " + doctor_data.username;
-    } else {
-      console.warn('[dashboard-custom.js] Element with id "DoctorName" not found.');
-    }
-    firebase_Data_retrieval(ref_doc_id);
-  });
-} catch (e) {
-  console.error("[dashboard-custom.js] Error retrieving doctor data:", e);
+if (DoctorNameElement && doctor_name) {
+  DoctorNameElement.innerHTML = "Dr. " + doctor_name;
+  firebase_Data_retrieval(ref_doc_id);
+} else {
+  console.warn('[dashboard-custom.js] Element with id "DoctorName" not found.');
 }
 
 function firebase_Data_retrieval(ref_doc_id) {
@@ -47,11 +54,7 @@ function firebase_Data_retrieval(ref_doc_id) {
       function (snapshot) {
         try {
           var patient_info = [];
-          var patient_id = [];
-          var user_name = [];
-          var user_age = [];
-          var user_gender = [];
-          var user_ailment = [];
+
           snapshot.forEach((data) => {
             let patients_string = JSON.stringify(data.val(), null, 2);
             let patients_json = JSON.parse(patients_string);
@@ -59,99 +62,114 @@ function firebase_Data_retrieval(ref_doc_id) {
             var doc_id = patients_json.docId;
             if (doc_id === ref_doc_id) {
               var id = patients_json.id.toString();
-              patient_id.push(id);
-
-              user_name.push(patients_json.username);
-              user_age.push(patients_json.age);
-              user_ailment.push(patients_json.ailment);
-              user_gender.push(patients_json.gender);
+              patient_info.push([patients_json.username, patients_json.age, patients_json.gender, patients_json.ailment, id]);
             }
           });
 
-          for (var i = 0; i < patient_id.length; i++) {
-            patient_info.push([user_name[i], user_age[i], user_gender[i], user_ailment[i], patient_id[i]]);
-          }
-          var NewPatientInfo = [];
-          var ews_value = "";
-          var ews_color = "";
-          var ID;
+          registerThresholdListeners(patient_info);
 
           const Obtain_ews = new Promise((resolve, reject) => {
+            if (patient_info.length === 0) {
+              resolve(patient_info);
+              return;
+            }
+
+            const loadedEwsPatients = new Set();
+
             for (let i = 0; i < patient_info.length; i++) {
+              const currentPatient = patient_info[i];
+              const currentPatientId = currentPatient[PATIENT_ID_INDEX];
+
               ews_list
-                .child(patient_info[i][4])
+                .child(currentPatientId)
                 .limitToLast(1)
                 .on("value", function (snapshot) {
+                  let nextEwsValue = "--";
+                  let nextEwsColor = "0";
+
                   if (snapshot.val() != null) {
                     snapshot.forEach((data) => {
-                      ID = patient_info[i][4];
-                      obj[ID] = ID;
                       let ews_string = JSON.stringify(data.val(), null, 2);
                       let ews_json = JSON.parse(ews_string);
-                      ews_value = ews_json.ews_score.toString();
-                      obj[ID + "ewsv"] = ews_value;
-                      ews_color = ews_json.color.toString();
-                      obj[ID + "ewsc"] = ews_color;
-
-                      NewPatientInfo.push([patient_info[i][0], patient_info[i][1], patient_info[i][2], patient_info[i][3], patient_info[i][4], ews_value, ews_color]);
+                      nextEwsValue = ews_json.ews_score.toString();
+                      nextEwsColor = ews_json.color.toString();
                     });
-                  } else {
-                    obj[ID + "ewsv"] = "--";
-                    obj[ID + "ewsc"] = "0";
-                    NewPatientInfo.push([patient_info[i][0], patient_info[i][1], patient_info[i][2], patient_info[i][3], patient_info[i][4], "--", "0"]);
                   }
-                  refreshews(obj[ID + "ewsv"], obj[ID + "ewsc"], ID);
-                  console.log("[dashboard-custom.js]  refreshews", obj[ID + "ewsv"], obj[ID + "ewsc"], ID);
-                  if (i == patient_info.length - 1) {
-                    resolve(NewPatientInfo);
+
+                  currentPatient[PATIENT_EWS_VALUE_INDEX] = nextEwsValue;
+                  currentPatient[PATIENT_EWS_COLOR_INDEX] = nextEwsColor;
+
+                  refreshews(currentPatient[PATIENT_EWS_VALUE_INDEX], currentPatient[PATIENT_EWS_COLOR_INDEX], currentPatientId);
+                  console.log("[dashboard-custom.js]  refreshews", currentPatient[PATIENT_EWS_VALUE_INDEX], currentPatient[PATIENT_EWS_COLOR_INDEX], currentPatientId);
+
+                  if (!loadedEwsPatients.has(currentPatientId)) {
+                    loadedEwsPatients.add(currentPatientId);
+                  }
+
+                  if (loadedEwsPatients.size === patient_info.length) {
+                    resolve(patient_info);
                   }
                 });
             }
           });
-          var ID;
           const Obtain_vitals = new Promise((resolve, reject) => {
-            var ID;
             var vitalinfo = [];
             const nowSec = Date.now() / 1000;
             for (let i = 0; i < patient_info.length; i++) {
-              vital_list.child(patient_info[i][4]).on("value", (snapshot) => {
-                if (snapshot.val() != null) {
-                  ID = snapshot.val().userId;
-                  obj[ID] = snapshot.val().userId;
+              const currentPatient = patient_info[i];
+              const currentPatientId = currentPatient[PATIENT_ID_INDEX];
 
-                  obj[ID + "hr"] = snapshot.val().hr === "00" || snapshot.val().hr === "0" || snapshot.val().hr === 0 ? "--" : snapshot.val().hr;
+              vital_list.child(currentPatientId).on("value", (snapshot) => {
+                let patientId = currentPatientId;
+
+                if (snapshot.val() != null) {
+                  patientId = snapshot.val().userId || currentPatientId;
+
+                  currentPatient[PATIENT_HR_INDEX] = snapshot.val().hr === "00" || snapshot.val().hr === "0" || snapshot.val().hr === 0 ? "--" : snapshot.val().hr;
                   if (snapshot.val().bp == "0/0") {
-                    obj[ID + "bp"] = "--/--";
+                    currentPatient[PATIENT_BP_INDEX] = "--/--";
                   } else {
-                    obj[ID + "bp"] = snapshot.val().bp;
+                    currentPatient[PATIENT_BP_INDEX] = snapshot.val().bp;
                   }
                   if (snapshot.val().spo == "00") {
-                    obj[ID + "spo"] = "--";
+                    currentPatient[PATIENT_SPO2_INDEX] = "--";
                   } else {
-                    obj[ID + "spo"] = snapshot.val().spo;
+                    currentPatient[PATIENT_SPO2_INDEX] = snapshot.val().spo;
                   }
                   if (parseFloat(snapshot.val().temp) == 0.0 || parseFloat(snapshot.val().temp) >= 238.48) {
-                    obj[ID + "temp"] = "--";
+                    currentPatient[PATIENT_TEMP_INDEX] = "--";
                   } else {
-                    obj[ID + "temp"] = parseFloat(snapshot.val().temp).toFixed(2);
+                    currentPatient[PATIENT_TEMP_INDEX] = parseFloat(snapshot.val().temp).toFixed(2);
                   }
                   if (snapshot.val().rr == "0") {
-                    obj[ID + "rr"] = "--";
+                    currentPatient[PATIENT_RR_INDEX] = "--";
                   } else {
-                    obj[ID + "rr"] = snapshot.val().rr;
+                    currentPatient[PATIENT_RR_INDEX] = snapshot.val().rr;
                   }
                   console.log("[dashboard-custom.js] retrieved bp", snapshot.val());
                 } else {
-                  obj[ID + "hr"] = "--";
-                  obj[ID + "bp"] = "--/--";
-                  obj[ID + "spo"] = "--";
-                  obj[ID + "temp"] = "--";
-                  obj[ID + "rr"] = "--";
-                  vitalinfo.push([obj[ID + "hr"], obj[ID + "rr"], obj[ID + "temp"], obj[ID + "spo"], obj[ID + "bp"]]);
-                  validTimestamp[patient_info[i][4]] = null;
+                  currentPatient[PATIENT_HR_INDEX] = "--";
+                  currentPatient[PATIENT_BP_INDEX] = "--/--";
+                  currentPatient[PATIENT_SPO2_INDEX] = "--";
+                  currentPatient[PATIENT_TEMP_INDEX] = "--";
+                  currentPatient[PATIENT_RR_INDEX] = "--";
+                  vitalinfo.push([
+                    currentPatient[PATIENT_HR_INDEX],
+                    currentPatient[PATIENT_RR_INDEX],
+                    currentPatient[PATIENT_TEMP_INDEX],
+                    currentPatient[PATIENT_SPO2_INDEX],
+                    currentPatient[PATIENT_BP_INDEX],
+                  ]);
                 }
 
-                refreshvitals(obj[ID + "hr"], obj[ID + "bp"], obj[ID + "temp"], obj[ID + "rr"], obj[ID + "spo"], obj[ID]);
+                refreshvitals(
+                  currentPatient[PATIENT_HR_INDEX],
+                  currentPatient[PATIENT_BP_INDEX],
+                  currentPatient[PATIENT_TEMP_INDEX],
+                  currentPatient[PATIENT_RR_INDEX],
+                  currentPatient[PATIENT_SPO2_INDEX],
+                  patientId,
+                );
 
                 if (i == vitalinfo.length - 1) {
                   resolve(vitalinfo);
@@ -162,12 +180,12 @@ function firebase_Data_retrieval(ref_doc_id) {
           var ecg_info = [];
           const Obtain_ecg = new Promise((resolve, reject) => {
             for (let i = 0; i < patient_info.length; i++) {
-              ecg_list.child(patient_info[i][4]).on("value", function (snapshot) {
+              const currentPatient = patient_info[i];
+              const currentPatientId = currentPatient[PATIENT_ID_INDEX];
+
+              ecg_list.child(currentPatientId).on("value", function (snapshot) {
                 if (snapshot.val() != null) {
                   // if (validTimestamp[patient_info[i][4]] === snapshot.key) {
-                  ID = patient_info[i][4];
-                  obj[ID] = ID;
-
                   let ecg_string = JSON.stringify(snapshot.val(), null, 2);
                   let ecg_json = JSON.parse(ecg_string);
                   let type = ecg_json.type;
@@ -175,7 +193,7 @@ function firebase_Data_retrieval(ref_doc_id) {
                   let timestamp = ecg_json.timestamp;
 
                   if (type == "noise" || type == "flat") {
-                    obj[ID + "final_min_ecg"] = [];
+                    currentPatient[PATIENT_ECG_INDEX] = [];
                   } else {
                     var ecg_text = ecg1;
                     let ecg_result = ecg_text.replace(/\]\[/g, ", ").trim();
@@ -183,7 +201,7 @@ function firebase_Data_retrieval(ref_doc_id) {
                     ecg_result = ecg_result.replace(/\[/g, "").trim();
                     var ecgvalue = ecg_result.split(",").map(Number);
 
-                    obj[ID + "final_min_ecg"] = ecgvalue;
+                    currentPatient[PATIENT_ECG_INDEX] = ecgvalue;
                   }
 
                   var f_ecgtimestamp = timestamp;
@@ -194,17 +212,13 @@ function firebase_Data_retrieval(ref_doc_id) {
                   ecgtime = date == undefined ? (ecgtime = "--/--/----") : ecgtime;
 
                   var dt = ecgdate + " " + ecgtime;
-                  obj[ID + "dt"] = dt;
-                  // } else {
-                  //   obj[ID + "final_min_ecg"] = [];
-                  //   obj[ID + "dt"] = "";
-                  // }
+                  currentPatient[PATIENT_ECG_TIMESTAMP_INDEX] = dt;
                 } else {
-                  obj[ID + "final_min_ecg"] = [];
-                  obj[ID + "dt"] = "";
+                  currentPatient[PATIENT_ECG_INDEX] = [];
+                  currentPatient[PATIENT_ECG_TIMESTAMP_INDEX] = "";
                 }
 
-                createECGchart(obj[ID + "final_min_ecg"], ID);
+                createECGchart(currentPatient[PATIENT_ECG_INDEX], currentPatientId);
                 if (i == ecg_info.length - 1) {
                   resolve(ecg_info);
                 }
@@ -216,13 +230,12 @@ function firebase_Data_retrieval(ref_doc_id) {
           const Obtain_ppg = new Promise((resolve, reject) => {
             for (let i = 0; i < patient_info.length; i++) {
               let promise = new Promise((resolve, reject) => {
-                ppg_list.child(patient_info[i][4]).on("value", function (snapshot) {
-                  // if (validTimestamp[patient_info[i][4]] === snapshot.key) {
-                  let ID = patient_info[i][4];
-                  let obj = {};
+                const currentPatient = patient_info[i];
+                const currentPatientId = currentPatient[PATIENT_ID_INDEX];
 
+                ppg_list.child(currentPatientId).on("value", function (snapshot) {
+                  // if (validTimestamp[patient_info[i][4]] === snapshot.key) {
                   if (snapshot.val() != null) {
-                    obj[ID] = ID;
                     let ppg_string = JSON.stringify(snapshot.val(), null, 2);
                     let ppg_json = JSON.parse(ppg_string);
                     let ppg_data = ppg_json.ppg;
@@ -239,7 +252,7 @@ function firebase_Data_retrieval(ref_doc_id) {
                       .map(Number)
                       .filter((n) => !isNaN(n));
 
-                    obj[ID + "ppg"] = final_ppg;
+                    currentPatient[PATIENT_PPG_INDEX] = final_ppg;
 
                     var f_ecgtimestamp = ppg_json.timestamp;
                     var date = new Date(f_ecgtimestamp * 1000);
@@ -249,16 +262,12 @@ function firebase_Data_retrieval(ref_doc_id) {
                     ecgtime = date == undefined ? (ecgtime = "--/--/----") : ecgtime;
 
                     var dt = ecgdate + " " + ecgtime;
-                    obj[ID + "dt"] = dt;
-                    // } else {
-                    //   obj[ID + "ppg"] = [];
-                    //   obj[ID + "dt"] = "";
-                    // }
+                    currentPatient[PATIENT_PPG_TIMESTAMP_INDEX] = dt;
                   } else {
-                    obj[ID + "ppg"] = [];
-                    obj[ID + "dt"] = "";
+                    currentPatient[PATIENT_PPG_INDEX] = [];
+                    currentPatient[PATIENT_PPG_TIMESTAMP_INDEX] = "";
                   }
-                  createPPGchart(obj[ID + "ppg"], ID);
+                  createPPGchart(currentPatient[PATIENT_PPG_INDEX], currentPatientId);
                   if (i == ppg_info.length - 1) {
                     resolve(ppg_info);
                   }
@@ -270,15 +279,15 @@ function firebase_Data_retrieval(ref_doc_id) {
           const Obtain_rr = new Promise((resolve, reject) => {
             for (let i = 0; i < patient_info.length; i++) {
               let promise = new Promise((resolve, reject) => {
-                rr_list.child(patient_info[i][4]).on("value", function (snapshot) {
-                  let ID = patient_info[i][4];
-                  let obj = {};
+                const currentPatient = patient_info[i];
+                const currentPatientId = currentPatient[PATIENT_ID_INDEX];
+
+                rr_list.child(currentPatientId).on("value", function (snapshot) {
                   if (snapshot.val() != null) {
                     // if (validTimestamp[patient_info[i][4]] === snapshot.key) {
-                    console.log("[dashboard-custom.js] RR data found for ID:", ID);
+                    console.log("[dashboard-custom.js] RR data found for ID:", currentPatientId);
                     console.log("[dashboard-custom.js] RR Snapshot value: ", snapshot.val());
 
-                    obj[ID] = ID;
                     let rr_string = JSON.stringify(snapshot.val(), null, 2);
                     let rr_json = JSON.parse(rr_string);
                     let rr_data = rr_json.res;
@@ -289,7 +298,7 @@ function firebase_Data_retrieval(ref_doc_id) {
                     console.log("[dashboard-custom.js] RR data from replace", result1);
                     var final_rr = result1.split(" ").map(Number);
                     console.log("[dashboard-custom.js] Parsed RR data:", final_rr);
-                    obj[ID + "rr"] = final_rr;
+                    currentPatient[PATIENT_RR_WAVE_INDEX] = final_rr;
 
                     var date = new Date(rr_timestamp * 1000);
                     var rrdate = ("0" + date.getDate()).slice(-2) + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" + date.getFullYear();
@@ -297,16 +306,12 @@ function firebase_Data_retrieval(ref_doc_id) {
                     rrdate = date == undefined ? (rrdate = "--/--/----") : rrdate;
                     rrtime = date == undefined ? (rrtime = "--/--/----") : rrtime;
                     var dt = rrdate + " " + rrtime;
-                    obj[ID + "dt"] = dt;
-                    // } else {
-                    //   obj[ID + "rr"] = [];
-                    //   obj[ID + "dt"] = "";
-                    // }
+                    currentPatient[PATIENT_RR_TIMESTAMP_INDEX] = dt;
                   } else {
-                    obj[ID + "rr"] = [];
-                    obj[ID + "dt"] = "";
+                    currentPatient[PATIENT_RR_WAVE_INDEX] = [];
+                    currentPatient[PATIENT_RR_TIMESTAMP_INDEX] = "";
                   }
-                  createRRchart(obj[ID + "rr"], ID);
+                  createRRchart(currentPatient[PATIENT_RR_WAVE_INDEX], currentPatientId);
                   if (i == rr_info.length - 1) {
                     resolve(rr_info);
                   }
@@ -314,80 +319,10 @@ function firebase_Data_retrieval(ref_doc_id) {
               });
             }
           });
-          // const latest5secHR = [];
-          // const obtain_5sec_HR = new Promise((resolve, reject) => {
-          //   for (let i = 0; i < patient_info.length; i++) {
-          //     // pat_bp_5sec_ref.child(patient_info[i][4]).on("value", (snapshot) => {
-          //     //   var ID = patient_info[i][4];
-          //     //   const val = snapshot.val();
-          //     //   if (val != null) {
-          //     //     const timestamps = Object.keys(val)
-          //     //       .map((k) => Number(k))
-          //     //       .filter((n) => Number.isFinite(n));
-          //     //     if (timestamps.length === 0) return;
-          //     //     const maxTs = Math.max(...timestamps);
-          //     //     const latest = val[maxTs];
-          //     //     if (latest && typeof latest.ECG_HR === "number") {
-          //     //       // Find existing entry
-          //     //       const idx = latest5secHR.findIndex((entry) => entry.patientId === ID);
-          //     //       if (idx !== -1) {
-          //     //         // Update existing
-          //     //         latest5secHR[idx] = {
-          //     //           patientId: ID,
-          //     //           HR: latest.ECG_HR,
-          //     //           timestamps: maxTs,
-          //     //         };
-          //     //       } else {
-          //     //         // Add new
-          //     //         latest5secHR.push({
-          //     //           patientId: ID,
-          //     //           HR: latest.ECG_HR,
-          //     //           timestamps: maxTs,
-          //     //         });
-          //     //       }
-          //     //     }
-          //     //   }
-          //     // });
-          //   }
-          // });
 
           Obtain_ews.then((value) => {
-            if (NewPatientInfo.length == value.length) {
+            if (patient_info.length == value.length) {
               patient_details(value);
-            }
-
-            const searchInput = document.getElementById("searchid");
-            if (searchInput) {
-              searchInput.onkeyup = function () {
-                const patientDetailsContainer = document.getElementById("p_details");
-
-                if (!patientDetailsContainer) {
-                  return;
-                }
-
-                const filter = searchInput.value.toUpperCase();
-                console.log("[dashboard-custom.js] filter", filter);
-
-                const filteredPatients = [];
-
-                for (let i = 0; i < value.length; i++) {
-                  const txtValue = value[i][0] || "";
-
-                  if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    filteredPatients.push(value[i]);
-                  }
-                }
-
-                if (filteredPatients.length === 0) {
-                  patientDetailsContainer.className = "SearchNoData";
-                  patientDetailsContainer.innerHTML = `<img src="images/search.png"></br></br> No Results Found`;
-                } else {
-                  patientDetailsContainer.className = "patient_details";
-                  patient_details(filteredPatients);
-                }
-              };
-            } else {
-              console.warn('[dashboard-custom.js] Element with id "searchid" not found.');
             }
           });
 
@@ -408,7 +343,7 @@ function firebase_Data_retrieval(ref_doc_id) {
                 const data = refValidSnapshot.val();
                 const latestValidEntry = getLatestSnapshotEntry(data);
                 const validTimestamp = latestValidEntry.key;
-                console.log("[dashboard-custom.js] validTimestamp ", patientId, validTimestamp);
+                // console.log("[dashboard-custom.js] validTimestamp ", patientId, validTimestamp);
                 const data1 = latestValidEntry.value || {};
                 let respiration_rate = data1.rr === "00" || data1.rr === "0" || data1.rr === 0 ? "--" : data1.rr;
 
@@ -420,7 +355,7 @@ function firebase_Data_retrieval(ref_doc_id) {
                 let parsedTemp = parseFloat(String(oldtemp).replace(/[^0-9.+-]/g, ""));
                 let temp = isNaN(parsedTemp) ? "--" : parsedTemp;
 
-                console.log("LOOPING vitals", heart_rate, bp_text, oldtemp, respiration_rate, spo2, patientId);
+                // console.log("LOOPING vitals", heart_rate, bp_text, oldtemp, respiration_rate, spo2, patientId);
                 refreshvitals(heart_rate, bp_text, temp, respiration_rate, spo2, patientId);
                 // ecg
                 const ecgData = ecgSnapshot.val();
@@ -441,8 +376,8 @@ function firebase_Data_retrieval(ref_doc_id) {
                     .filter((value) => !isNaN(value));
                 }
 
-                console.log("LOOPING ECG", patientId, final_min_ecg);
-                console.log("[dashboard-custom.js] validTimestamp ECG", patientId, ECGkey, shouldRenderWaveform(validTimestamp, ECGkey));
+                // console.log("LOOPING ECG", patientId, final_min_ecg);
+                // console.log("[dashboard-custom.js] validTimestamp ECG", patientId, ECGkey, shouldRenderWaveform(validTimestamp, ECGkey));
                 if (shouldRenderWaveform(validTimestamp, ECGkey)) {
                   if (final_min_ecg.length > 625) {
                     final_min_ecg = final_min_ecg.slice(-625);
@@ -467,8 +402,8 @@ function firebase_Data_retrieval(ref_doc_id) {
                     .filter((value) => !isNaN(value));
                 }
 
-                console.log("LOOPING PPG", final_ppg);
-                console.log("[dashboard-custom.js] validTimestamp PPG", patientId, PPGkey, shouldRenderWaveform(validTimestamp, PPGkey));
+                // console.log("LOOPING PPG", final_ppg);
+                // console.log("[dashboard-custom.js] validTimestamp PPG", patientId, PPGkey, shouldRenderWaveform(validTimestamp, PPGkey));
                 if (shouldRenderWaveform(validTimestamp, PPGkey)) {
                   if (final_ppg.length > 500) {
                     final_ppg = final_ppg.slice(-500);
@@ -511,8 +446,8 @@ function firebase_Data_retrieval(ref_doc_id) {
                   }
                 }
 
-                console.log("LOOPING RR", patientId, final_rr);
-                console.log("[dashboard-custom.js] validTimestamp RR", patientId, RRkey, shouldRenderWaveform(validTimestamp, RRkey));
+                // console.log("LOOPING RR", patientId, final_rr);
+                // console.log("[dashboard-custom.js] validTimestamp RR", patientId, RRkey, shouldRenderWaveform(validTimestamp, RRkey));
                 if (shouldRenderWaveform(validTimestamp, RRkey)) {
                   if (final_rr.length > 125) {
                     final_rr = final_rr.slice(-125);
@@ -566,18 +501,6 @@ function getOrCreateChart(containerId) {
 
   chartRegistry.set(containerId, chart);
   return chart;
-}
-
-function getStableWaveformData(type, id, data, minLength) {
-  const safeData = Array.isArray(data) ? data.filter((value) => Number.isFinite(value)) : [];
-  const cache = waveformCache[type];
-
-  if (safeData.length >= minLength) {
-    cache.set(id, safeData);
-    return safeData;
-  }
-
-  return cache.get(id) || safeData;
 }
 
 function getLatestSnapshotEntry(snapshotValue) {
@@ -1380,45 +1303,56 @@ function restoreBlinkAlertsFromSession() {
 // Apply the blink effect to the users
 restoreBlinkAlertsFromSession();
 
-messagesRef.on("child_added", (patientSnapshot) => {
-  const patientId = patientSnapshot.key;
-  const patientRef = patientSnapshot.ref;
+function registerThresholdListeners(patient_info) {
+  if (!Array.isArray(patient_info) || patient_info.length === 0) {
+    return;
+  }
 
-  console.log("[dashboard-custom.js] threshold patient:", patientId);
+  for (let i = 0; i < patient_info.length; i++) {
+    const patientId = patient_info[i][PATIENT_ID_INDEX];
 
-  patientRef.once("value", (initialSnap) => {
-    const oldTimestampKeys = new Set();
+    if (!patientId || thresholdListenerPatients.has(patientId)) {
+      continue;
+    }
 
-    initialSnap.forEach((child) => {
-      oldTimestampKeys.add(child.key);
+    thresholdListenerPatients.add(patientId);
+
+    const patientRef = messagesRef.child(patientId);
+
+    console.log("[dashboard-custom.js] threshold patient:", patientId);
+
+    patientRef.once("value", (initialSnap) => {
+      const oldTimestampKeys = new Set();
+
+      initialSnap.forEach((child) => {
+        oldTimestampKeys.add(child.key);
+      });
+
+      patientRef.on("child_added", (timestampSnapshot) => {
+        const timestampKey = timestampSnapshot.key;
+
+        if (oldTimestampKeys.has(timestampKey)) return;
+
+        const rawVitals = timestampSnapshot.val();
+
+        console.log("[dashboard-custom.js] threshold timestamp:", timestampKey);
+        console.log("[dashboard-custom.js] threshold data:", rawVitals);
+
+        if (typeof rawVitals !== "string") return;
+
+        const normalizedVitals = parseThresholdVitals(rawVitals);
+        const sessionData = getStoredThresholdAlerts();
+        const alreadyExistingVitals = sessionData[patientId] || [];
+
+        sessionData[patientId] = [...new Set([...alreadyExistingVitals, ...normalizedVitals])];
+
+        setStoredThresholdAlerts(sessionData);
+
+        normalizedVitals.forEach((vital) => addBlink(patientId, vital));
+      });
     });
-
-    patientRef.on("child_added", (timestampSnapshot) => {
-      const timestampKey = timestampSnapshot.key;
-
-      if (oldTimestampKeys.has(timestampKey)) return;
-
-      const rawVitals = timestampSnapshot.val();
-
-      console.log("[dashboard-custom.js] threshold timestamp:", timestampKey);
-      console.log("[dashboard-custom.js] threshold data:", rawVitals);
-
-      if (typeof rawVitals !== "string") return;
-
-      const normalizedVitals = parseThresholdVitals(rawVitals);
-
-      const sessionData = getStoredThresholdAlerts();
-
-      const alreadyExistingVitals = sessionData[patientId] || [];
-
-      sessionData[patientId] = [...new Set([...alreadyExistingVitals, ...normalizedVitals])];
-
-      setStoredThresholdAlerts(sessionData);
-
-      normalizedVitals.forEach((vital) => addBlink(patientId, vital));
-    });
-  });
-});
+  }
+}
 const sound = document.getElementById("alertSound");
 let alertSoundPrimed = false;
 
@@ -1588,76 +1522,76 @@ window.clearAllBlinkAlerts = clearAllBlinkAlerts;
 window.flushPendingBlinkAlerts = flushPendingBlinkAlerts;
 
 // Firebase Notifications
-let messaging = null;
-try {
-  messaging = fb.messaging();
-} catch (error) {
-  console.error("notification [dashboard-custom.js] in messaging initialization error catch", error);
-}
+// let messaging = null;
+// try {
+//   messaging = fb.messaging();
+// } catch (error) {
+//   console.error("notification [dashboard-custom.js] in messaging initialization error catch", error);
+// }
 
-try {
-  navigator.serviceWorker
-    .register(new URL("../../../production/firebase-messaging-sw.js", import.meta.url))
-    .then(function (registration) {
-      console.log("notification [dashboard-custom.js] Service Worker registered with scope:", registration.scope);
-      messaging.useServiceWorker(registration);
-      return messaging.requestPermission();
-    })
+// try {
+//   navigator.serviceWorker
+//     .register(new URL("../../../production/firebase-messaging-sw.js", import.meta.url))
+//     .then(function (registration) {
+//       console.log("notification [dashboard-custom.js] Service Worker registered with scope:", registration.scope);
+//       messaging.useServiceWorker(registration);
+//       return messaging.requestPermission();
+//     })
 
-    .then(function () {
-      console.log("notification [dashboard-custom.js] Have permission");
+//     .then(function () {
+//       console.log("notification [dashboard-custom.js] Have permission");
 
-      var docid = localStorage.getItem("doctor_id");
-      console.log("notification [dashboard-custom.js] docid", docid);
-      return messaging.getToken(messaging, { vapidKey: "BDSMgbKCwTOC9f7r4FPoXsymskTh_M_GfLXi_sszHMbzLMaLG1zVD0jyVUVMkuVAszaNSrUwyb-aM8X9E5Qclv0" });
-    })
-    .then((currentToken) => {
-      if (currentToken) {
-        var context_assessmenttoken = fb.database().ref().child("FCM_token").child(currentToken);
+//       var docid = localStorage.getItem("doctor_id");
+//       console.log("notification [dashboard-custom.js] docid", docid);
+//       return messaging.getToken(messaging, { vapidKey: "BDSMgbKCwTOC9f7r4FPoXsymskTh_M_GfLXi_sszHMbzLMaLG1zVD0jyVUVMkuVAszaNSrUwyb-aM8X9E5Qclv0" });
+//     })
+//     .then((currentToken) => {
+//       if (currentToken) {
+//         var context_assessmenttoken = fb.database().ref().child("FCM_token").child(currentToken);
 
-        context_assessmenttoken.set({
-          Id: localStorage.getItem("doctor_id"),
-        });
+//         context_assessmenttoken.set({
+//           Id: localStorage.getItem("doctor_id"),
+//         });
 
-        console.log("notification [dashboard-custom.js] current token", currentToken);
-      } else {
-        console.log("notification [dashboard-custom.js] No registration token available. Request permission to generate one.");
-      }
-    })
-    .catch(function (err) {
-      console.error("notification [dashboard-custom.js]in first error ctch", err);
-    });
-} catch (e) {
-  console.error("notification [dashboard-custom.js] in request permission error catch", e);
-}
-try {
-  messaging.onMessage(function (payload) {
-    console.log("notification [dashboard-custom.js] Inside onMessage:", payload);
+//         console.log("notification [dashboard-custom.js] current token", currentToken);
+//       } else {
+//         console.log("notification [dashboard-custom.js] No registration token available. Request permission to generate one.");
+//       }
+//     })
+//     .catch(function (err) {
+//       console.error("notification [dashboard-custom.js]in first error ctch", err);
+//     });
+// } catch (e) {
+//   console.error("notification [dashboard-custom.js] in request permission error catch", e);
+// }
+// try {
+//   messaging.onMessage(function (payload) {
+//     console.log("notification [dashboard-custom.js] Inside onMessage:", payload);
 
-    if (payload.data.timestamp && payload.data.uid) {
-      const param1 = btoa(payload.data.timestamp);
-      console.log("notification [dashboard-custom.js] param1:", param1);
+//     if (payload.data.timestamp && payload.data.uid) {
+//       const param1 = btoa(payload.data.timestamp);
+//       console.log("notification [dashboard-custom.js] param1:", param1);
 
-      const param2 = btoa(payload.data.uid);
-      console.log("notification [dashboard-custom.js] param2:", param2);
+//       const param2 = btoa(payload.data.uid);
+//       console.log("notification [dashboard-custom.js] param2:", param2);
 
-      const param3 = btoa("1");
+//       const param3 = btoa("1");
 
-      const url = "context_assment.html" + "?param1=" + param1 + "&param2=" + param2 + "&param3=" + param3;
+//       const url = "context_assment.html" + "?param1=" + param1 + "&param2=" + param2 + "&param3=" + param3;
 
-      var childWindow = window.open(url, "Context Assessment", "width=1050,height=670,left=150,top=200,titlebar=0,toolbar=0,status=0");
+//       var childWindow = window.open(url, "Context Assessment", "width=1050,height=670,left=150,top=200,titlebar=0,toolbar=0,status=0");
 
-      setTimeout(function () {
-        if (childWindow && !childWindow.closed) {
-          childWindow.close();
-        } else {
-          console.log("notification [dashboard-custom.js] Child window is already closed or not available.");
-        }
-      }, 30000);
-    } else {
-      console.log("notification [dashboard-custom.js] Invalid timestamp or final_patient_uid in payload data");
-    }
-  });
-} catch (e) {
-  console.error("notification [dashboard-custom.js] in onMessage error catch", e);
-}
+//       setTimeout(function () {
+//         if (childWindow && !childWindow.closed) {
+//           childWindow.close();
+//         } else {
+//           console.log("notification [dashboard-custom.js] Child window is already closed or not available.");
+//         }
+//       }, 30000);
+//     } else {
+//       console.log("notification [dashboard-custom.js] Invalid timestamp or final_patient_uid in payload data");
+//     }
+//   });
+// } catch (e) {
+//   console.error("notification [dashboard-custom.js] in onMessage error catch", e);
+// }

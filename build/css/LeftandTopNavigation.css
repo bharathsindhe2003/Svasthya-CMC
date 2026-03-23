@@ -17,7 +17,18 @@
   box-shadow: inset 0 0 5px rgba(172, 171, 171, 0.582);
   border-radius: 10px;
 }
-
+.version-badge {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  z-index: 9999;
+  pointer-events: none;
+}
 ::-webkit-scrollbar-thumb {
   background: rgba(26, 73, 143, 0.63);
   border-radius: 10px;

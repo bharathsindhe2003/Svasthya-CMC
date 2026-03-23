@@ -842,3 +842,46 @@ body.nav-sm #sidebar-menu .side-menu li a:hover {
     padding-right: 10px !important;
   }
 }
+
+/* Final live gauge layout override.
+   Keep this near the end of the file so duplicate older rules do not collapse the gauge canvas. */
+.x_panel.gauge-inline,
+.x_panel.fixed_height_310.gauge-inline {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  height: 190px !important;
+  min-height: 190px !important;
+  overflow: hidden !important;
+}
+
+.x_panel.gauge-inline .x_content,
+.x_panel.fixed_height_310.gauge-inline .x_content {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-height: 132px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.x_panel.gauge-inline .echartsgauges1,
+.x_panel.fixed_height_310.gauge-inline .echartsgauges1 {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: 128px !important;
+  min-height: 128px !important;
+  margin: 0 auto !important;
+}
+
+.x_panel.gauge-inline h4.name_title,
+.x_panel.fixed_height_310.gauge-inline h4.name_title {
+  margin: 0 !important;
+  padding: 0 0 10px !important;
+  text-align: center !important;
+  line-height: 1.1 !important;
+}

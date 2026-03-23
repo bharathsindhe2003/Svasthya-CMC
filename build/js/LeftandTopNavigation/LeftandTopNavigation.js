@@ -1,10 +1,5 @@
 import { fb } from "../livepage/database_function.js";
 
-//document.getElementById("LeftColomnIcon"). src="images/svasthyaicon.png";
-//document.getElementById("site_title").innerHTML=`<img src="images/svasthyaicon.png"  width="55" height="55"> `
-//document.getElementById("SvasthyaTitle").innerHTML="SVASTHYA &trade;";
-
-//document.getElementById("logout").innerHTML=`<i class="fa fa-power-off" ></i> Logout`;
 var patientname;
 var gender;
 var age;
@@ -15,16 +10,10 @@ var email;
 var gender;
 var mobile;
 
-if (localStorage.getItem("doctor_id") == undefined) {
+var doctor_id = localStorage.getItem("doctor_id");
+if (doctor_id && doctor_id == undefined) {
   location.replace("login.html");
 }
-
-/* $(window).unload(function() {
-	localStorage.removeItem('doctor_id');
-	localStorage.removeItem('patient_unique_id');
-  }); */
-
-var doctor_id = localStorage.getItem("doctor_id");
 
 try {
   document.getElementById("logout").addEventListener("click", logout);
@@ -52,34 +41,6 @@ try {
 }
 
 function logout() {
-  // Get the current user's FCM token
-  try {
-    const messaging = fb.messaging();
-    messaging
-      .getToken()
-      .then((currentToken) => {
-        if (currentToken) {
-          // Delete the user's FCM token
-          messaging
-            .deleteToken(currentToken)
-            .then(() => {
-              console.log("FCM token deleted.");
-            })
-            .catch((error) => {
-              console.error("Error deleting FCM token.", error);
-            });
-        } else {
-          console.log("No Instance ID token available. Unable to delete FCM token.");
-        }
-      })
-      .catch((error) => {
-        console.error("An error occurred while retrieving token. Unable to delete FCM token.", error);
-      });
-  } catch (e) {
-    console.error("In HTML ID: Login is not found", e);
-  }
-
-  // Remove the user's data from local storage
   localStorage.removeItem("patient_unique_id");
   localStorage.removeItem("doctor_id");
   localStorage.removeItem("docname");
@@ -89,14 +50,12 @@ function logout() {
 }
 
 var id = localStorage.getItem("patient_unique_id");
-//console.log("LTN",id);
-if (id != null && id != undefined) {
+if (id && id != null && id != undefined) {
   var patients = fb.database().ref().child("patients").child(id);
 
   patients.once("value", function (snapshot) {
     let patient_data = JSON.stringify(snapshot.val(), null, 2);
     let patient_data1 = JSON.parse(patient_data);
-    // console.log(document.getElementById("PatientImg"));
     patientname = patient_data1.username;
 
     gender = patient_data1.gender == "" ? (gender = "--") : (gender = patient_data1.gender);

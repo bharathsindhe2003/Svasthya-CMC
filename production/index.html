@@ -8,16 +8,15 @@
     <link rel="icon" href="images/svasthyaicon2.ico" type="image/ico" />
 
     <title>Svasthya | Live and History</title>
-    <script type="module" src="../build/js/livepage/database_function.js"></script>
-    <script type="module" src="../build/js/videoCall/index.js"></script>
     <script type="module" src="../build/js/LeftandTopNavigation/LeftandTopNavigation.js"></script>
-    <script type="module" src="../build/js/backend/notification.js"></script>
+    <script type="module" src="../build/js/livepage/database_function.js?v=0.1.6"></script>
+    <script type="module" src="../build/js/history/option-module.js"></script>
     <script type="module" src="../build/js/vitals/vitals_module.js"></script>
     <!-- Bootstrap -->
     <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <!-- Font Awesome -->
     <link href="../vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="../build/js/videoCall/index.css" />
+    <!-- <link rel="stylesheet" href="../build/js/videoCall/index.css" /> -->
     <!-- NProgress -->
     <link href="../vendors/nprogress/nprogress.css" rel="stylesheet" />
     <!-- iCheck -->
@@ -33,11 +32,10 @@
     <link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
 
     <!-- Custom Theme Style -->
-    <script type="module" src="../build/js/history/option-module.js"></script>
 
     <!-- <link href="../build/css/custom.min.css" rel="stylesheet"> -->
     <link href="../build/css/LeftandTopNavigation.css" rel="stylesheet" />
-    <link href="../build/css/LiveRightColomn.css" rel="stylesheet" />
+    <link href="../build/css/LiveRightColomn.css?v=0.1.6" rel="stylesheet" />
     <link href="../build/css/vital.css" rel="stylesheet" />
     <!-- Final unified layout overrides to eliminate gap between sidebar and content -->
     <link href="../build/css/layout-fix.css" rel="stylesheet" />
@@ -49,7 +47,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-messaging.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-    <script type="module" src="../build/js/backend/incomingpopup.js"></script>
+    <!-- <script type="module" src="../build/js/backend/incomingpopup.js"></script> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   </head>
   <body class="nav-md">
@@ -131,7 +129,6 @@
       <div id="LiveComponents" class="right_col" role="main">
         <div id="LiveSpecification" class="LiveSpecification">
           <p id="SymptomMsg"></p>
-          <!-- ECG-->
           <!-- Ews card -->
           <div class="col-md-12 col-sm-12 col-xs-12">
             <div id="ews_id" class="ews_card_js">
@@ -389,8 +386,8 @@
                 setTimeout(function () {
                   window.dispatchEvent(new Event("resize"));
                 }, 150);
-              } catch {
-                // ignore
+              } catch (error) {
+                console.error("Error occurred while resizing charts", error);
               }
             }
 
@@ -434,32 +431,6 @@
           <div id="graphs" class="history-graphs">
             <div id="HistoryPrimaryCharts" class="history-chart-content">
               <div class="row" style="margin-bottom: 10px">
-                <!-- EWS Score echart_context -->
-                <!-- <div class="col-md-4 col-sm-6 col-xs-12 Graphcard">
-                  <div class="x_panel">
-                    <div class="x_title">
-                      <h2>EWS Score</h2>
-                      <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
-                      <div id="ews_score_echart_context" style="width: 95%; height: 250px"></div>
-                    </div>
-                  </div>
-                </div> -->
-
-                <!-- Context Assessment echart_context -->
-                <!-- <div class="col-md-4 col-sm-6 col-xs-12 Graphcard">
-                  <div class="x_panel">
-                    <div class="x_title">
-                      <h2>Vitals Data</h2>
-                      <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
-                      <div id="context_assessment_echart_context" style="width: 95%; height: 250px"></div>
-                    </div>
-                  </div>
-                </div> -->
-
                 <!-- ECG echart_content -->
                 <div class="col-md-6 col-sm-6 col-xs-12 Graphcard">
                   <div class="x_panel">
@@ -923,23 +894,83 @@
 
     <!-- <script type="module" src="../build/js/videoCall/AgoraRTC_N-4.16.0.js"></script>-->
 
-    <script src="../build/js/videoCall/AgoraRTC_N-4.16.0.js"></script>
+    <!-- <script src="../build/js/videoCall/AgoraRTC_N-4.16.0.js"></script> -->
     <!-- easy-pie-chart -->
     <script src="../vendors/jquery.easy-pie-chart/dist/jquery.easypiechart.min.js"></script>
 
     <script>
-      // Show the Vitals section by default
-      // console.log("Window Inner Width:", window.innerWidth);
-      // console.log("Window Inner Height:", window.innerHeight);
+      function showMainSection(sectionId) {
+        var sectionMap = {
+          LiveComponents: "defaultOpen",
+          HistoryComponents: "openhistory",
+          VitalsComponents: "openvitals",
+        };
+
+        Object.keys(sectionMap).forEach(function (id) {
+          var section = document.getElementById(id);
+          var trigger = document.getElementById(sectionMap[id]);
+          var isActive = id === sectionId;
+
+          if (section) {
+            section.style.display = isActive ? "block" : "none";
+          }
+
+          if (trigger) {
+            trigger.classList.toggle("active", isActive);
+            trigger.setAttribute("aria-current", isActive ? "page" : "false");
+          }
+        });
+
+        try {
+          window.dispatchEvent(
+            new CustomEvent("main-section:shown", {
+              detail: { sectionId: sectionId },
+            }),
+          );
+          window.dispatchEvent(new Event("resize"));
+          setTimeout(function () {
+            window.dispatchEvent(new Event("resize"));
+          }, 150);
+        } catch (error) {
+          console.error("Unable to resize layout after section switch", error);
+        }
+      }
 
       document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("openvitals").click();
+        var sectionByTrigger = {
+          defaultOpen: "LiveComponents",
+          openhistory: "HistoryComponents",
+          openvitals: "VitalsComponents",
+        };
+        var querySection = new URLSearchParams(window.location.search).get("openpage");
+        var normalizedQuerySection = querySection ? querySection.toLowerCase() : "";
+        var initialSection = "VitalsComponents";
+
+        if (normalizedQuerySection === "livecomponents") {
+          initialSection = "LiveComponents";
+        } else if (normalizedQuerySection === "historycomponents") {
+          initialSection = "HistoryComponents";
+        } else if (normalizedQuerySection === "vitalscomponents") {
+          initialSection = "VitalsComponents";
+        }
+
+        Object.keys(sectionByTrigger).forEach(function (triggerId) {
+          var trigger = document.getElementById(triggerId);
+          if (!trigger) return;
+
+          trigger.addEventListener("click", function (event) {
+            event.preventDefault();
+            showMainSection(sectionByTrigger[triggerId]);
+          });
+        });
+
+        showMainSection(initialSection);
         document.getElementById("historyEightChartButton")?.click();
       });
     </script>
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <div class="version-badge">Version 0.1.5</div>
+    <div class="version-badge">Version 0.1.7</div>
   </body>
   <script>
     (function () {

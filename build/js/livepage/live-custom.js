@@ -800,7 +800,7 @@ function heartrate_data(LiveHeartrate, ContextHeartrate) {
     if (ContextHeartrate !== "") {
       var echartGauge1 = RawechartGauge;
       var d1 = ContextHeartrate;
-      echartGauge1.series[0].data[0].value[0] = d1;
+      echartGauge1.series[0].data[0].value = d1;
 
       if (isNaN(d1) || d1 == 0 || d1 === undefined || d1 === "" || d1 === null) {
         echartGauge1.series[0].pointer.show = false;
@@ -814,7 +814,7 @@ function heartrate_data(LiveHeartrate, ContextHeartrate) {
     LiveHRId = echarts.init(document.getElementById("LiveHeartRateId"));
     var echartGauge2 = RawechartGauge;
     var d = LiveHeartrate;
-    echartGauge2.series[0].data[0].value[0] = d;
+    echartGauge2.series[0].data[0].value = d;
 
     if (isNaN(d) || d == 0 || d === undefined || d === "" || d === null) {
       echartGauge2.series[0].pointer.show = false;
@@ -950,7 +950,7 @@ function blood_oxygen_data(LiveBloodOxygen) {
     } else {
       echartGauge2.series[0].pointer.show = true;
     }
-    echartGauge2.series[0].data[0].value[0] = d;
+    echartGauge2.series[0].data[0].value = d;
     LiveBloodOxygenId.setOption(echartGauge2);
   }
 }
@@ -1270,7 +1270,7 @@ function acceleration_data(LiveAcc, ContextAcc) {
       } else {
         echartGauge1.series[0].pointer.show = true;
       }
-      echartGauge1.series[0].data[0].value[0] = d1;
+      echartGauge1.series[0].data[0].value = d1;
       ContextAccId.setOption(echartGauge1);
     }
   } else if ($("#LiveAccelrationId").length) {
@@ -1284,7 +1284,7 @@ function acceleration_data(LiveAcc, ContextAcc) {
     } else {
       echartGauge2.series[0].pointer.show = true;
     }
-    echartGauge2.series[0].data[0].value[0] = d;
+    echartGauge2.series[0].data[0].value = d;
     LiveAccId.setOption(echartGauge2);
   }
 }
@@ -1386,7 +1386,7 @@ function blood_pressure_data(LiveSBP, LiveDBP, ContextSBP, ContextDBP) {
         echartGauge1.series[0].pointer.show = true;
       }
 
-      echartGauge1.series[0].data[0].value[0] = d1;
+      echartGauge1.series[0].data[0].value = d1;
       ContextBPId.setOption(echartGauge1);
     }
   } else if ($("#LiveBloodPressureId").length) {
@@ -1399,7 +1399,7 @@ function blood_pressure_data(LiveSBP, LiveDBP, ContextSBP, ContextDBP) {
     } else {
       echartGauge2.series[0].pointer.show = true;
     }
-    echartGauge2.series[0].data[0].value[0] = d;
+    echartGauge2.series[0].data[0].value = d;
     LiveBPId.setOption(echartGauge2);
   }
 }
@@ -1497,7 +1497,7 @@ function respiration_rate_data(LiveRRData, contextRRData) {
       } else {
         echartGauge1.series[0].pointer.show = true;
       }
-      echartGauge1.series[0].data[0].value[0] = d1;
+      echartGauge1.series[0].data[0].value = d1;
       ContextHRId.setOption(echartGauge1);
     }
   } else if ($("#LiveRespirationRateId").length) {
@@ -1510,7 +1510,7 @@ function respiration_rate_data(LiveRRData, contextRRData) {
       echartGauge2.series[0].pointer.show = true;
     }
 
-    echartGauge2.series[0].data[0].value[0] = d;
+    echartGauge2.series[0].data[0].value = d;
     LiveHRId.setOption(echartGauge2);
   }
 }

@@ -13,8 +13,8 @@ import {
 } from "./live-custom.js";
 // import { SymptomMsg } from "../context_assessment/ContextAssessmentTrim.js";
 import { NoEcgData, NoData, NoRRData, NoPpgData } from "./EchartGraphs.js";
-import { joincall, userjoin, leave } from "../videoCall/index.js";
-import { showToast } from "../backend/toastmsg.js";
+// import { joincall, userjoin, leave } from "../videoCall/index.js";
+// import { showToast } from "../backend/toastmsg.js";
 import { installGlobalEchartsAutoResize } from "../utils/echarts-auto-resize.js";
 
 // Keep ECharts charts responsive when components are shown/hidden,
@@ -44,33 +44,33 @@ export let firebaseConfig = {
 export let sensor_flag;
 
 export var fb = firebase.initializeApp(firebaseConfig);
-var ongoing_val = 0;
-var call_decline_val;
-var docId = localStorage.getItem("doctor_id");
+// var ongoing_val = 0;
+// var call_decline_val;
+// var docId = localStorage.getItem("doctor_id");
 
-if (fb !== undefined && docId !== null) {
-  var vc2 = fb.database().ref().child("video_call").child(docId);
-  vc2.on("value", function (snapshot) {
-    ongoing_val = snapshot.child("ongoing").val();
-    if (ongoing_val == 0) {
-      // closeLightbox();
-    }
-    call_decline_val = snapshot.child("call_decline").val();
-    if (ongoing_val == 0 && userjoin == true && call_decline_val == 1) {
-      // console.log("Leave function line:", 86);
-      // console.log("ongoing_val", ongoing_val);
-      showToast("call end");
-      leave();
-      userjoin = false;
-    }
-    if (call_decline_val == 1 && ongoing_val == 0) {
-      leave();
-      showToast("call declined");
-      fb.database().ref("/video_call_initiator").remove();
-      fb.database().ref().child("video_call").child(docId).child("ongoing").set("0");
-    }
-  });
-}
+// if (fb !== undefined && docId !== null) {
+//   var vc2 = fb.database().ref().child("video_call").child(docId);
+//   vc2.on("value", function (snapshot) {
+//     ongoing_val = snapshot.child("ongoing").val();
+//     if (ongoing_val == 0) {
+//       // closeLightbox();
+//     }
+//     call_decline_val = snapshot.child("call_decline").val();
+//     if (ongoing_val == 0 && userjoin == true && call_decline_val == 1) {
+//       // console.log("Leave function line:", 86);
+//       // console.log("ongoing_val", ongoing_val);
+//       showToast("call end");
+//       leave();
+//       userjoin = false;
+//     }
+//     if (call_decline_val == 1 && ongoing_val == 0) {
+//       leave();
+//       showToast("call declined");
+//       fb.database().ref("/video_call_initiator").remove();
+//       fb.database().ref().child("video_call").child(docId).child("ongoing").set("0");
+//     }
+//   });
+// }
 
 export var vct;
 
@@ -269,6 +269,7 @@ function init_echarts() {
     let latestPatHr = null;
     let latestPatHrTs = 0;
     let activeVitalsTimestamp = null;
+    let latestVitalsRecord = null;
     if (id != null || id != undefined) {
       ref = fb.database().ref().child("patientlivedata7s").child(id);
       ecg_ref = fb.database().ref().child("ECG_plot").child(id);
@@ -388,6 +389,27 @@ function init_echarts() {
           });
       };
 
+      window.addEventListener("main-section:shown", function (event) {
+        if (event?.detail?.sectionId !== "LiveComponents") {
+          return;
+        }
+
+        if (latestVitalsRecord) {
+          setTimeout(function () {
+            applyVitalsToUi(latestVitalsRecord);
+          }, 0);
+          setTimeout(function () {
+            applyVitalsToUi(latestVitalsRecord);
+          }, 120);
+        }
+
+        if (Number.isFinite(Number(activeVitalsTimestamp))) {
+          setTimeout(function () {
+            loadHistoricalWaveforms(activeVitalsTimestamp);
+          }, 80);
+        }
+      });
+
       let listener = ref.on("value", function (snapshot) {
         const live = snapshot.val();
         if (live != null) {
@@ -397,6 +419,7 @@ function init_echarts() {
             const data1 = live;
             console.log("[database_function.js] Live data:", data1);
             activeVitalsTimestamp = Number(data1.timestamp) || activeVitalsTimestamp;
+            latestVitalsRecord = data1;
             applyVitalsToUi(data1);
           } else {
             // First snapshot from live vitals stream – treat as baseline.
@@ -509,6 +532,7 @@ function init_echarts() {
 
           if (latestEntry.record) {
             console.log("[database_function.js] in validapatientdata", latestEntry.record);
+            latestVitalsRecord = latestEntry.record;
             applyVitalsToUi(latestEntry.record);
           }
           console.log("[database_function.js] Applying data from last timestamp from patientlivedata:", activeVitalsTimestamp);

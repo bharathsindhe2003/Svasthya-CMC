@@ -39,10 +39,10 @@ export async function patient_details(patient_info) {
   normalizedPatientInfo.sort(sortFunction);
 
   function sortFunction(a, b) {
-    if (a[7] === b[7]) {
+    if (a[5] === b[5]) {
       return 0;
     } else {
-      return a[7] < b[7] ? -1 : 1;
+      return a[5] > b[5] ? -1 : 1;
     }
   }
   console.log("[Dashboard-UI.js] patient_info after in array: ", normalizedPatientInfo);
