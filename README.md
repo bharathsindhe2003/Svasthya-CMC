@@ -15,7 +15,7 @@ Link: https://bharathsindhe2003.github.io/Svasthya-CMC/production/login.html
    - Added blinking effect and sound effect for a patients card if his/her vital cross threshold values
    - Redsigned the Congiration tab
 
-RELEASE DATE: 17-04-2026
+RELEASE DATE: 17-03-2026
 
 <hr>
 
@@ -29,4 +29,15 @@ RELEASE DATE: 17-04-2026
    - Redsigned the patient card in dashborad page
    - Redsigned the history tab
 
-RELEASE DATE: 18-04-2026
+RELEASE DATE: 18-03-2026
+
+<hr>
+
+3. Version Update: 0.1.5
+
+Features:
+
+- Fixed issue with SPO2 not beening displayed in History
+- Resolved 2 UI Changes
+
+RELEASE DATE: 23-03-2026
