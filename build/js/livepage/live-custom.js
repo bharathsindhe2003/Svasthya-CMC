@@ -240,15 +240,6 @@ function ECG_data_passing(LiveEcgValues, ecgdate, ecgtime, option1, value, ecgda
       },
     ],
   };
-  //console.log("plot data structure: ",plot.dataZoom[0].id);
-  /* if(endzoom!==0){
-			
-		  } */
-
-  //console.log("plot data structure: ",plot.dataZoom[0].id);
-  /* if(endzoom!==0){
-				
-			  } */
 
   try {
     if (EcgData.length < 625 && endzoom == 0) {
@@ -333,9 +324,6 @@ function ECG_data_passing(LiveEcgValues, ecgdate, ecgtime, option1, value, ecgda
     console.log("Error:", e.message);
   }
 
-  // const queryString = window.location.search;
-  // const urlParams = new URLSearchParams(queryString);
-  // const openpage = urlParams.get('openpage');
 }
 /***************************EOF of Electrocardiogram(ECG)*****************************/
 
@@ -358,8 +346,6 @@ function PPG_data_passing(LivePpgValues, ecgdate, ecgtime, option1, value, ppgda
     echartLine = echarts.init(document.getElementById("LivePPGId"));
     PpgData = Array.isArray(LivePpgValues) ? LivePpgValues : [];
   }
-  // console.log("ppg in live", PpgData);
-  // console.log("[live-custom.js] PpgData received:", PpgData ? PpgData.length : "null/undefined");
   function randomData() {
     if (PpgData.length === 0) return { value: [0, 0] };
     value1 = PpgData[counter % PpgData.length];

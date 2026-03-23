@@ -89,10 +89,5 @@ if (id && id != null && id != undefined) {
     } catch (e) {
       console.error("Unable to set innerHTML", e);
     }
-    // document.getElementById("PatientEmail").innerHTML='Email: '+patient_data1.gender;
-    //left_colomn_PD(Venu,27,6,70,"well","venu@mail.com",4448743543);
   });
-} else {
-  console.log("Time out id fetching");
 }
-/************************************** dashboard js  ********************************************/

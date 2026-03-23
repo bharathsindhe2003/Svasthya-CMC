@@ -197,24 +197,8 @@ function shouldRenderForActiveTimestamp(signalTimestamp, activeVitalsTimestamp) 
 function init_echarts() {
   $(document).ready(() => {
     var PatientName;
-    var heart_rate;
-    var spo2;
-    var sbp;
-    var dbp;
-    var oldtemp;
     var option1;
-    // var newTemp;
-    // var sbp_dbp;
-    var respiration_rate;
-    var temp;
-    // var acc;
-    var final_min_ecg;
-    var batteryPercentage;
     var value;
-    // var scale;
-    // var symptoms;
-    // var pain_spot;
-    // var flag = false;
     var id = localStorage.getItem("patient_unique_id");
     var ref;
     let ecg_ref;
@@ -223,7 +207,6 @@ function init_echarts() {
     let rr_min;
     let ews;
     var ref_valid;
-    // var context_assessment;
     var patients;
     sensor_flag = 0;
     var ecg_flag = 0;
@@ -232,12 +215,10 @@ function init_echarts() {
     var live_vitals_flag = 0;
     var ppg_ref;
     var rr_ref;
-    // var pat_bp_5sec_ref;
-    // let latestPatHr = null;
-    // let latestPatHrTs = 0;
     let activeVitalsTimestamp = null;
     let latestVitalsRecord = null;
-    if (id != null || id != undefined) {
+
+    if (id && id != null && id != undefined) {
       ref = fb.database().ref().child("patientlivedata7s").child(id);
       ecg_ref = fb.database().ref().child("ECG_plot").child(id);
       ppg_ref = fb.database().ref().child("PPG_plot").child(id);
@@ -247,32 +228,8 @@ function init_echarts() {
       ppg_min = fb.database().ref().child("patientppgdata").child(id);
       rr_min = fb.database().ref().child("patientrrdata").child(id);
       ref_valid = fb.database().ref().child("patientlivedata").child(id).limitToLast(1);
-      ews = fb.database().ref().child("EWS").child(id).limitToLast(1); //ews inititlization
-      // pat_bp_5sec_ref = fb.database().ref().child("PAT_BP_5s_tree").child(id);
-      // context_assessment = fb.database().ref().child("context_assessment").child(id);
+      ews = fb.database().ref().child("EWS").child(id).limitToLast(1);
       patients = fb.database().ref().child("patients").child(id);
-
-      patients.once("value", function (snapshot) {
-        let patient_data = JSON.stringify(snapshot.val(), null, 2);
-        let patient_data1 = JSON.parse(patient_data);
-        PatientName = patient_data1.username;
-        localStorage.setItem("patientname", PatientName);
-      });
-
-      // pat_bp_5sec_ref.on("value", function (snapshot) {
-      //   const val = snapshot.val();
-      //   if (!val) return;
-      //   const timestamps = Object.keys(val)
-      //     .map((k) => Number(k))
-      //     .filter((n) => Number.isFinite(n));
-      //   if (timestamps.length === 0) return;
-      //   const maxTs = Math.max(...timestamps);
-      //   const latest = val[maxTs];
-      //   if (latest && typeof latest.ECG_HR === "number") {
-      //     latestPatHr = latest.ECG_HR / 100;
-      //     latestPatHrTs = maxTs; // seconds epoch
-      //   }
-      // });
 
       const loadHistoricalWaveforms = function (timestamp) {
         if (!Number.isFinite(Number(timestamp))) {

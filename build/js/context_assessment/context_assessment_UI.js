@@ -32,13 +32,13 @@ console.log("[context_assessment_UI.js] Timestamp:", timestamp);
 console.log("[context_assessment_UI.js] ID:", id);
 console.log("[context_assessment_UI.js] page", page, "timestamp", timestamp);
 
-var patients = fb.database().ref().child("patients").child(id);
+// var patients = fb.database().ref().child("patients").child(id);
 
-patients.once("value", function (snapshot) {
-  // console.log("[context_assessment_UI.js] Fetching patient data...");
-  let patient_data = snapshot.val() || {};
-  username = patient_data.username;
-});
+// patients.once("value", function (snapshot) {
+//   // console.log("[context_assessment_UI.js] Fetching patient data...");
+//   let patient_data = snapshot.val() || {};
+//   username = patient_data.username;
+// });
 
 var patientsDataRef;
 var patientsECGDataRef;
@@ -196,97 +196,6 @@ try {
 
           document.getElementById("contextsensordate").innerHTML = ContextSensorDate;
           document.getElementById("contextsensortime").innerHTML = ContextSensorTime;
-
-          // Symptoms
-          if (patientData.symptoms) {
-            symptoms = patientData.symptoms;
-
-            const scale_array = patientData.scale ? patientData.scale.split(",").map((s) => s.trim()) : [];
-            const symptoms_array = symptoms.split(",").map((symptom) => symptom.trim().replace(/_/g, " "));
-            pain_spot = patientData.pain_spot ? patientData.pain_spot.split(",").map((s) => s.trim().replace(/\//g, "")) : [];
-            // Build symptom text with severity based on scale values
-            const painSymptoms = {
-              "Head Ache": { imagePath: new URL("../../../production/images/head.jpg", import.meta.url).href, grid: "12X12" },
-              "Throat pain": { imagePath: new URL("../../../production/images/head.jpg", import.meta.url).href, grid: "12X12" },
-              "Shoulder pain": { imagePath: new URL("../../../production/images/chest.jpg", import.meta.url).href, grid: "12X12" },
-              "Chest pain": { imagePath: new URL("../../../production/images/chest.jpg", import.meta.url).href, grid: "12X12" },
-              "Abdominal pain": { imagePath: new URL("../../../production/images/abdominal.jpg", import.meta.url).href, grid: "12X12" },
-              "Back pain": { imagePath: new URL("../../../production/images/back_pain.jpg", import.meta.url).href, grid: "12X12" },
-              "Ankle pain": { imagePath: new URL("../../../production/images/knee.jpg", import.meta.url).href, grid: "12X12" },
-              "Knee pain": { imagePath: new URL("../../../production/images/knee.jpg", import.meta.url).href, grid: "12X12" },
-              "Elbow pain": { imagePath: new URL("../../../production/images/abdominal.jpg", import.meta.url).href, grid: "12X12" },
-              "Foot pain": { imagePath: new URL("../../../production/images/knee.jpg", import.meta.url).href, grid: "12X12" },
-              "Wrist pain": { imagePath: new URL("../../../production/images/abdominal.jpg", import.meta.url).href, grid: "12X12" },
-              "Hip pain": { imagePath: new URL("../../../production/images/abdominal.jpg", import.meta.url).href, grid: "12X12" },
-              "Forearm pain": { imagePath: new URL("../../../production/images/abdominal.jpg", import.meta.url).href, grid: "12X12" },
-              "Hand pain": { imagePath: new URL("../../../production/images/abdominal.jpg", import.meta.url).href, grid: "12X12" },
-              "Thigh pain": { imagePath: new URL("../../../production/images/abdominal.jpg", import.meta.url).href, grid: "12X12" },
-              "Lower leg pain": { imagePath: new URL("../../../production/images/knee.jpg", import.meta.url).href, grid: "12X12" },
-              "Upper arm pain": { imagePath: new URL("../../../production/images/chest.jpg", import.meta.url).href, grid: "12X12" },
-              "Chin pain": { imagePath: new URL("../../../production/images/head.jpg", import.meta.url).href, grid: "12X12" },
-              "Ear pain": { imagePath: new URL("../../../production/images/head.jpg", import.meta.url).href, grid: "12X12" },
-              "Nose pain": { imagePath: new URL("../../../production/images/head.jpg", import.meta.url).href, grid: "12X12" },
-              "Eye pain": { imagePath: new URL("../../../production/images/head.jpg", import.meta.url).href, grid: "12X12" },
-            };
-
-            const symptomHTMLParts = [];
-
-            for (let i = 0; i < symptoms_array.length; i++) {
-              const symptomName = symptoms_array[i];
-              if (painSymptoms.hasOwnProperty(symptomName)) {
-                const scaleRaw = scale_array[i];
-                const scaleValue = scaleRaw !== undefined && scaleRaw !== null && scaleRaw !== "" ? parseInt(scaleRaw, 10) : NaN;
-                const painspot = pain_spot[i];
-
-                let severity = "";
-                if (!isNaN(scaleValue)) {
-                  if (scaleValue >= 1 && scaleValue <= 3) severity = "mild";
-                  else if (scaleValue >= 4 && scaleValue <= 6) severity = "moderate";
-                  else if (scaleValue >= 7 && scaleValue <= 10) severity = "severe";
-                }
-
-                if (severity !== "") {
-                  const imgSrc = painSymptoms[symptomName].imagePath;
-                  const grid = painSymptoms[symptomName].grid;
-                  if (imgSrc && grid) {
-                    symptomHTMLParts.push(` ${severity} <a href="#" class="symptom-link" data-image-src="${imgSrc}" data-grid="${grid}" data-painspot="${painspot}">${symptomName}</a>`);
-                  }
-                }
-              } else {
-                symptomHTMLParts.push(symptomName);
-              }
-            }
-
-            const element_systoms = document.getElementById("symtoms");
-            if (element_systoms) {
-              element_systoms.innerHTML = `<h5>${username} has ${symptomHTMLParts.join(", ")}</h5>`;
-              element_systoms.style.display = "block";
-              // color light red and text color dark red
-              element_systoms.style.color = "#990000";
-              element_systoms.style.backgroundColor = "#ffcccc";
-              element_systoms.style.padding = "10px";
-              element_systoms.style.borderRadius = "5px";
-
-              console.log("[context_assessment_UI.js]Symptoms displayed:", symptomHTMLParts.join(", "));
-              // Attach click handler to open popup with image when a pain symptom is clicked
-              element_systoms.addEventListener("click", function (event) {
-                const target = event.target;
-                if (target && target.classList && target.classList.contains("symptom-link")) {
-                  event.preventDefault();
-                  const imageSrc = target.getAttribute("data-image-src");
-                  const grid = target.getAttribute("data-grid");
-                  const painspot = target.getAttribute("data-painspot");
-                  if (imageSrc && grid && painspot) {
-                    openSymptomImagePopup(imageSrc, grid, painspot);
-                  }
-                }
-              });
-            } else {
-              console.log("[context_assessment_UI.js]Symptoms element not found in the DOM.");
-            }
-          } else {
-            console.log("[context_assessment_UI.js] No Symptoms data available.");
-          }
         }
         if (patientEWSData) {
           const ewsColor = patientEWSData.color !== undefined && patientEWSData.color !== null && patientEWSData.color !== "" ? patientEWSData.color : null;
@@ -309,218 +218,7 @@ try {
 } catch (error) {
   console.log("[context_assessment_UI.js] Error:", error);
 }
-// Popup helper to show symptom image from imageMapping
-function openSymptomImagePopup(imageSrc, grid, painspot) {
-  if (!imageSrc || !grid || !painspot) return;
 
-  let modal = document.getElementById("symptomImageModal");
-  let imagePainSpotPath = new URL("../../../production/images/pain_spot1-removebg.png", import.meta.url).href;
-  if (!modal) {
-    modal = document.createElement("div");
-    modal.id = "symptomImageModal";
-    modal.className = "symptom-modal";
-    modal.innerHTML =
-      '<div class="symptom-modal-content">' +
-      '  <span class="symptom-modal-close">&times;</span>' +
-      '  <div class="symptom-image-container" style="position:relative; display:flex; align-items:center; justify-content:center; max-width:100%; max-height:100%; width:100%; height:100%; margin:0 auto;">' +
-      '    <img id="symptomModalImage" src="" alt="Symptom image" style="display:block; max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; margin:0 auto;" />' +
-      '    <img id="symptomPainSpot" src="' +
-      imagePainSpotPath +
-      '" alt="Pain spot" style="position:absolute; width:8%; height:auto; transform:translate(-50%, -50%); display:none;" />' +
-      "  </div>" +
-      "</div>";
-
-    document.body.appendChild(modal);
-
-    // Basic styles for the popup (self-contained)
-    if (!document.getElementById("symptomModalStyles")) {
-      const style = document.createElement("style");
-      style.id = "symptomModalStyles";
-      style.textContent =
-        ".symptom-modal{" +
-        "position:fixed;" +
-        "z-index:9999;" +
-        "left:0;top:0;width:100%;height:100%;" +
-        "display:none;" +
-        "align-items:center;justify-content:center;" +
-        "background:rgba(0,0,0,0.6);" +
-        "}" +
-        ".symptom-modal-content{" +
-        "background:#fff;" +
-        "padding:10px;" +
-        "border-radius:6px;" +
-        "max-width:80%;max-height:80vh;" +
-        "box-sizing:border-box;" +
-        "box-shadow:0 2px 10px rgba(0,0,0,0.4);" +
-        "position:relative;" +
-        "overflow:hidden;" +
-        "}" +
-        ".symptom-modal-close{" +
-        "position:absolute;" +
-        "top:8px;right:12px;" +
-        "font-size:28px;" +
-        "cursor:pointer;" +
-        "color:#000;" +
-        "background:rgba(255,255,255,0.9);" +
-        "border-radius:50%;" +
-        "padding:4px 10px;" +
-        "z-index:10000;" +
-        "}";
-      document.head.appendChild(style);
-    }
-
-    const closeBtn = modal.querySelector(".symptom-modal-close");
-    closeBtn.addEventListener("click", function () {
-      modal.style.display = "none";
-    });
-
-    // Close when clicking outside the content
-    modal.addEventListener("click", function (event) {
-      if (event.target === modal) {
-        modal.style.display = "none";
-      }
-    });
-  }
-
-  const img = modal.querySelector("#symptomModalImage");
-  const painSpotImg = modal.querySelector("#symptomPainSpot");
-
-  // Helper to parse grid like "12X12" or "12x12"
-  function parseGrid(gridStr) {
-    if (!gridStr) return null;
-    const parts = String(gridStr)
-      .toLowerCase()
-      .split("x")
-      .map(function (p) {
-        return p.trim();
-      });
-    if (parts.length !== 2) return null;
-    var cols = parseInt(parts[0], 10);
-    var rows = parseInt(parts[1], 10);
-    if (!cols || !rows || cols <= 0 || rows <= 0) return null;
-    return { cols: cols, rows: rows };
-  }
-
-  // Convert column letters (e.g. "A", "B", ..., "L") to 0-based index
-  function columnLettersToIndex(letters) {
-    if (!letters) return -1;
-    var idx = 0;
-    var upper = String(letters).toUpperCase();
-    for (var i = 0; i < upper.length; i++) {
-      var code = upper.charCodeAt(i);
-      if (code < 65 || code > 90) return -1; // not A-Z
-      idx = idx * 26 + (code - 65 + 1);
-    }
-    return idx - 1; // convert to 0-based
-  }
-
-  // Parse painspot like "B11" where 11 means
-  // "11th box in the grid when counted row-wise".
-  // For a 12x12 grid: 1..12 = row 0, 13..24 = row 1, etc.
-  function parsePainspot(painStr, cols, rows) {
-    if (!painStr || !cols || !rows) return null;
-    var match = /^([A-Za-z]+)?(\d+)$/.exec(String(painStr).trim());
-    if (!match) return null;
-    var cellNumber = parseInt(match[2], 10); // 1-based linear index
-    if (!cellNumber || cellNumber < 1 || cellNumber > cols * rows) return null;
-
-    var zeroBased = cellNumber - 1;
-    var rowIndex = Math.floor(zeroBased / cols); // 0-based row
-    var colIndex = zeroBased % cols; // 0-based column
-
-    return { colIndex: colIndex, rowIndex: rowIndex, cellNumber: cellNumber };
-  }
-
-  // Position the pain spot image based on grid and painspot value
-  function positionPainSpot(gridStr, painStr) {
-    if (!painSpotImg) {
-      console.log("[context_assessment_UI.js] No painSpotImg element found. Cannot place pain spot.");
-      return;
-    }
-    var gridInfo = parseGrid(gridStr);
-    if (!gridInfo) {
-      painSpotImg.style.display = "none";
-      console.log("[context_assessment_UI.js] Failed to place pain spot - invalid grid.", {
-        grid: gridStr,
-        painspot: painStr,
-      });
-      return;
-    }
-
-    var cols = gridInfo.cols;
-    var rows = gridInfo.rows;
-    var painInfo = parsePainspot(painStr, cols, rows);
-    if (!gridInfo || !painInfo) {
-      painSpotImg.style.display = "none";
-      console.log("[context_assessment_UI.js] Failed to place pain spot - invalid grid or painspot.", {
-        grid: gridStr,
-        painspot: painStr,
-      });
-      return;
-    }
-
-    var colIdx = Math.min(Math.max(painInfo.colIndex, 0), cols - 1);
-    var rowIdx = Math.min(Math.max(painInfo.rowIndex, 0), rows - 1);
-
-    var leftPercent = ((colIdx + 0.5) / cols) * 100;
-    var topPercent = ((rowIdx + 0.5) / rows) * 100;
-
-    painSpotImg.style.left = leftPercent + "%";
-    painSpotImg.style.top = topPercent + "%";
-    painSpotImg.style.display = "block";
-    console.log("[context_assessment_UI.js] Pain spot placed successfully.", {
-      grid: gridStr,
-      painspot: painStr,
-      cellNumber: painInfo.cellNumber,
-      leftPercent: leftPercent,
-      topPercent: topPercent,
-    });
-  }
-
-  // Ensure the body image fits within the viewport ("zoom out" if needed)
-  function fitImageToViewport(imageElement) {
-    if (!imageElement || !imageElement.naturalWidth || !imageElement.naturalHeight) return;
-
-    var viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
-    var viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-    if (!viewportWidth || !viewportHeight) return;
-
-    var maxWidth = viewportWidth * 0.8; // match ~80% modal max width
-    var maxHeight = viewportHeight * 0.8; // match ~80vh modal max height
-
-    var naturalWidth = imageElement.naturalWidth;
-    var naturalHeight = imageElement.naturalHeight;
-
-    var widthScale = maxWidth / naturalWidth;
-    var heightScale = maxHeight / naturalHeight;
-    var scale = Math.min(widthScale, heightScale, 1); // never scale up
-
-    var finalWidth = naturalWidth * scale;
-    var finalHeight = naturalHeight * scale;
-
-    imageElement.style.width = finalWidth + "px";
-    imageElement.style.height = finalHeight + "px";
-
-    console.log("[context_assessment_UI.js] Image fitted to viewport.", {
-      naturalWidth: naturalWidth,
-      naturalHeight: naturalHeight,
-      finalWidth: finalWidth,
-      finalHeight: finalHeight,
-      viewportWidth: viewportWidth,
-      viewportHeight: viewportHeight,
-    });
-  }
-
-  img.onload = function () {
-    // First, make sure the whole image fits inside the modal/viewport
-    fitImageToViewport(img);
-    // Then place the pain spot marker using the final rendered size
-    positionPainSpot(grid, painspot);
-  };
-
-  img.src = imageSrc;
-  modal.style.display = "flex";
-}
 function ews_value_passing_context(ews_value, ews_color) {
   try {
     const cardContainer = document.getElementById("context_ews_id");
@@ -1314,24 +1012,24 @@ function RR_data(LiveRRValues, date, time, option1, value, rrdata, endzoom) {
 }
 // Keep live ECG/PPG charts responsive to layout changes
 // by resizing the echarts instances when the window size changes.
-window.addEventListener("resize", function () {
-  try {
-    var liveEcgDom = document.getElementById("LiveECGId");
-    if (liveEcgDom) {
-      var ecgInstance = echarts.getInstanceByDom(liveEcgDom);
-      if (ecgInstance) {
-        ecgInstance.resize();
-      }
-    }
+// window.addEventListener("resize", function () {
+//   try {
+//     var liveEcgDom = document.getElementById("LiveECGId");
+//     if (liveEcgDom) {
+//       var ecgInstance = echarts.getInstanceByDom(liveEcgDom);
+//       if (ecgInstance) {
+//         ecgInstance.resize();
+//       }
+//     }
 
-    var livePpgDom = document.getElementById("LivePPGId");
-    if (livePpgDom) {
-      var ppgInstance = echarts.getInstanceByDom(livePpgDom);
-      if (ppgInstance) {
-        ppgInstance.resize();
-      }
-    }
-  } catch (e) {
-    console.error("[context_assessment_UI.js] Live chart resize error:", e);
-  }
-});
+//     var livePpgDom = document.getElementById("LivePPGId");
+//     if (livePpgDom) {
+//       var ppgInstance = echarts.getInstanceByDom(livePpgDom);
+//       if (ppgInstance) {
+//         ppgInstance.resize();
+//       }
+//     }
+//   } catch (e) {
+//     console.error("[context_assessment_UI.js] Live chart resize error:", e);
+//   }
+// });

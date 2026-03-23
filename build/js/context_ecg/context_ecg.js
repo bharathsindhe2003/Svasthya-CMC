@@ -1,21 +1,7 @@
 import { fb } from "../livepage/database_function.js";
-// import { heartrate_data, blood_pressure_data, respiration_rate_data, acceleration_data, blood_oxygen_data, temperature_data, ews_value_passing } from "../livepage/live-custom.js";
-import {
-  NoEcgData,
-  //  NoPpgData
-} from "../livepage/EchartGraphs.js";
-
-var username;
-var heart_rate;
-var bp;
-var respiration_rate;
-var acc;
-var spo2;
-var temp;
+import { NoEcgData } from "../livepage/EchartGraphs.js";
 
 var scale;
-var symptoms;
-var pain_spot = [];
 var option1;
 var value;
 
@@ -34,19 +20,17 @@ console.log("[context_ecg.js] page", page, "timestamp", timestamp);
 
 var patientsDataRef;
 if (page == "2") {
-  patientsDataRef = fb.database().ref().child("patientecgdata").child(id);
-  var patientRef = patientsDataRef.child(timestamp);
+  patientsDataRef = fb.database().ref().child("patientecgdata").child(id).child(timestamp);
 
-  patientRef
+  patientsDataRef
     .once("value", function (snapshot) {
-      // console.log("[context_ecg.js] Fetching live patient data...");
       const patientData = snapshot.val() || {};
-      console.log("[context_ecg.js] patient data snapshot:", patientData);
+      // console.log("[context_ecg.js] patient data snapshot:", patientData);
 
       if (patientData) {
         if (page == "2") {
           // For Alert History, keep gauges and PPG section hidden (already hidden via HTML)
-          console.log("[context_ecg.js] Fetching Alert History data...");
+          // console.log("[context_ecg.js] Fetching Alert History data...");
 
           const ecg = patientData?.payload !== undefined ? patientData?.payload : null;
           if (ecg && ecg != null) {
