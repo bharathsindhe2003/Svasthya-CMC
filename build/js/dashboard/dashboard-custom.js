@@ -1192,6 +1192,9 @@ function parseThresholdVitals(vitalString) {
   if (typeof vitalString !== "string") {
     return [];
   }
+  if (vitalString === "") {
+    return [""];
+  }
 
   return vitalString
     .split(",")
