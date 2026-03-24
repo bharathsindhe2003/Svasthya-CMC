@@ -42,6 +42,8 @@ Features:
 
 RELEASE DATE: 23-03-2026
 
+<hr>
+
 4. Version Update: 0.1.7
 
 Features:
@@ -50,3 +52,14 @@ Features:
 - Remove notification and video files and code from codebase
 
 RELEASE DATE: 23-03-2026
+
+<hr>
+
+4. Version Update: 0.1.8
+
+Features:
+
+- Added Listerns to both dashborad page and live page.
+- Added empty string handling for threshold_trigers
+
+RELEASE DATE: 24-03-2026

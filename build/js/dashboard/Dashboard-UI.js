@@ -35,7 +35,7 @@ export async function patient_details(patient_info) {
       })
     : [];
 
-  console.log("[Dashboard-UI.js] patient_info before in array: ", normalizedPatientInfo);
+  // console.log("[Dashboard-UI.js] patient_info before in array: ", normalizedPatientInfo);
   normalizedPatientInfo.sort(sortFunction);
 
   function sortFunction(a, b) {
@@ -45,9 +45,9 @@ export async function patient_details(patient_info) {
       return a[5] > b[5] ? -1 : 1;
     }
   }
-  console.log("[Dashboard-UI.js] patient_info after in array: ", normalizedPatientInfo);
+  // console.log("[Dashboard-UI.js] patient_info after in array: ", normalizedPatientInfo);
 
-  console.log("[Dashboard-UI.js] Data before creating charts:", normalizedPatientInfo);
+  // console.log("[Dashboard-UI.js] Data before creating charts:", normalizedPatientInfo);
 
   var modal = document.getElementById("myModal");
 

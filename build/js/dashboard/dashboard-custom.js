@@ -30,7 +30,6 @@ const PATIENT_PPG_INDEX = 14;
 const PATIENT_PPG_TIMESTAMP_INDEX = 15;
 const PATIENT_RR_WAVE_INDEX = 16;
 const PATIENT_RR_TIMESTAMP_INDEX = 17;
-const thresholdListenerPatients = new Set();
 
 // let pat_bp_5sec_ref = fb.database().ref().child("PAT_BP_5s_tree");
 var doctor_id = localStorage.getItem("doctor_id");
@@ -66,7 +65,7 @@ function firebase_Data_retrieval(ref_doc_id) {
             }
           });
 
-          registerThresholdListeners(patient_info);
+          localStorage.setItem("patient_info", JSON.stringify(patient_info));
 
           const Obtain_ews = new Promise((resolve, reject) => {
             if (patient_info.length === 0) {
@@ -100,7 +99,7 @@ function firebase_Data_retrieval(ref_doc_id) {
                   currentPatient[PATIENT_EWS_COLOR_INDEX] = nextEwsColor;
 
                   refreshews(currentPatient[PATIENT_EWS_VALUE_INDEX], currentPatient[PATIENT_EWS_COLOR_INDEX], currentPatientId);
-                  console.log("[dashboard-custom.js]  refreshews", currentPatient[PATIENT_EWS_VALUE_INDEX], currentPatient[PATIENT_EWS_COLOR_INDEX], currentPatientId);
+                  // console.log("[dashboard-custom.js]  refreshews", currentPatient[PATIENT_EWS_VALUE_INDEX], currentPatient[PATIENT_EWS_COLOR_INDEX], currentPatientId);
 
                   if (!loadedEwsPatients.has(currentPatientId)) {
                     loadedEwsPatients.add(currentPatientId);
@@ -146,7 +145,7 @@ function firebase_Data_retrieval(ref_doc_id) {
                   } else {
                     currentPatient[PATIENT_RR_INDEX] = snapshot.val().rr;
                   }
-                  console.log("[dashboard-custom.js] retrieved bp", snapshot.val());
+                  // console.log("[dashboard-custom.js] retrieved bp", snapshot.val());
                 } else {
                   currentPatient[PATIENT_HR_INDEX] = "--";
                   currentPatient[PATIENT_BP_INDEX] = "--/--";
@@ -285,19 +284,19 @@ function firebase_Data_retrieval(ref_doc_id) {
                 rr_list.child(currentPatientId).on("value", function (snapshot) {
                   if (snapshot.val() != null) {
                     // if (validTimestamp[patient_info[i][4]] === snapshot.key) {
-                    console.log("[dashboard-custom.js] RR data found for ID:", currentPatientId);
-                    console.log("[dashboard-custom.js] RR Snapshot value: ", snapshot.val());
+                    // console.log("[dashboard-custom.js] RR data found for ID:", currentPatientId);
+                    // console.log("[dashboard-custom.js] RR Snapshot value: ", snapshot.val());
 
                     let rr_string = JSON.stringify(snapshot.val(), null, 2);
                     let rr_json = JSON.parse(rr_string);
                     let rr_data = rr_json.res;
-                    console.log("[dashboard-custom.js] RR data:", rr_data);
+                    // console.log("[dashboard-custom.js] RR data:", rr_data);
                     let rr_timestamp = rr_json.timestamp;
 
                     let result1 = rr_data.replace(/\,/g, "").trim();
-                    console.log("[dashboard-custom.js] RR data from replace", result1);
+                    //  console.log("[dashboard-custom.js] RR data from replace", result1);
                     var final_rr = result1.split(" ").map(Number);
-                    console.log("[dashboard-custom.js] Parsed RR data:", final_rr);
+                    // console.log("[dashboard-custom.js] Parsed RR data:", final_rr);
                     currentPatient[PATIENT_RR_WAVE_INDEX] = final_rr;
 
                     var date = new Date(rr_timestamp * 1000);
@@ -328,7 +327,7 @@ function firebase_Data_retrieval(ref_doc_id) {
 
           for (let i = 0; i < patient_info.length; i++) {
             const patientId = patient_info[i][4];
-            console.log("LOOPING", patientId);
+            // console.log("LOOPING", patientId);
 
             const ecg_min = fb.database().ref().child("patientecgdata").child(patientId).orderByKey().limitToLast(1); //1 minute data
             const ppg_min = fb.database().ref().child("patientppgdata").child(patientId).orderByKey().limitToLast(1); //1 minute data
@@ -479,7 +478,7 @@ function refreshews(ews_value, ews_color, ID) {
 
   var ews_v = document.getElementById(ewsvId);
   var ews_c = document.getElementById(ewscId);
-  console.log("[dashboard-custom.js]  refreshews", ewsvId, ews_v, ews_color);
+  // console.log("[dashboard-custom.js]  refreshews", ewsvId, ews_v, ews_color);
   if (ews_v === null) {
   } else {
     ews_v.textContent = ews_value;
@@ -550,7 +549,6 @@ document.addEventListener("visibilitychange", function () {
 });
 
 function createECGchart(ecg, Id) {
-  console.log("");
   var LiveECGId = "chart" + Id;
   var chart = getOrCreateChart(LiveECGId);
 
@@ -1182,419 +1180,3 @@ function refreshvitals(hr, bp, temp, rr, spo, ID) {
   if (spov) spov.textContent = spo + " %";
   if (tempv) tempv.textContent = temp + " ˚C";
 }
-// listener
-const messagesRef = fb.database().ref().child("threshold_triggers");
-const activeAlertTargets = new Set();
-const activePatientAlerts = new Map();
-const pendingBlinkAlerts = new Map();
-
-function parseThresholdVitals(vitalString) {
-  if (typeof vitalString !== "string") {
-    return [];
-  }
-  if (vitalString === "") {
-    return [""];
-  }
-
-  return vitalString
-    .split(",")
-    .map((vital) =>
-      String(vital || "")
-        .trim()
-        .toUpperCase(),
-    )
-    .filter(Boolean);
-}
-
-function resolveAlertElementId(id, vital) {
-  if (vital === "HR") {
-    return "hrBorder" + id;
-  }
-  if (vital === "BP") {
-    return "bpBorder" + id;
-  }
-  if (vital === "RR") {
-    return "rrBorder" + id;
-  }
-  if (vital === "SPO2") {
-    return "spo2Border" + id;
-  }
-  if (vital === "TEMP") {
-    return "tempBorder" + id;
-  }
-
-  return "border" + id;
-}
-
-function getPatientBorderId(id) {
-  return "border" + id;
-}
-const sessionStorageName = "THRESHOLD_TRIGGERS";
-
-function getStoredThresholdAlerts() {
-  try {
-    const storedValue = sessionStorage.getItem(sessionStorageName);
-    if (!storedValue) {
-      return {};
-    }
-
-    const parsedValue = JSON.parse(storedValue);
-    if (!parsedValue || typeof parsedValue !== "object" || Array.isArray(parsedValue)) {
-      return {};
-    }
-
-    return parsedValue;
-  } catch (error) {
-    console.warn("[dashboard-custom.js] Unable to read threshold alerts from session storage:", error);
-    return {};
-  }
-}
-
-function setStoredThresholdAlerts(alertsByPatient) {
-  const patientIds = Object.keys(alertsByPatient || {});
-
-  if (patientIds.length === 0) {
-    sessionStorage.removeItem(sessionStorageName);
-    return;
-  }
-
-  sessionStorage.setItem(sessionStorageName, JSON.stringify(alertsByPatient));
-}
-
-function queuePendingBlink(id, vital) {
-  const patientVitals = pendingBlinkAlerts.get(id) || new Set();
-  patientVitals.add(vital);
-  pendingBlinkAlerts.set(id, patientVitals);
-}
-
-function flushPendingBlinkAlerts() {
-  if (pendingBlinkAlerts.size === 0) {
-    return;
-  }
-
-  const pendingEntries = Array.from(pendingBlinkAlerts.entries());
-  pendingBlinkAlerts.clear();
-
-  pendingEntries.forEach(([id, vitals]) => {
-    vitals.forEach((vital) => {
-      addBlink(id, vital);
-    });
-  });
-}
-
-function restoreBlinkAlertsFromSession() {
-  const storedAlerts = getStoredThresholdAlerts();
-  const patientIds = Object.keys(storedAlerts);
-
-  if (patientIds.length === 0) {
-    return;
-  }
-
-  console.log("[dashboard-custom.js] Applying blink effect for session data:", storedAlerts);
-
-  patientIds.forEach((patientId) => {
-    const patientVitals = Array.isArray(storedAlerts[patientId]) ? storedAlerts[patientId] : [];
-    patientVitals.forEach((vital) => {
-      addBlink(patientId, vital);
-      console.log("[dashboard-custom.js] Applying blink effect for session data:", patientId, vital);
-    });
-  });
-
-  console.log("[dashboard-custom.js] Completed");
-}
-
-// Apply the blink effect to the users
-restoreBlinkAlertsFromSession();
-
-function registerThresholdListeners(patient_info) {
-  if (!Array.isArray(patient_info) || patient_info.length === 0) {
-    return;
-  }
-
-  for (let i = 0; i < patient_info.length; i++) {
-    const patientId = patient_info[i][PATIENT_ID_INDEX];
-
-    if (!patientId || thresholdListenerPatients.has(patientId)) {
-      continue;
-    }
-
-    thresholdListenerPatients.add(patientId);
-
-    const patientRef = messagesRef.child(patientId);
-
-    console.log("[dashboard-custom.js] threshold patient:", patientId);
-
-    patientRef.once("value", (initialSnap) => {
-      const oldTimestampKeys = new Set();
-
-      initialSnap.forEach((child) => {
-        oldTimestampKeys.add(child.key);
-      });
-
-      patientRef.on("child_added", (timestampSnapshot) => {
-        const timestampKey = timestampSnapshot.key;
-
-        if (oldTimestampKeys.has(timestampKey)) return;
-
-        const rawVitals = timestampSnapshot.val();
-
-        console.log("[dashboard-custom.js] threshold timestamp:", timestampKey);
-        console.log("[dashboard-custom.js] threshold data:", rawVitals);
-
-        if (typeof rawVitals !== "string") return;
-
-        const normalizedVitals = parseThresholdVitals(rawVitals);
-        const sessionData = getStoredThresholdAlerts();
-        const alreadyExistingVitals = sessionData[patientId] || [];
-
-        sessionData[patientId] = [...new Set([...alreadyExistingVitals, ...normalizedVitals])];
-
-        setStoredThresholdAlerts(sessionData);
-
-        normalizedVitals.forEach((vital) => addBlink(patientId, vital));
-      });
-    });
-  }
-}
-const sound = document.getElementById("alertSound");
-let alertSoundPrimed = false;
-
-if (sound) {
-  sound.preload = "auto";
-}
-
-function primeAlertSound() {
-  if (!sound || alertSoundPrimed) {
-    return;
-  }
-
-  const playAttempt = sound.play();
-  if (!playAttempt || typeof playAttempt.then !== "function") {
-    alertSoundPrimed = true;
-    sound.pause();
-    sound.currentTime = 0;
-    return;
-  }
-
-  sound.muted = true;
-  playAttempt
-    .then(() => {
-      sound.pause();
-      sound.currentTime = 0;
-      sound.muted = false;
-      alertSoundPrimed = true;
-    })
-    .catch(() => {
-      sound.muted = false;
-    });
-}
-
-document.addEventListener("pointerdown", primeAlertSound, { once: true });
-document.addEventListener("keydown", primeAlertSound, { once: true });
-
-function syncAlertSound() {
-  if (!sound) {
-    return;
-  }
-
-  if (activeAlertTargets.size > 0) {
-    sound.loop = true;
-    sound.play().catch((error) => {
-      console.warn("[dashboard-custom.js] Unable to play alert sound:", error);
-    });
-    return;
-  }
-
-  sound.pause();
-  sound.currentTime = 0;
-}
-
-function clearAllBlinkAlerts() {
-  document.querySelectorAll(".blink-border").forEach((element) => {
-    element.classList.remove("blink-border");
-  });
-  document.querySelectorAll(".blink-text").forEach((element) => {
-    element.classList.remove("blink-text");
-  });
-  activeAlertTargets.clear();
-  activePatientAlerts.clear();
-  pendingBlinkAlerts.clear();
-  syncAlertSound();
-}
-
-function addBlink(id, vital) {
-  try {
-    let val = resolveAlertElementId(id, vital);
-    const alertBox = document.getElementById(val);
-    const patientBorderId = getPatientBorderId(id);
-    const patientBorder = document.getElementById(patientBorderId);
-
-    if (!alertBox) {
-      queuePendingBlink(id, vital);
-      console.warn("[dashboard-custom.js] Alert UI element not found:", val);
-      return;
-    }
-
-    const pendingVitals = pendingBlinkAlerts.get(id);
-    if (pendingVitals) {
-      pendingVitals.delete(vital);
-      if (pendingVitals.size === 0) {
-        pendingBlinkAlerts.delete(id);
-      }
-    }
-
-    if (val.startsWith("border")) alertBox.classList.add("blink-border");
-    else alertBox.classList.add("blink-text");
-
-    if (patientBorder) {
-      patientBorder.classList.add("blink-border");
-      activeAlertTargets.add(patientBorderId);
-    }
-
-    const patientVitals = activePatientAlerts.get(id) || new Set();
-    patientVitals.add(vital);
-    activePatientAlerts.set(id, patientVitals);
-
-    activeAlertTargets.add(val);
-    syncAlertSound();
-  } catch (error) {
-    console.error("[dashboard-custom.js] Error in addBlink function:", error);
-  }
-}
-
-function removeBlink(id, vital) {
-  try {
-    // remove from session storage
-    const sessionData = getStoredThresholdAlerts();
-    const storedVitals = Array.isArray(sessionData[id]) ? sessionData[id] : [];
-
-    if (storedVitals.length > 0) {
-      const updatedVitals = storedVitals.filter((storedVital) => storedVital !== vital);
-      if (updatedVitals.length > 0) {
-        sessionData[id] = updatedVitals;
-      } else {
-        delete sessionData[id];
-      }
-
-      setStoredThresholdAlerts(sessionData);
-    }
-
-    let val = resolveAlertElementId(id, vital);
-
-    const alertBox = document.getElementById(val);
-    const patientBorderId = getPatientBorderId(id);
-    const patientBorder = document.getElementById(patientBorderId);
-
-    if (!alertBox) {
-      const pendingVitals = pendingBlinkAlerts.get(id);
-      if (pendingVitals) {
-        pendingVitals.delete(vital);
-        if (pendingVitals.size === 0) {
-          pendingBlinkAlerts.delete(id);
-        }
-      }
-      console.warn("[dashboard-custom.js] Alert UI element not found:", val);
-      return;
-    }
-
-    if (val.startsWith("border")) alertBox.classList.remove("blink-border");
-    else alertBox.classList.remove("blink-text");
-
-    const patientVitals = activePatientAlerts.get(id);
-    if (patientVitals) {
-      patientVitals.delete(vital);
-      if (patientVitals.size === 0) {
-        activePatientAlerts.delete(id);
-        if (patientBorder) {
-          patientBorder.classList.remove("blink-border");
-        }
-        activeAlertTargets.delete(patientBorderId);
-      }
-    }
-
-    activeAlertTargets.delete(val);
-    syncAlertSound();
-  } catch (error) {
-    console.error("[dashboard-custom.js] Error in removeBlink function:", error);
-  }
-}
-
-window.addBlink = addBlink;
-window.removeBlink = removeBlink;
-window.clearAllBlinkAlerts = clearAllBlinkAlerts;
-window.flushPendingBlinkAlerts = flushPendingBlinkAlerts;
-
-// Firebase Notifications
-// let messaging = null;
-// try {
-//   messaging = fb.messaging();
-// } catch (error) {
-//   console.error("notification [dashboard-custom.js] in messaging initialization error catch", error);
-// }
-
-// try {
-//   navigator.serviceWorker
-//     .register(new URL("../../../production/firebase-messaging-sw.js", import.meta.url))
-//     .then(function (registration) {
-//       console.log("notification [dashboard-custom.js] Service Worker registered with scope:", registration.scope);
-//       messaging.useServiceWorker(registration);
-//       return messaging.requestPermission();
-//     })
-
-//     .then(function () {
-//       console.log("notification [dashboard-custom.js] Have permission");
-
-//       var docid = localStorage.getItem("doctor_id");
-//       console.log("notification [dashboard-custom.js] docid", docid);
-//       return messaging.getToken(messaging, { vapidKey: "BDSMgbKCwTOC9f7r4FPoXsymskTh_M_GfLXi_sszHMbzLMaLG1zVD0jyVUVMkuVAszaNSrUwyb-aM8X9E5Qclv0" });
-//     })
-//     .then((currentToken) => {
-//       if (currentToken) {
-//         var context_assessmenttoken = fb.database().ref().child("FCM_token").child(currentToken);
-
-//         context_assessmenttoken.set({
-//           Id: localStorage.getItem("doctor_id"),
-//         });
-
-//         console.log("notification [dashboard-custom.js] current token", currentToken);
-//       } else {
-//         console.log("notification [dashboard-custom.js] No registration token available. Request permission to generate one.");
-//       }
-//     })
-//     .catch(function (err) {
-//       console.error("notification [dashboard-custom.js]in first error ctch", err);
-//     });
-// } catch (e) {
-//   console.error("notification [dashboard-custom.js] in request permission error catch", e);
-// }
-// try {
-//   messaging.onMessage(function (payload) {
-//     console.log("notification [dashboard-custom.js] Inside onMessage:", payload);
-
-//     if (payload.data.timestamp && payload.data.uid) {
-//       const param1 = btoa(payload.data.timestamp);
-//       console.log("notification [dashboard-custom.js] param1:", param1);
-
-//       const param2 = btoa(payload.data.uid);
-//       console.log("notification [dashboard-custom.js] param2:", param2);
-
-//       const param3 = btoa("1");
-
-//       const url = "context_assment.html" + "?param1=" + param1 + "&param2=" + param2 + "&param3=" + param3;
-
-//       var childWindow = window.open(url, "Context Assessment", "width=1050,height=670,left=150,top=200,titlebar=0,toolbar=0,status=0");
-
-//       setTimeout(function () {
-//         if (childWindow && !childWindow.closed) {
-//           childWindow.close();
-//         } else {
-//           console.log("notification [dashboard-custom.js] Child window is already closed or not available.");
-//         }
-//       }, 30000);
-//     } else {
-//       console.log("notification [dashboard-custom.js] Invalid timestamp or final_patient_uid in payload data");
-//     }
-//   });
-// } catch (e) {
-//   console.error("notification [dashboard-custom.js] in onMessage error catch", e);
-// }
