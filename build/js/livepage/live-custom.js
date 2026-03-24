@@ -323,7 +323,6 @@ function ECG_data_passing(LiveEcgValues, ecgdate, ecgtime, option1, value, ecgda
   } catch (e) {
     console.log("Error:", e.message);
   }
-
 }
 /***************************EOF of Electrocardiogram(ECG)*****************************/
 
@@ -599,14 +598,29 @@ function RR_data_passing(LiveRrValues, rrdate, rrtime, option1, value, rrdata, e
   if (!$("#LiveRRId").length) return;
   try {
     const echartLine = echarts.init(document.getElementById("LiveRRId"));
-
-    const RrData = Array.isArray(LiveRrValues) ? LiveRrValues : [];
-    const data = RrData.map((v, i) => [i, v]); // x starts at 0, keep decimals
-
+    var RrData = LiveRrValues;
+    var data = [];
+    var value1;
+    var counter = 0;
+    function randomData() {
+      if (RrData.length === 0) return { value: [0, 0] };
+      value1 = RrData[counter % RrData.length];
+      counter++;
+      return {
+        value: [counter % RrData.length, Math.round(value1)],
+      };
+    }
+    try {
+      for (var i = 1; i < RrData.length; i++) {
+        data.push(randomData());
+      }
+    } catch (e) {
+      console.error("[live-custom.js] Error in processing RrData:", e);
+    }
     // y padding
-    const yMin = RrData.length ? Math.min(...RrData) : 0;
-    const yMax = RrData.length ? Math.max(...RrData) : 1;
-    const pad = Math.max((yMax - yMin) * 0.05, 1);
+    // const yMin = RrData.length ? Math.min(...RrData) : 0;
+    // const yMax = RrData.length ? Math.max(...RrData) : 1;
+    // const pad = Math.max((yMax - yMin) * 0.05, 1);
 
     let option;
     if (data.length < 120) {
@@ -656,32 +670,99 @@ function RR_data_passing(LiveRrValues, rrdate, rrtime, option1, value, rrdata, e
         ],
         xAxis: {
           type: "value",
-          show: false,
-          min: "dataMin",
-          max: "dataMax",
-          boundaryGap: false,
-          splitLine: { show: false },
-          axisLine: { show: false },
+          splitNumber: 25,
+          splitLine: {
+            show: false,
+            lineStyle: {
+              color: "#0686AF",
+              width: 1.2,
+            },
+          },
+          grid: {
+            show: false,
+          },
+          minorSplitLine: {
+            show: false,
+            lineStyle: {
+              color: "#23B5E4",
+              width: 0.5,
+            },
+          },
+          axisLine: {
+            show: true, // Hide full Line
+          },
+          axisLabel: {
+            show: false,
+          },
+          axisTick: {
+            show: false,
+          },
+          minorTick: {
+            show: false,
+          },
+          alignTicks: false,
         },
         yAxis: {
           type: "value",
           show: false,
-          min: yMin - pad,
-          max: yMax + pad,
-          splitLine: { show: false },
-          axisLine: { show: false },
+          splitLine: {
+            lineStyle: {
+              color: "#0686AF",
+              width: 1.2,
+            },
+          },
+          // min:Math.min(...data) -20,
+          min: function (value) {
+            return value.min - 10;
+          },
+          max: function (value) {
+            return value.max + 100;
+          },
+          grid: {
+            show: false,
+          },
+          minorSplitLine: {
+            show: false,
+            lineStyle: {
+              color: "#23B5E4",
+              width: 0.5,
+            },
+          },
+          axisLine: {
+            show: true, // Hide full Line
+          },
+          axisLabel: {
+            show: false,
+          },
+          axisTick: {
+            show: false,
+          },
+          minorTick: {
+            show: false,
+          },
+          alignTicks: false,
         },
         series: [
           {
             name: "RR",
             type: "line",
+            xAxisIndex: 0,
+            yAxisIndex: 0,
             showSymbol: false,
-            data,
+            //symbol: 'emptyCircle' ,
+            //hoverAnimation: false,
+            data: data,
             animation: false,
             smooth: true,
-            lineStyle: { color: "#FFFFFF", width: 2 },
-            connectNulls: true,
-            clip: true,
+            lineStyle: {
+              color: "#FFFFFF",
+              width: 1.6,
+              //miterLimit: 10 ,
+            },
+            labelLine: {
+              show: false,
+            },
+            seriesLayoutBy: "column",
           },
         ],
       };

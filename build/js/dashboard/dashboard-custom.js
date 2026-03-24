@@ -81,6 +81,7 @@ function firebase_Data_retrieval(ref_doc_id) {
 
               ews_list
                 .child(currentPatientId)
+                .orderByKey()
                 .limitToLast(1)
                 .on("value", function (snapshot) {
                   let nextEwsValue = "--";
@@ -109,6 +110,11 @@ function firebase_Data_retrieval(ref_doc_id) {
                     resolve(patient_info);
                   }
                 });
+            }
+          });
+          Obtain_ews.then((value) => {
+            if (patient_info.length == value.length) {
+              patient_details(value);
             }
           });
           const Obtain_vitals = new Promise((resolve, reject) => {
@@ -316,12 +322,6 @@ function firebase_Data_retrieval(ref_doc_id) {
                   }
                 });
               });
-            }
-          });
-
-          Obtain_ews.then((value) => {
-            if (patient_info.length == value.length) {
-              patient_details(value);
             }
           });
 
@@ -1067,20 +1067,20 @@ function createRRchart(rr, ID) {
   function randomData() {
     var value = rrData[counter % rrData.length];
     counter++;
-    return { value: [counter, value] };
+    return { value: [counter % rrData.length, value] };
   }
   console.log("[dashboard-custom.js] rrdata length", rrData.length);
   var data = [];
   try {
-    for (var i = 0; i < rrData.length; i++) {
+    for (var i = 1; i < rrData.length; i++) {
       data.push(randomData());
     }
   } catch (e) {
     console.error("[dashboard-custom.js] RRData.length error:", e);
   }
   let option;
-  chart.clear();
   if (rrData.length < 125) {
+    chart.clear();
     option = {
       title: {
         text: "WAITING FOR VALID RR",

@@ -61,5 +61,7 @@ Features:
 
 - Added Listerns to both dashborad page and live page.
 - Added empty string handling for threshold_trigers
+- Added CSS to fit it in TV Screen
+- Resolved Issue with EWS Score
 
 RELEASE DATE: 24-03-2026

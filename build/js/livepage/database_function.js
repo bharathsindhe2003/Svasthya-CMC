@@ -227,8 +227,8 @@ function init_echarts() {
       ecg_min = fb.database().ref().child("patientecgdata").child(id);
       ppg_min = fb.database().ref().child("patientppgdata").child(id);
       rr_min = fb.database().ref().child("patientrrdata").child(id);
-      ref_valid = fb.database().ref().child("patientlivedata").child(id).limitToLast(1);
-      ews = fb.database().ref().child("EWS").child(id).limitToLast(1);
+      ref_valid = fb.database().ref().child("patientlivedata").child(id).orderByKey().limitToLast(1);
+      ews = fb.database().ref().child("EWS").child(id).orderByKey().limitToLast(1);
       patients = fb.database().ref().child("patients").child(id);
 
       const loadHistoricalWaveforms = function (timestamp) {
