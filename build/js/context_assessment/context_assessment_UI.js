@@ -757,21 +757,37 @@ function RR_data(LiveRRValues, date, time, option1, value, rrdata, endzoom) {
   var value1;
   if ($("#context_rr").length) {
     echartLinecontext = echarts.init(document.getElementById("context_rr"));
-    RrData = rrdata;
+    RrData = Array.isArray(rrdata) ? rrdata : [];
   } else if ($("#LiveRRId").length) {
     echartLine = echarts.init(document.getElementById("LiveRRId"));
-    RrData = LiveRRValues;
+    RrData = Array.isArray(LiveRRValues) ? LiveRRValues : [];
   }
 
   console.log("[context_assessment_UI.js] RR_data called with RrData length:", RrData ? RrData.length : "null/undefined");
 
   var counter = 0;
 
+  function smoothRRSeries(points, windowSize) {
+    if (points.length < 3) return points;
+    var radius = Math.floor(windowSize / 2);
+    return points.map(function (point, index) {
+      var sum = 0;
+      var count = 0;
+      for (var innerIndex = Math.max(0, index - radius); innerIndex <= Math.min(points.length - 1, index + radius); innerIndex++) {
+        sum += points[innerIndex].value[1];
+        count++;
+      }
+      return {
+        value: [point.value[0], count ? sum / count : point.value[1]],
+      };
+    });
+  }
+
   function randomData() {
-    value1 = RrData[counter % RrData.length];
+    value1 = Number(RrData[counter % RrData.length]);
     counter++;
     return {
-      value: [counter % RrData.length, Math.round(value1)],
+      value: [counter % RrData.length, Number.isFinite(value1) ? value1 : 0],
     };
   }
   var data = [];
@@ -779,6 +795,7 @@ function RR_data(LiveRRValues, date, time, option1, value, rrdata, endzoom) {
     for (var i = 1; i < RrData.length; i++) {
       data.push(randomData());
     }
+    data = smoothRRSeries(data, 7);
   } catch (e) {
     console.error("[context_assessment_UI.js] RrData.length:", e);
   }
@@ -917,7 +934,8 @@ function RR_data(LiveRRValues, date, time, option1, value, rrdata, endzoom) {
         showSymbol: false,
         data: data,
         animation: false,
-        smooth: false,
+        smooth: 0.7,
+        sampling: "average",
         lineStyle: {
           color: "#FFFFFF",
           width: 1.6,

@@ -598,22 +598,38 @@ function RR_data_passing(LiveRrValues, rrdate, rrtime, option1, value, rrdata, e
   if (!$("#LiveRRId").length) return;
   try {
     const echartLine = echarts.init(document.getElementById("LiveRRId"));
-    var RrData = LiveRrValues;
+    var RrData = Array.isArray(LiveRrValues) ? LiveRrValues : [];
     var data = [];
     var value1;
     var counter = 0;
+    function smoothRRSeries(points, windowSize) {
+      if (points.length < 3) return points;
+      var radius = Math.floor(windowSize / 2);
+      return points.map(function (point, index) {
+        var sum = 0;
+        var count = 0;
+        for (var innerIndex = Math.max(0, index - radius); innerIndex <= Math.min(points.length - 1, index + radius); innerIndex++) {
+          sum += points[innerIndex].value[1];
+          count++;
+        }
+        return {
+          value: [point.value[0], count ? sum / count : point.value[1]],
+        };
+      });
+    }
     function randomData() {
       if (RrData.length === 0) return { value: [0, 0] };
-      value1 = RrData[counter % RrData.length];
+      value1 = Number(RrData[counter % RrData.length]);
       counter++;
       return {
-        value: [counter % RrData.length, Math.round(value1)],
+        value: [counter % RrData.length, Number.isFinite(value1) ? value1 : 0],
       };
     }
     try {
       for (var i = 1; i < RrData.length; i++) {
         data.push(randomData());
       }
+      data = smoothRRSeries(data, 7);
     } catch (e) {
       console.error("[live-custom.js] Error in processing RrData:", e);
     }
@@ -641,7 +657,12 @@ function RR_data_passing(LiveRrValues, rrdate, rrtime, option1, value, rrdata, e
       };
     } else {
       option = {
-        grid: { top: 5, left: 10, right: 10, bottom: 52 },
+        grid: {
+          top: 5,
+          left: 40,
+          right: 40,
+          bottom: 52,
+        },
         toolbox: {
           orient: "vertical",
           right: 5,
@@ -753,7 +774,8 @@ function RR_data_passing(LiveRrValues, rrdate, rrtime, option1, value, rrdata, e
             //hoverAnimation: false,
             data: data,
             animation: false,
-            smooth: true,
+            smooth: 0.7,
+            sampling: "average",
             lineStyle: {
               color: "#FFFFFF",
               width: 1.6,
@@ -767,7 +789,26 @@ function RR_data_passing(LiveRrValues, rrdate, rrtime, option1, value, rrdata, e
         ],
       };
     }
-    echartLine.setOption(option, true);
+    if ($("#context_rr").length && echartLinecontext) {
+      // console.log("[live-custom.js] Setting option for context RR");
+      echartLinecontext.setOption(option, true);
+      if (endzoom !== 0) {
+        echartLinecontext.dispatchAction({
+          type: "dataZoom",
+          endValue: endzoom,
+        });
+      }
+    } else if ($("#LiveRRId").length) {
+      // console.log("[live-custom.js] Setting option for Live RR");
+      echartLine.setOption(option, true);
+      if (endzoom !== 0) {
+        echartLine.dispatchAction({
+          type: "dataZoom",
+          endValue: endzoom,
+        });
+      }
+    }
+    // echartLine.setOption(option, true);
   } catch (e) {
     console.error("[live-custom.js] Error in RR_data_passing:", e);
   }

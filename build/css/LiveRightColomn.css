@@ -556,6 +556,16 @@ iframe {
   box-sizing: border-box;
 }
 
+.live-vitals-grid__row--center {
+  text-align: center;
+}
+
+.live-vitals-grid__row--center > [class*="col-"] {
+  float: none;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .left_col {
   transition: width 0.25s ease;
 }
