@@ -135,11 +135,11 @@ export function firebase(min_time, max_time, localarray, trim) {
             snapshot.forEach((data) => {
               var tme_in_ms = data.key * 1000;
               threshold_triggers_timestamps.push([parseInt(tme_in_ms), parseInt(5)]);
-              history_threshold_triggers(min_time, max_time, threshold_triggers_timestamps, id);
             });
           } else {
             console.log("[history_fb_module.js] No threshold triggers data available for the given time range.");
           }
+          history_threshold_triggers(min_time, max_time, threshold_triggers_timestamps, id);
         }),
       ]).then(() => {
         const loader = document.querySelector(".loader");

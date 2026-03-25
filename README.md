@@ -63,5 +63,7 @@ Features:
 - Added empty string handling for threshold_trigers
 - Added CSS to fit it in TV Screen
 - Resolved Issue with EWS Score
+- undefined getting displayed in dashboard for new created patients - Issue resolved
+- no chart getting ploted for Alert threshold - Issue resolved
 
 RELEASE DATE: 24-03-2026
