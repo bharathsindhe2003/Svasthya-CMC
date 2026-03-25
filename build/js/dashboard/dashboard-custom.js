@@ -1172,7 +1172,17 @@ function refreshvitals(hr, bp, temp, rr, spo, ID) {
   var tempv = document.getElementById(tempId);
 
   console.log("[dashboard-custom.js] in refresh vitals", hr, bp, temp, rr, spo, ID);
-  console.log("[dashboard-custom.js] id in refresh vitals", hrId, bpId, spoId, rrId, tempId);
+  
+  function formatValue(val) {
+    return val === 0 || val ? val : "--";
+  }
+  
+  hr = formatValue(hr);
+  bp = formatValue(bp);
+  rr = formatValue(rr);
+  spo = formatValue(spo);
+  temp = formatValue(temp);
+  console.log("[dashboard-custom.js] in refresh vitals after", hr, bp, temp, rr, spo, ID);
 
   if (hrv) hrv.textContent = hr + " bpm";
   if (bpv) bpv.textContent = bp + " mmHg";
