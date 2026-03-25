@@ -1172,13 +1172,16 @@ function refreshvitals(hr, bp, temp, rr, spo, ID) {
   var tempv = document.getElementById(tempId);
 
   console.log("[dashboard-custom.js] in refresh vitals", hr, bp, temp, rr, spo, ID);
-  
+
   function formatValue(val) {
     return val === 0 || val ? val : "--";
   }
-  
+  function formatValueV2(val) {
+    return val === 0 || val ? val : "--/--";
+  }
+
   hr = formatValue(hr);
-  bp = formatValue(bp);
+  bp = formatValueV2(bp);
   rr = formatValue(rr);
   spo = formatValue(spo);
   temp = formatValue(temp);
