@@ -77,15 +77,14 @@ if (id && id != null && id != undefined) {
     gender = patient_data1.gender == "" ? (gender = "--") : (gender = patient_data1.gender);
     mobile = patient_data1.mobile == "" ? (mobile = "--") : (mobile = patient_data1.mobile);
     try {
-      document.getElementById("PatientName").innerHTML = "Name: " + patientname;
-      document.getElementById("PatientGender").innerHTML = "Gender: " + gender;
-
-      document.getElementById("PatientAge").innerHTML = "Age: " + age;
-      document.getElementById("PatientHeight").innerHTML = "Height: " + height;
-      document.getElementById("PatientWeight").innerHTML = "Weight: " + weight;
-      document.getElementById("PatientAilments").innerHTML = "Ailments: " + ailment;
-      document.getElementById("PatientEmail").innerHTML = "Email Id: " + email;
-      document.getElementById("PatientMob").innerHTML = "Mob No: " + mobile;
+      if (document.getElementById("PatientName")) document.getElementById("PatientName").innerHTML = "Name: " + patientname;
+      if (document.getElementById("PatientGender")) document.getElementById("PatientGender").innerHTML = "Gender: " + gender;
+      if (document.getElementById("PatientAge")) document.getElementById("PatientAge").innerHTML = "Age: " + age;
+      if (document.getElementById("PatientHeight")) document.getElementById("PatientHeight").innerHTML = "Height: " + height;
+      if (document.getElementById("PatientWeight")) document.getElementById("PatientWeight").innerHTML = "Weight: " + weight;
+      if (document.getElementById("PatientAilments")) document.getElementById("PatientAilments").innerHTML = "Ailments: " + ailment;
+      if (document.getElementById("PatientEmail")) document.getElementById("PatientEmail").innerHTML = "Email Id: " + email;
+      if (document.getElementById("PatientMob")) document.getElementById("PatientMob").innerHTML = "Mob No: " + mobile;
     } catch (e) {
       console.error("Unable to set innerHTML", e);
     }

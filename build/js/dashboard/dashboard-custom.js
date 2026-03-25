@@ -16,6 +16,9 @@ const waveformCache = {
   RR: new Map(),
 };
 const chartRegistry = new Map();
+const EWS_FRESHNESS_WINDOW_SECONDS = 60;
+const DEFAULT_EWS_VALUE = "--";
+const DEFAULT_EWS_COLOR = "0";
 const PATIENT_ID_INDEX = 4;
 const PATIENT_EWS_VALUE_INDEX = 5;
 const PATIENT_EWS_COLOR_INDEX = 6;
@@ -84,22 +87,28 @@ function firebase_Data_retrieval(ref_doc_id) {
                 .orderByKey()
                 .limitToLast(1)
                 .on("value", function (snapshot) {
-                  let nextEwsValue = "--";
-                  let nextEwsColor = "0";
-
+                  let nextEwsValue = DEFAULT_EWS_VALUE;
+                  let nextEwsColor = DEFAULT_EWS_COLOR;
+                  // in seconds
+                  let nexttimestampdiffernce = null;
                   if (snapshot.val() != null) {
                     snapshot.forEach((data) => {
                       let ews_string = JSON.stringify(data.val(), null, 2);
                       let ews_json = JSON.parse(ews_string);
                       nextEwsValue = ews_json.ews_score.toString();
                       nextEwsColor = ews_json.color.toString();
+                      nexttimestampdiffernce = ews_json.timestamp ? Date.now() / 1000 - Number(ews_json.timestamp) : null;
+                      console.log("EWS nexttimestampdiffernce in sec", currentPatientId, nexttimestampdiffernce);
                     });
                   }
 
-                  currentPatient[PATIENT_EWS_VALUE_INDEX] = nextEwsValue;
-                  currentPatient[PATIENT_EWS_COLOR_INDEX] = nextEwsColor;
+                  const hasFreshEws = nexttimestampdiffernce !== null && nexttimestampdiffernce < EWS_FRESHNESS_WINDOW_SECONDS;
+                  const displayEwsValue = hasFreshEws ? nextEwsValue : DEFAULT_EWS_VALUE;
+                  const displayEwsColor = hasFreshEws ? nextEwsColor : DEFAULT_EWS_COLOR;
 
-                  refreshews(currentPatient[PATIENT_EWS_VALUE_INDEX], currentPatient[PATIENT_EWS_COLOR_INDEX], currentPatientId);
+                  currentPatient[PATIENT_EWS_VALUE_INDEX] = displayEwsValue;
+                  currentPatient[PATIENT_EWS_COLOR_INDEX] = displayEwsColor;
+                  refreshews(displayEwsValue, displayEwsColor, currentPatientId);
                   // console.log("[dashboard-custom.js]  refreshews", currentPatient[PATIENT_EWS_VALUE_INDEX], currentPatient[PATIENT_EWS_COLOR_INDEX], currentPatientId);
 
                   if (!loadedEwsPatients.has(currentPatientId)) {
@@ -189,13 +198,14 @@ function firebase_Data_retrieval(ref_doc_id) {
               const currentPatientId = currentPatient[PATIENT_ID_INDEX];
 
               ecg_list.child(currentPatientId).on("value", function (snapshot) {
-                if (snapshot.val() != null) {
+                const ecgData = snapshot.val() || {};
+                if (ecgData != null) {
                   // if (validTimestamp[patient_info[i][4]] === snapshot.key) {
-                  let ecg_string = JSON.stringify(snapshot.val(), null, 2);
-                  let ecg_json = JSON.parse(ecg_string);
-                  let type = ecg_json.type;
-                  let ecg1 = ecg_json.ecg;
-                  let timestamp = ecg_json.timestamp;
+                  // let ecg_string = JSON.stringify(ecgData, null, 2);
+                  // let ecg_json = JSON.parse(ecg_string);
+                  let type = ecgData.type;
+                  let ecg1 = ecgData.ecg;
+                  let timestamp = ecgData.timestamp;
 
                   if (type == "noise" || type == "flat") {
                     currentPatient[PATIENT_ECG_INDEX] = [];
@@ -239,11 +249,11 @@ function firebase_Data_retrieval(ref_doc_id) {
                 const currentPatientId = currentPatient[PATIENT_ID_INDEX];
 
                 ppg_list.child(currentPatientId).on("value", function (snapshot) {
-                  // if (validTimestamp[patient_info[i][4]] === snapshot.key) {
-                  if (snapshot.val() != null) {
-                    let ppg_string = JSON.stringify(snapshot.val(), null, 2);
-                    let ppg_json = JSON.parse(ppg_string);
-                    let ppg_data = ppg_json.ppg;
+                  const ppgData = snapshot.val() || {};
+                  if (ppgData != null) {
+                    // let ppg_string = JSON.stringify(ppgData, null, 2);
+                    // let ppg_json = JSON.parse(ppg_string);
+                    let ppg_data = ppgData.ppg;
 
                     let result1;
                     if (typeof ppg_data === "string") {
@@ -259,7 +269,7 @@ function firebase_Data_retrieval(ref_doc_id) {
 
                     currentPatient[PATIENT_PPG_INDEX] = final_ppg;
 
-                    var f_ecgtimestamp = ppg_json.timestamp;
+                    var f_ecgtimestamp = ppgData.timestamp;
                     var date = new Date(f_ecgtimestamp * 1000);
                     var ecgdate = ("0" + date.getDate()).slice(-2) + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" + date.getFullYear();
                     var ecgtime = ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2);
@@ -288,21 +298,13 @@ function firebase_Data_retrieval(ref_doc_id) {
                 const currentPatientId = currentPatient[PATIENT_ID_INDEX];
 
                 rr_list.child(currentPatientId).on("value", function (snapshot) {
+                  const rrdata = snapshot.val();
                   if (snapshot.val() != null) {
-                    // if (validTimestamp[patient_info[i][4]] === snapshot.key) {
-                    // console.log("[dashboard-custom.js] RR data found for ID:", currentPatientId);
-                    // console.log("[dashboard-custom.js] RR Snapshot value: ", snapshot.val());
-
-                    let rr_string = JSON.stringify(snapshot.val(), null, 2);
-                    let rr_json = JSON.parse(rr_string);
-                    let rr_data = rr_json.res;
-                    // console.log("[dashboard-custom.js] RR data:", rr_data);
-                    let rr_timestamp = rr_json.timestamp;
+                    let rr_data = rrdata.res;
+                    let rr_timestamp = rrdata.timestamp;
 
                     let result1 = rr_data.replace(/\,/g, "").trim();
-                    //  console.log("[dashboard-custom.js] RR data from replace", result1);
                     var final_rr = result1.split(" ").map(Number);
-                    // console.log("[dashboard-custom.js] Parsed RR data:", final_rr);
                     currentPatient[PATIENT_RR_WAVE_INDEX] = final_rr;
 
                     var date = new Date(rr_timestamp * 1000);
@@ -325,25 +327,118 @@ function firebase_Data_retrieval(ref_doc_id) {
             }
           });
 
+          // Use lasttimestamp from patientlivedata logic
+          // for (let i = 0; i < patient_info.length; i++) {
+          //   const patientId = patient_info[i][4];
+          //   // console.log("LOOPING", patientId);
+          //   const ref_valid = fb.database().ref().child("patientlivedata").child(patientId).orderByKey().limitToLast(1); //1 minute data
+          //   ref_valid.once("value").then((refValidSnapshot) => {
+          //     const data = refValidSnapshot.val() || {};
+          //     const key = Object.keys(data)[0];
+          //     // vitals
+          //     const data1 = data[key] || {};
+          //     const lastTimestamp = data1.timestamp;
+          //     console.log("LOOPING valid data", patientId, data, lastTimestamp);
+          //     let respiration_rate = data1.rr === "00" || data1.rr === "0" || data1.rr === 0 ? "--" : data1.rr;
+
+          //     let heart_rate = data1.hr === "00" || data1.hr === "0" || data1.hr === 0 ? "--" : data1.hr;
+          //     let spo2 = data1.spo === "00" || data1.spo === "0" || data1.spo === 0 ? "--" : data1.spo;
+          //     let bp_text = data1.bp === 0 / 0 || data1.bp === "0/0" || data1.bp === "--/--" ? "--/--" : data1.bp;
+
+          //     let oldtemp = data1.temp;
+          //     let parsedTemp = parseFloat(String(oldtemp).replace(/[^0-9.+-]/g, ""));
+          //     let temp = isNaN(parsedTemp) ? "--" : parsedTemp;
+
+          //     console.log("LOOPING vitals", heart_rate, bp_text, oldtemp, respiration_rate, spo2, patientId);
+          //     refreshvitals(heart_rate, bp_text, temp, respiration_rate, spo2, patientId);
+
+          //     const ecg_min = fb.database().ref().child("patientecgdata").child(patientId).child(lastTimestamp);
+          //     const ppg_min = fb.database().ref().child("patientppgdata").child(patientId).child(lastTimestamp);
+          //     const rr_min = fb.database().ref().child("patientrrdata").child(patientId).child(lastTimestamp);
+          //     Promise.all([ecg_min.once("value"), ppg_min.once("value"), rr_min.once("value")])
+          //       .then(([ecgSnapshot, ppgSnapshot, rrSnapshot]) => {
+          //         // ecg
+          //         const ecgData = ecgSnapshot.val() || {};
+          //         const ecg = ecgData.payload;
+          //         const type = ecgData.type;
+          //         let final_min_ecg = [];
+
+          //         if (typeof ecg === "string" && type !== "noise" && type !== "flat") {
+          //           let ecg_result = ecg.replace(/\]\[/g, ", ").trim();
+          //           ecg_result = ecg_result.replace(/\]/g, "").trim();
+          //           ecg_result = ecg_result.replace(/\[/g, "").trim();
+          //           final_min_ecg = ecg_result
+          //             .split(",")
+          //             .map(Number)
+          //             .filter((value) => !isNaN(value));
+          //         }
+
+          //         if (final_min_ecg.length > 625) {
+          //           final_min_ecg = final_min_ecg.slice(-625);
+          //         }
+          //         createECGchart(final_min_ecg, patientId);
+
+          //         // ppg
+          //         const ppgDataValue = ppgSnapshot.val() || {};
+          //         // const latestPPGEntry = getLatestSnapshotEntry(ppgDataValue);
+          //         // const PPGkey = latestPPGEntry.key;
+          //         // const latestPPG = latestPPGEntry.value;
+          //         const ppgdata = ppgDataValue.payload;
+          //         let final_ppg = [];
+
+          //         if (typeof ppgdata === "string") {
+          //           let result1 = ppgdata.replace(/\,/g, "").trim();
+          //           final_ppg = result1
+          //             .split(" ")
+          //             .map(Number)
+          //             .filter((value) => !isNaN(value));
+          //         }
+
+          //         if (final_ppg.length > 500) {
+          //           final_ppg = final_ppg.slice(-500);
+          //         }
+          //         createPPGchart(final_ppg, patientId);
+
+          //         // RR
+          //         const rrDataValue = rrSnapshot.val() || {};
+          //         const rrdata = rrDataValue.payload;
+          //         let final_rr = [];
+
+          //         if (typeof rrdata === "string") {
+          //           final_rr = rrdata
+          //             .replace(/,/g, " ")
+          //             .trim()
+          //             .split(/\s+/)
+          //             .map(Number)
+          //             .filter((value) => Number.isFinite(value));
+          //         }
+
+          //         if (final_rr.length > 125) {
+          //           final_rr = final_rr.slice(-125);
+          //         }
+          //         createRRchart(final_rr, patientId);
+          //       })
+          //       .catch((error) => {
+          //         console.error("[dashboard-custom.js] Error retrieving chart/vital snapshots for patient:", patientId, error);
+          //       });
+          //   });
+          // }
+          // Use limittolast logic
           for (let i = 0; i < patient_info.length; i++) {
             const patientId = patient_info[i][4];
             // console.log("LOOPING", patientId);
-
-            const ecg_min = fb.database().ref().child("patientecgdata").child(patientId).orderByKey().limitToLast(1); //1 minute data
-            const ppg_min = fb.database().ref().child("patientppgdata").child(patientId).orderByKey().limitToLast(1); //1 minute data
-            const rr_min = fb.database().ref().child("patientrrdata").child(patientId).orderByKey().limitToLast(1); //1 minute data
             const ref_valid = fb.database().ref().child("patientlivedata").child(patientId).orderByKey().limitToLast(1); //1 minute data
-
+            const ecg_min = fb.database().ref().child("patientecgdata").child(patientId).orderByKey().limitToLast(1);
+            const ppg_min = fb.database().ref().child("patientppgdata").child(patientId).orderByKey().limitToLast(1);
+            const rr_min = fb.database().ref().child("patientrrdata").child(patientId).orderByKey().limitToLast(1);
             Promise.all([ecg_min.once("value"), ppg_min.once("value"), rr_min.once("value"), ref_valid.once("value")])
               .then(([ecgSnapshot, ppgSnapshot, rrSnapshot, refValidSnapshot]) => {
+                const data = refValidSnapshot.val() || {};
+                const key = Object.keys(data)[0];
                 // vitals
-                // const validTimestamp = dataKey;
-                // console.log("[dashboard-custom.js] validTimestamp ", validTimestamp);
-                const data = refValidSnapshot.val();
-                const latestValidEntry = getLatestSnapshotEntry(data);
-                const validTimestamp = latestValidEntry.key;
-                // console.log("[dashboard-custom.js] validTimestamp ", patientId, validTimestamp);
-                const data1 = latestValidEntry.value || {};
+                const data1 = data[key] || {};
+                const lastTimestamp = data1.timestamp;
+                console.log("LOOPING valid data", patientId, data, lastTimestamp);
                 let respiration_rate = data1.rr === "00" || data1.rr === "0" || data1.rr === 0 ? "--" : data1.rr;
 
                 let heart_rate = data1.hr === "00" || data1.hr === "0" || data1.hr === 0 ? "--" : data1.hr;
@@ -354,15 +449,13 @@ function firebase_Data_retrieval(ref_doc_id) {
                 let parsedTemp = parseFloat(String(oldtemp).replace(/[^0-9.+-]/g, ""));
                 let temp = isNaN(parsedTemp) ? "--" : parsedTemp;
 
-                // console.log("LOOPING vitals", heart_rate, bp_text, oldtemp, respiration_rate, spo2, patientId);
+                console.log("LOOPING vitals", heart_rate, bp_text, oldtemp, respiration_rate, spo2, patientId);
                 refreshvitals(heart_rate, bp_text, temp, respiration_rate, spo2, patientId);
                 // ecg
-                const ecgData = ecgSnapshot.val();
-                const latestECGEntry = getLatestSnapshotEntry(ecgData);
-                const ECGkey = latestECGEntry.key;
-                const latestECG = latestECGEntry.value;
-                const ecg = latestECG ? latestECG.payload : null;
-                const type = latestECG ? latestECG.type : null;
+                const ecgData = ecgSnapshot.val() || {};
+                const ecgKey = Object.keys(ecgData)[0];
+                const ecg = ecgData[ecgKey].payload;
+                const type = ecgData[ecgKey].type;
                 let final_min_ecg = [];
 
                 if (typeof ecg === "string" && type !== "noise" && type !== "flat") {
@@ -375,22 +468,18 @@ function firebase_Data_retrieval(ref_doc_id) {
                     .filter((value) => !isNaN(value));
                 }
 
-                // console.log("LOOPING ECG", patientId, final_min_ecg);
-                // console.log("[dashboard-custom.js] validTimestamp ECG", patientId, ECGkey, shouldRenderWaveform(validTimestamp, ECGkey));
-                if (shouldRenderWaveform(validTimestamp, ECGkey)) {
-                  if (final_min_ecg.length > 625) {
-                    final_min_ecg = final_min_ecg.slice(-625);
-                  }
-                  createECGchart(final_min_ecg, patientId);
-                } else {
-                  createECGchart([], patientId);
+                if (final_min_ecg.length > 625) {
+                  final_min_ecg = final_min_ecg.slice(-625);
                 }
+                createECGchart(final_min_ecg, patientId);
+
                 // ppg
-                const ppgDataValue = ppgSnapshot.val();
-                const latestPPGEntry = getLatestSnapshotEntry(ppgDataValue);
-                const PPGkey = latestPPGEntry.key;
-                const latestPPG = latestPPGEntry.value;
-                const ppgdata = latestPPG ? latestPPG.payload : undefined;
+                const ppgDataValue = ppgSnapshot.val() || {};
+                // const latestPPGEntry = getLatestSnapshotEntry(ppgDataValue);
+                // const PPGkey = latestPPGEntry.key;
+                // const latestPPG = latestPPGEntry.value;
+                const ppgDataKey = Object.keys(ppgDataValue)[0];
+                const ppgdata = ppgDataValue[ppgDataKey].payload;
                 let final_ppg = [];
 
                 if (typeof ppgdata === "string") {
@@ -401,60 +490,30 @@ function firebase_Data_retrieval(ref_doc_id) {
                     .filter((value) => !isNaN(value));
                 }
 
-                // console.log("LOOPING PPG", final_ppg);
-                // console.log("[dashboard-custom.js] validTimestamp PPG", patientId, PPGkey, shouldRenderWaveform(validTimestamp, PPGkey));
-                if (shouldRenderWaveform(validTimestamp, PPGkey)) {
-                  if (final_ppg.length > 500) {
-                    final_ppg = final_ppg.slice(-500);
-                  }
-                  createPPGchart(final_ppg, patientId);
-                } else {
-                  createPPGchart([], patientId);
+                if (final_ppg.length > 500) {
+                  final_ppg = final_ppg.slice(-500);
                 }
+                createPPGchart(final_ppg, patientId);
 
                 // RR
-                const rrDataValue = rrSnapshot.val();
-                const latestRREntry = getLatestSnapshotEntry(rrDataValue);
-                const RRkey = latestRREntry.key;
-                const latestRR = latestRREntry.value;
-                const rrdata = latestRR ? latestRR.payload : undefined;
+                const rrDataValue = rrSnapshot.val() || {};
+                const rrDataKey = Object.keys(rrDataValue)[0];
+                const rrdata = rrDataValue[rrDataKey].payload;
                 let final_rr = [];
 
                 if (typeof rrdata === "string") {
-                  // Process the nested array structure
-                  let cleanedData = rrdata.replace(/\]\[/g, ", ").replace(/\[/g, "").replace(/\]/g, "");
-                  let allValues = cleanedData
-                    .split(",")
-                    .map((num) => parseFloat(num.trim()))
-                    .filter((num) => !isNaN(num));
-
-                  // Filter out extreme values that cause display issues
-                  final_rr = allValues.filter((value) => {
-                    return value > -1000 && value < 1000;
-                  });
-
-                  // If we have too few values after filtering, take a sample
-                  if (final_rr.length < 50 && allValues.length > 50) {
-                    const step = Math.max(1, Math.floor(allValues.length / 200));
-                    final_rr = [];
-                    for (let j = 0; j < allValues.length; j += step) {
-                      if (allValues[j] > -1000 && allValues[j] < 1000) {
-                        final_rr.push(allValues[j]);
-                      }
-                    }
-                  }
+                  final_rr = rrdata
+                    .replace(/,/g, " ")
+                    .trim()
+                    .split(/\s+/)
+                    .map(Number)
+                    .filter((value) => Number.isFinite(value));
                 }
 
-                // console.log("LOOPING RR", patientId, final_rr);
-                // console.log("[dashboard-custom.js] validTimestamp RR", patientId, RRkey, shouldRenderWaveform(validTimestamp, RRkey));
-                if (shouldRenderWaveform(validTimestamp, RRkey)) {
-                  if (final_rr.length > 125) {
-                    final_rr = final_rr.slice(-125);
-                  }
-                  createRRchart(final_rr, patientId);
-                } else {
-                  createRRchart([], patientId);
+                if (final_rr.length > 125) {
+                  final_rr = final_rr.slice(-125);
                 }
+                createRRchart(final_rr, patientId);
               })
               .catch((error) => {
                 console.error("[dashboard-custom.js] Error retrieving chart/vital snapshots for patient:", patientId, error);
@@ -478,7 +537,7 @@ function refreshews(ews_value, ews_color, ID) {
 
   var ews_v = document.getElementById(ewsvId);
   var ews_c = document.getElementById(ewscId);
-  // console.log("[dashboard-custom.js]  refreshews", ewsvId, ews_v, ews_color);
+  console.log("[dashboard-custom.js]  refreshews", ID, ews_value, ews_color);
   if (ews_v === null) {
   } else {
     ews_v.textContent = ews_value;
@@ -500,32 +559,6 @@ function getOrCreateChart(containerId) {
 
   chartRegistry.set(containerId, chart);
   return chart;
-}
-
-function getLatestSnapshotEntry(snapshotValue) {
-  if (!snapshotValue || typeof snapshotValue !== "object") {
-    return { key: null, value: null };
-  }
-
-  const keys = Object.keys(snapshotValue);
-  if (keys.length === 0) {
-    return { key: null, value: null };
-  }
-
-  const latestKey = keys[keys.length - 1];
-
-  return {
-    key: latestKey,
-    value: snapshotValue[latestKey] || null,
-  };
-}
-
-function shouldRenderWaveform(validTimestamp, waveformKey) {
-  if (validTimestamp == null || waveformKey == null) {
-    return false;
-  }
-
-  return String(validTimestamp) === String(waveformKey);
 }
 
 function resizeAllCharts() {
@@ -1079,8 +1112,8 @@ function createRRchart(rr, ID) {
     console.error("[dashboard-custom.js] RRData.length error:", e);
   }
   let option;
+  chart.clear();
   if (rrData.length < 125) {
-    chart.clear();
     option = {
       title: {
         text: "WAITING FOR VALID RR",
@@ -1174,7 +1207,8 @@ function refreshvitals(hr, bp, temp, rr, spo, ID) {
   console.log("[dashboard-custom.js] in refresh vitals", hr, bp, temp, rr, spo, ID);
 
   function formatValue(val) {
-    return val === 0 || val ? val : "--";
+    const value = Number(val);
+    return value !== 0 && !isNaN(value) ? val : "--";
   }
   function formatValueV2(val) {
     return val === 0 || val ? val : "--/--";
