@@ -55,7 +55,7 @@ RELEASE DATE: 23-03-2026
 
 <hr>
 
-4. Version Update: 0.1.8
+5. Version Update: 0.1.8
 
 Features:
 
@@ -65,5 +65,15 @@ Features:
 - Resolved Issue with EWS Score
 - undefined getting displayed in dashboard for new created patients - Issue resolved
 - no chart getting ploted for Alert threshold - Issue resolved
+
+RELEASE DATE: 24-03-2026
+
+<hr>
+
+6. Version Update: 0.1.10
+
+Features:
+
+- Resolved issue related EWS score
 
 RELEASE DATE: 24-03-2026

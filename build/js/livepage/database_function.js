@@ -249,6 +249,23 @@ function init_echarts() {
             const data1 = live;
             console.log("[database_function.js] Live data:", data1);
             applyVitalsToUi(data1);
+            fb.database()
+              .ref()
+              .child("EWS")
+              .child(id)
+              .orderByKey()
+              .limitToLast(1)
+              .once("value", (snapshot) => {
+                const data = snapshot.val() || {};
+                const key = Object.keys(data)[0];
+                const timestamp = data[key].timestamp;
+                if (timestamp != null && patientlivedata7s_timestamp != null) {
+                  const nexttimestampdiffernce = patientlivedata7s_timestamp - timestamp;
+                  if (nexttimestampdiffernce > 70) {
+                    ews_value_passing(NoData);
+                  }
+                }
+              });
           } else {
             // First snapshot from live vitals stream – treat as baseline.
             // Subsequent changes will override the default/ref_valid data.

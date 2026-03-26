@@ -90,25 +90,25 @@ function firebase_Data_retrieval(ref_doc_id) {
                   let nextEwsValue = DEFAULT_EWS_VALUE;
                   let nextEwsColor = DEFAULT_EWS_COLOR;
                   // in seconds
-                  let nexttimestampdiffernce = null;
+                  // let nexttimestampdiffernce = null;
                   if (snapshot.val() != null) {
                     snapshot.forEach((data) => {
                       let ews_string = JSON.stringify(data.val(), null, 2);
                       let ews_json = JSON.parse(ews_string);
                       nextEwsValue = ews_json.ews_score.toString();
                       nextEwsColor = ews_json.color.toString();
-                      nexttimestampdiffernce = ews_json.timestamp ? Date.now() / 1000 - Number(ews_json.timestamp) : null;
-                      console.log("EWS nexttimestampdiffernce in sec", currentPatientId, nexttimestampdiffernce);
+                      // nexttimestampdiffernce = ews_json.timestamp ? Date.now() / 1000 - Number(ews_json.timestamp) : null;
+                      // console.log("EWS nexttimestampdiffernce in sec", currentPatientId, nexttimestampdiffernce);
                     });
                   }
 
-                  const hasFreshEws = nexttimestampdiffernce !== null && nexttimestampdiffernce < EWS_FRESHNESS_WINDOW_SECONDS;
-                  const displayEwsValue = hasFreshEws ? nextEwsValue : DEFAULT_EWS_VALUE;
-                  const displayEwsColor = hasFreshEws ? nextEwsColor : DEFAULT_EWS_COLOR;
+                  // const hasFreshEws = nexttimestampdiffernce !== null && nexttimestampdiffernce < EWS_FRESHNESS_WINDOW_SECONDS;
+                  // const displayEwsValue = hasFreshEws ? nextEwsValue : DEFAULT_EWS_VALUE;
+                  // const displayEwsColor = hasFreshEws ? nextEwsColor : DEFAULT_EWS_COLOR;
 
-                  currentPatient[PATIENT_EWS_VALUE_INDEX] = displayEwsValue;
-                  currentPatient[PATIENT_EWS_COLOR_INDEX] = displayEwsColor;
-                  refreshews(displayEwsValue, displayEwsColor, currentPatientId);
+                  currentPatient[PATIENT_EWS_VALUE_INDEX] = nextEwsValue;
+                  currentPatient[PATIENT_EWS_COLOR_INDEX] = nextEwsColor;
+                  refreshews(nextEwsValue, nextEwsColor, currentPatientId);
                   // console.log("[dashboard-custom.js]  refreshews", currentPatient[PATIENT_EWS_VALUE_INDEX], currentPatient[PATIENT_EWS_COLOR_INDEX], currentPatientId);
 
                   if (!loadedEwsPatients.has(currentPatientId)) {
@@ -132,13 +132,13 @@ function firebase_Data_retrieval(ref_doc_id) {
             for (let i = 0; i < patient_info.length; i++) {
               const currentPatient = patient_info[i];
               const currentPatientId = currentPatient[PATIENT_ID_INDEX];
-
               vital_list.child(currentPatientId).on("value", (snapshot) => {
                 let patientId = currentPatientId;
+                let patientlivedata7s_timestamp = null;
 
                 if (snapshot.val() != null) {
                   patientId = snapshot.val().userId || currentPatientId;
-
+                  patientlivedata7s_timestamp = snapshot.val().timestamp || null;
                   currentPatient[PATIENT_HR_INDEX] = snapshot.val().hr === "00" || snapshot.val().hr === "0" || snapshot.val().hr === 0 ? "--" : snapshot.val().hr;
                   if (snapshot.val().bp == "0/0") {
                     currentPatient[PATIENT_BP_INDEX] = "--/--";
@@ -184,6 +184,21 @@ function firebase_Data_retrieval(ref_doc_id) {
                   currentPatient[PATIENT_SPO2_INDEX],
                   patientId,
                 );
+                ews_list
+                  .child(currentPatientId)
+                  .orderByKey()
+                  .limitToLast(1)
+                  .once("value", (snapshot) => {
+                    const data = snapshot.val() || {};
+                    const key = Object.keys(data)[0];
+                    const timestamp = data[key].timestamp;
+                    if (timestamp != null && patientlivedata7s_timestamp != null) {
+                      const nexttimestampdiffernce = patientlivedata7s_timestamp - timestamp;
+                      if (nexttimestampdiffernce > 70) {
+                        refreshews("--", "0", currentPatientId);
+                      }
+                    }
+                  });
 
                 if (i == vitalinfo.length - 1) {
                   resolve(vitalinfo);
