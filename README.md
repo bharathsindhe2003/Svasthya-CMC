@@ -77,3 +77,13 @@ Features:
 - Resolved issue related EWS score
 
 RELEASE DATE: 24-03-2026
+
+<hr>
+
+7. Version Update: 0.1.11
+
+Features:
+
+- Update UI in dashborad and patient cards, Live page and Login page
+
+RELEASE DATE: 30-03-2026
