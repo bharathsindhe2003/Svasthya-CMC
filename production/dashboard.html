@@ -6,9 +6,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!--<link rel="icon" href="images/favicon.ico" type="image/ico" />-->
     <link rel="icon" href="images/svasthyaicon2.ico" type="image/ico" />
-
     <title>Svasthya | Dashboard</title>
     <!-- Bootstrap -->
     <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -28,7 +26,6 @@
     <link href="../build/css/incomingDialogbox.css" rel="stylesheet" />
     <link href="../build/css/lightbox.css" rel="stylesheet" />
     <!-- Custom Theme Style -->
-    <!--  <link href="../build/css/custom.min.css" rel="stylesheet"> -->
     <link href="../build/css/LeftandTopNavigation.css" rel="stylesheet" />
     <link href="../build/css/DashbordRightColomn.css" rel="stylesheet" />
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -39,7 +36,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-messaging.js"></script>
     <script type="module" src="../build/js/livepage/database_function.js"></script>
   </head>
-
   <body class="nav-md">
     <div class="container body">
       <div class="main_container">
@@ -51,7 +47,6 @@
               <a href="dashboard.html" class="site_title"><img src="images/svasthyaicon.png" width="55" height="55" /> <span>SVASTHYA &trade;</span></a>
               <a id="DashboardSubtitle" href="dashboard.html"></a>
             </div>
-
             <!-- Right: profile avatar, name & logout dropdown -->
             <div class="Righthand">
               <div class="profile-wrapper">
@@ -68,7 +63,6 @@
                 </div>
               </div>
             </div>
-
             <div id="myModal" class="modal">
               <!-- Modal content -->
               <div class="modal-content">
@@ -78,7 +72,6 @@
             </div>
           </div>
         </div>
-
         <!-- /top navigation -->
 
         <div id="loader">
@@ -90,7 +83,6 @@
       <div class="right_col" role="main">
         <div class="x_content">
           <audio id="alertSound" src="../build/assests/aduio2.mp3"></audio>
-
           <div id="p_details" class="patient_details"></div>
         </div>
       </div>
@@ -143,22 +135,14 @@
     <script src="../vendors/moment/min/moment.min.js"></script>
     <script src="../vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
     <script src="../vendors/echarts/dist/echarts.min.js"></script>
-    <!-- <script src="../vendors/echarts/map/js/world.js"></script> -->
     <script src="../vendors/jquery-sparkline/dist/jquery.sparkline.min.js"></script>
     <!-- Custom Theme Scripts -->
     <script type="module" src="../build/js/LeftandTopNavigation/LeftandTopNavigation.js"></script>
     <script type="module" src="../build/js/dashboard/dashboard-custom.js"></script>
     <script type="module" src="../build/js/utils/Threshold_triggers.js"></script>
-    <!-- <script type="module" src="../build/js/backend/incomingpopup.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- <script src="../build/js/videoCall/AgoraRTC_N-4.16.0.js"></script> -->
   </body>
   <script>
-    // console.log("Window Inner Width:", window.innerWidth);
-    // console.log("Window Inner Height:", window.innerHeight);
-    // let box = document.getElementById("box");
-
     function cardclick(id) {
       const key = "THRESHOLD_TRIGGERS";
       const data = JSON.parse(sessionStorage.getItem(key)) || {};

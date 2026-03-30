@@ -6,11 +6,8 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!--<link rel="icon" href="images/favicon.ico" type="image/ico" />-->
     <link rel="icon" href="images/svasthyaicon2.ico" type="image/ico" />
-
     <title>Svasthya | Context Assesment</title>
-
     <!-- Bootstrap -->
     <link href="../vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <!-- Font Awesome -->
@@ -26,71 +23,20 @@
     <link href="../vendors/jqvmap/dist/jqvmap.min.css" rel="stylesheet" />
     <!-- bootstrap-daterangepicker -->
     <link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
-
     <!-- Custom Theme Style -->
-
     <link href="../build/css/context_assment_LeftandTopNavigation.css" rel="stylesheet" />
     <link href="../build/css/context_assment_LiveRightColomn.css" rel="stylesheet" />
   </head>
-
   <body class="nav-md">
     <div class="container body">
       <div class="main_container">
-        <!-- <div class="col-md-3 left_col">
-          <div class="left_col scroll-view">
-            <div class="nav_title">
-              <a class="site_title"><img src="images/svasthyaicon.png" width="55" height="55" /> <span id="SvasthyaTitle">SVASTHYA &trade;</span></a>
-            </div> -->
         <div id="loader"></div>
-
-        <!--<div class="clearfix"></div>
-
-            menu profile quick info
-            <div id="left_colomn_details" class="left_colomn_details">
-              <div class="profile clearfix">
-                <div class="profile_pic">
-                  <img id="PatientImg" alt="..." class="img-circle profile_img" />
-                </div>
-                <div id="profile_info" class="profile_info">
-                  <h2 id="PatientName"></h2>
-                  <h2 id="PatientGender"></h2>
-                  <h2 id="PatientAge"></h2>
-                  <h2 id="PatientHeight"></h2>
-                  <h2 id="PatientWeight"></h2>
-                </div>
-                <div class="profile_info2">
-                  <h2 id="PatientAilments"></h2>
-                  <h2 id="PatientMob"></h2>
-                  <h2 id="PatientEmail"></h2>
-                </div>
-              </div>
-            </div>
-            <br />
-
-            sidebar menu
-            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
-              <div class="menu_section">
-                <ul class="nav side-menu"></ul>
-              </div>
-            </div>
-          </div>
-        </div> -->
-
-        <!-- top navigation -->
-        <!-- <div class="top_nav">
-          <div class="nav_menu">
-            <div class="Lefthand">
-              <p id="DoctorName"></p>
-            </div>
-          </div>
-        </div> -->
       </div>
       <div class="right_col" role="main">
         <div class="LiveSpecification">
           <div class="Live_context_assessment">
             <p id="ContextSymptomName"></p>
           </div>
-          <!-- Ews card -->
           <!-- Ews card -->
           <div class="col-md-12 col-sm-12 col-xs-12">
             <div id="context_ews_id" class="ews_card_js">
@@ -104,9 +50,7 @@
             </div>
           </div>
           <!-- /Ews card -->
-
           <div class="symtoms" id="symtoms"></div>
-
           <div class="container" style="display: flex; width: 100%; gap: 1rem; padding-bottom: 2rem; padding-left: 2rem; padding-right: 2rem; flex-direction: row; margin-bottom: 5rem">
             <!-- Left: Big charts 70% -->
             <div class="big-charts" style="flex: 0 0 70%; display: flex; flex-direction: column; gap: 1rem">
@@ -125,7 +69,6 @@
                 <div class="x_content"><div id="context_ecg" style="width: 100%; height: 200px"></div></div>
               </div>
               <!-- PPG -->
-              <!-- Hidden on initial load; shown via JS only for page == "1" -->
               <div class="ppg_timstamp" style="align-items: center; margin-bottom: 0.5rem">
                 <span>PPG Date: <label id="contextppgdate"></label></span>
                 <span style="margin: 0 1.5rem"></span>
@@ -136,7 +79,6 @@
                   <h2>Photoplethysmogram (PPG)</h2>
                   <div class="clearfix"></div>
                 </div>
-                <!-- Added Date/Time Row -->
                 <div class="x_content">
                   <div id="context_ppg" style="width: 100%; height: 200px"></div>
                 </div>
@@ -151,15 +93,12 @@
                   <h2>Respiratory Rate (RR)</h2>
                   <div class="clearfix"></div>
                 </div>
-                <!-- Added Date/Time Row -->
                 <div class="x_content">
                   <div id="context_rr" style="width: 100%; height: 200px"></div>
                 </div>
               </div>
             </div>
-
             <!-- Right: Small gauges 30% -->
-            <!-- Hidden on initial load; shown via JS only for page == "1" -->
             <div class="small-gauges" style="flex: 0 0 30%; flex-direction: column">
               <!-- Top row: Sensor Date/Time -->
               <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 1rem; margin-right: 2rem">
@@ -196,15 +135,6 @@
                     </div>
                   </div>
                 </div>
-                <!-- Activity -->
-                <!-- <div class="x_panel ui-ribbon-container fixed_height_310" style="padding: 5px">
-                  <div class="x_content" style="display: flex; flex-direction: column; align-items: center; height: 90%">
-                    <div id="ContextAccelrationId" class="echartsgauges1" style="width: 100%; height: 100%"></div>
-                    <div style="display: flex; align-items: center; margin-top: 2px">
-                      <h4 class="name_title" style="color: #fff; margin: 0; font-weight: 600">Activity</h4>
-                    </div>
-                  </div>
-                </div> -->
                 <!-- Blood Pressure -->
                 <div class="x_panel ui-ribbon-container fixed_height_310" style="padding: 5px">
                   <div class="x_content" style="display: flex; flex-direction: column; align-items: center; height: 90%">
@@ -266,21 +196,17 @@
     <script src="../vendors/DateJS/build/date.js"></script>
     <!-- JQVMap -->
     <script src="../vendors/jqvmap/dist/jquery.vmap.js"></script>
-    <!-- <script src="../vendors/jqvmap/dist/maps/jquery.vmap.world.js"></script> -->
     <script src="../vendors/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>
     <!-- bootstrap-daterangepicker -->
     <script src="../vendors/moment/min/moment.min.js"></script>
     <script src="../vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
     <script src="../vendors/echarts/dist/echarts.min.js"></script>
-    <!-- <script src="../vendors/echarts/map/js/world.js"></script> -->
     <script src="../vendors/jquery-sparkline/dist/jquery.sparkline.min.js"></script>
     <!-- Custom Theme Scripts -->
     <script type="module" src="../build/js/context_assessment/context_assessment_UI.js"></script>
     <script type="module" src="../build/js/LeftandTopNavigation/LeftandTopNavigation.js"></script>
-
     <!-- easy-pie-chart -->
     <script src="../vendors/jquery.easy-pie-chart/dist/jquery.easypiechart.min.js"></script>
-
     <!-- TODO: Add SDKs for Firebase products that you want to use
 	  https://firebase.google.com/docs/web/setup#available-libraries -->
     <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-app.js"></script>
