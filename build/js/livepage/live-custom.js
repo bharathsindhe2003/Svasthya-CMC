@@ -4,24 +4,28 @@ function ews_value_passing(ews_value, ews_color) {
     const cardContainer = document.getElementById("ews_id");
     const scoreElement = document.getElementById("ews_id1");
     const colorBar = document.getElementById("ews_color1");
+    const ewsSection = cardContainer ? cardContainer.closest(".live-ews-surface") : null;
 
     if (!cardContainer || !scoreElement || !colorBar) {
       return;
     }
 
     // Treat missing/placeholder or non-numeric values as "no data" and hide the card
-    const isNoData = ews_value === undefined || ews_value === null || ews_value === "" || ews_value === "--" || typeof ews_value === "object";
+    const parsedScore = Number(ews_value);
+    const isNoData = ews_value === undefined || ews_value === null || ews_value === "" || ews_value === "--" || typeof ews_value === "object" || !Number.isFinite(parsedScore);
 
     if (isNoData) {
       scoreElement.innerHTML = "";
       colorBar.style.backgroundColor = "#ffffff00";
       cardContainer.style.display = "none";
+      ewsSection?.classList.remove("is-visible");
       return;
     }
 
+    ewsSection?.classList.add("is-visible");
     cardContainer.style.display = "block";
     colorBar.style.backgroundColor = ews_color || colorBar.style.backgroundColor || "#ffffff";
-    scoreElement.innerHTML = "EWS Score - " + ews_value;
+    scoreElement.innerHTML = "EWS Score - " + parsedScore;
   } catch (e) {
     console.log("[live-custom.js] Error in ews_value_passing:", e);
   }
@@ -883,7 +887,7 @@ function heartrate_data(LiveHeartrate, ContextHeartrate) {
           fontSize: 0,
         },
         detail: {
-          fontSize: 15,
+          fontSize: 20,
           offsetCenter: [0, "10%"],
           valueAnimation: true,
           formatter: function (value) {
@@ -1017,7 +1021,7 @@ function blood_oxygen_data(LiveBloodOxygen) {
           fontSize: 0,
         },
         detail: {
-          fontSize: 15,
+          fontSize: 20,
           offsetCenter: [0, "10%"],
           valueAnimation: true,
           formatter: function (value) {
@@ -1226,7 +1230,7 @@ function temperature_data(LiveTemperature, ContextTemperature) {
           fontSize: 0,
         },
         detail: {
-          fontSize: 15,
+          fontSize: 20,
           offsetCenter: [0, "20%"],
           valueAnimation: true,
           formatter: function (value) {
@@ -1347,7 +1351,7 @@ function blood_pressure_data(LiveSBP, LiveDBP, ContextSBP, ContextDBP) {
           fontSize: 0,
         },
         detail: {
-          fontSize: 15,
+          fontSize: 20,
           offsetCenter: [0, "30%"],
           valueAnimation: true,
           formatter: function (value) {
@@ -1460,7 +1464,7 @@ function respiration_rate_data(LiveRRData, contextRRData) {
           fontSize: 0,
         },
         detail: {
-          fontSize: 15,
+          fontSize: 20,
           offsetCenter: [0, "10%"],
           valueAnimation: true,
           formatter: function (value) {

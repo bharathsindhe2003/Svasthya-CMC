@@ -25,7 +25,7 @@
     <link href="../vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet" />
     <!-- Custom Theme Style -->
     <link href="../build/css/context_assment_LeftandTopNavigation.css" rel="stylesheet" />
-    <link href="../build/css/context_assment_LiveRightColomn.css" rel="stylesheet" />
+    <link href="../build/css/context_assment_LiveRightColomn.css?v=0.1.10" rel="stylesheet" />
   </head>
   <body class="nav-md">
     <div class="container body">
@@ -46,30 +46,28 @@
             z-index: 9999;
           "></div>
       </div>
-      <div class="right_col" role="main">
+      <div class="right_col context-page context-ecg-page" role="main">
         <div class="LiveSpecification">
-          <div class="Live_context_assessment">
-            <p id="ContextSymptomName"></p>
-          </div>
-
-          <div class="container" style="display: flex; width: 100%; flex-direction: row">
-            <!-- Left: Big charts 70% -->
-            <div class="big-charts" style="flex: 0 0 100%; display: flex; flex-direction: column">
-              <!-- Top row: ECG Date/Time -->
-              <div class="ecg_timestamp" style="display: flex; align-items: center; margin-bottom: 1rem">
-                <span>ECG Date: <label id="contextecgdate"></label></span>
-                <span style="margin: 0 1.5rem"></span>
-                <span>ECG Time: <label id="contextecgtime"></label></span>
-              </div>
-              <!-- ECG -->
-              <div class="x_panel">
-                <div class="x_title">
-                  <h2>Electrocardiogram (ECG)</h2>
-                  <div class="clearfix"></div>
+          <div class="context-shell context-shell--single">
+            <section class="context-ecg-focus" aria-label="Context ECG chart">
+              <article class="context-wave-card context-wave-card--single">
+                <div class="context-wave-card__header">
+                  <div>
+                    <p id="ContextSymptomName" class="context-section-kicker"></p>
+                    <h2>Electrocardiogram (ECG)</h2>
+                  </div>
+                  <div class="context-wave-card__meta">
+                    <span>ECG Date: <label id="contextecgdate"></label></span>
+                    <span>ECG Time: <label id="contextecgtime"></label></span>
+                  </div>
                 </div>
-                <div class="x_content"><div id="context_ecg" style="width: 100%; height: 200px"></div></div>
-              </div>
-            </div>
+                <div class="x_panel context-chart-panel context-chart-panel--focus">
+                  <div class="x_content">
+                    <div id="context_ecg"></div>
+                  </div>
+                </div>
+              </article>
+            </section>
           </div>
         </div>
       </div>
