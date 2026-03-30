@@ -427,7 +427,7 @@ function history_ECG(min_time, max_time, ecg_timestamp, id) {
           showSymbol: false,
           data: ECG_scatter_data,
           lineStyle: {
-            color: "#026492",
+            color: "#1991c994",
             width: 1.5,
           },
         },

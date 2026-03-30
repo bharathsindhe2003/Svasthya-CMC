@@ -128,7 +128,7 @@
   height: 100%;
   z-index: 9;
   width: 280px;
-  background: #026492;
+  background: #1991c994;
 }
 .nav-sm .nav.side-menu > li > a .menu-text {
   display: none !important;
@@ -264,8 +264,8 @@
 }
 
 .nav_menu {
-  background: #00458b;
-  border-bottom: 1px solid #00458b;
+  background: #1991c994;
+  border-bottom: 1px solid #1991c994;
 
   width: 100%;
   z-index: 7;
@@ -312,7 +312,7 @@
 .nav_title {
   width: 280px;
   float: left;
-  background: #00458b;
+  /* background: #1991c994; */
   border-radius: 0;
   height: 57px;
   border-right: 5px #000;
@@ -434,7 +434,7 @@
 
 body {
   color: #2e2e2e;
-  background: #00458b;
+  background: #1991c994;
   font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
   font-size: 13px;
   font-weight: 400;
@@ -840,8 +840,8 @@ a:focus {
   font-weight: 400;
   font-size: x-large;
   width: 100%;
-  background-color: #00458b;
-  box-shadow: 1px 0px rgb(0, 0, 0);
+  /* background-color: #1991c994; */
+  /* box-shadow: 1px 0px rgb(0, 0, 0); */
   color: #ecf0f1 !important;
   margin-left: 10px;
   line-height: 59px;
@@ -1750,7 +1750,7 @@ span.right {
     position: fixed;
     height: 100%;
     width: 230px;
-    background: #026492;
+    background: #1991c994;
   }
   .nav_title {
     width: 230px;
@@ -1822,7 +1822,7 @@ span.right {
     position: fixed;
     height: 100%;
     width: 200px;
-    background: #026492;
+    background: #1991c994;
   }
   .nav_title {
     width: 200px;
@@ -1896,7 +1896,7 @@ span.right {
     position: fixed;
     height: 100%;
     width: 200px;
-    background: #00458b;
+    background: #1991c994;
   }
 
   .img-circle.profile_img {
