@@ -96,13 +96,22 @@ export async function patient_details(patient_info) {
       const [name, age, gender, ailment, patient_id_no, ews, color] = patientDetails;
       console.log("[Dashboard-UI.js] Creating card with IDs:", ewsvId, ewscId);
 
+      const ageLabel = age === undefined || age === null || age === "" ? "--" : `${age}Y`;
+      const genderLabel = gender === undefined || gender === null || gender === "" ? "--" : gender;
+
       let code = `
           <div class="well profile_view patient-card" id="${borderId}">
             <div class="border_1 patient-card__shell">
               <div class="patient-card__header animated flipInY">
                 <div class="patient-card__identity">
                   <span class="patient-card__caption">Name</span>
-                  <h2 class="patient-card__name">${name}</h2>
+                  <div class="patient-card__name-row">
+                    <h2 class="patient-card__name">${name}</h2>
+                    <div class="patient-card__meta patient-card__meta--badges">
+                      <span>${ageLabel}</span>
+                      <span>${genderLabel}</span>
+                    </div>
+                  </div>
                 </div>
                 <div class="patient-card__ews" id="${ewscId}">
                   <span class="patient-card__ews-label">EWS</span>

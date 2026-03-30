@@ -111,12 +111,12 @@ form:after {
   float: none;
   position: static;
   margin: 0;
-  border: 3px solid rgba(111, 163, 255, 0.18);
+  border: 1px solid rgba(55, 253, 18, 0.16);
   border-radius: 18px;
-  background: linear-gradient(180deg, #07111f 0%, #02060d 100%);
+  background: radial-gradient(circle at top left, rgba(77, 160, 214, 0.18), transparent 34%), linear-gradient(180deg, #102536 0%, #0b1b28 100%);
   width: min(100%, 392px);
   min-height: 332px;
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 16px 32px rgba(4, 11, 19, 0.34);
   overflow: hidden;
   cursor: pointer;
   padding: 12px;
@@ -126,8 +126,8 @@ form:after {
 }
 
 .patient_details .profile_view:hover {
-  box-shadow: 0 22px 40px rgba(0, 0, 0, 0.38);
-  border-color: rgba(135, 206, 250, 0.4);
+  box-shadow: 0 22px 40px rgba(4, 11, 19, 0.42);
+  border-color: rgba(55, 253, 18, 0.32);
 }
 
 .blink-border {
@@ -250,6 +250,13 @@ form:after {
   gap: 4px;
 }
 
+.patient-card__name-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .patient-card__caption {
   font-size: 10px;
   font-weight: 700;
@@ -271,6 +278,7 @@ form:after {
 
 .patient-card__meta {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: 6px;
   font-size: 11px;
@@ -278,10 +286,22 @@ form:after {
 }
 
 .patient-card__meta span {
-  padding: 3px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(122, 162, 214, 0.22);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.patient-card__meta--badges span {
+  color: #d9ecff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
 }
 
 .patient-card__ews {
