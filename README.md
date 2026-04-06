@@ -1,178 +1,347 @@
-Application: Svasthya Playstore Respiration (CMC)
+# Svasthya CMC
 
-Company: TANTRAGYAAN — Unit of TANTROTTOLAN SOLUTIONS LLP.
+Svasthya CMC is a static web application for remote patient monitoring. It is designed for doctor-facing workflows where a clinician signs in, reviews assigned patients, opens a patient monitoring view, watches live waveform and vital feeds, reviews history, and configures alert thresholds.
 
-Link: https://bharathsindhe2003.github.io/Svasthya-CMC/production/login.html
+Company: TANTRAGYAAN - Unit of TANTROTTOLAN SOLUTIONS LLP
 
-<hr>
+Hosted URL: https://bharathsindhe2003.github.io/Svasthya-CMC/production/login.html
 
-# Folder Structure:
+## Overview
 
-| .gitignore
-| .nojekyll                                        # Required for GitHub Pages hosting
-| index.html                                       # Entry file for GitHub Pages hosting
-| LICENSE
-| README.md
-|
-|-- build/
-| |-- assests/
-| | |-- aduio2.mp3                                 # Audio file for threshold notification sound
-| |
-| |-- css/
-| | |-- context_assment_LeftandTopNavigation.css   
-| | |-- context_assment_LiveRightColomn.css        # Styles for the context component in context_assment.html 
-| | |-- custom.min.css
-| | |-- DashbordRightColomn.css                    # Styles for the dashboard in dashboard.html
-| | |-- HistoryRightColomn.css                     # Styles for the History component in index.html
-| | |-- incomingDialogbox.css                      
-| | |-- LeftandTopNavigation.css                   # Styles for the top navigation in dashboard.html and top navigation and left taskbar in index.html
-| | |-- lightbox.css                               
-| | |-- LiveRightColomn.css                        # Styles for the live component in index.html
-| | |-- login-custom.css                           # Styles for login.html
-| | |-- vital.css                                  # Styles for the threshold configuration component in index.html
-| |
-| |-- js/
-| | |-- backend/
-| | | |-- toastmsg.js                              # Displays toast messages
-| | |
-| | |-- context_assessment/
-| | | |-- context_assessment_UI.js                 # Fetches and plots ECG, PPG, RR, EWS score, and five vitals in the history view
-| | |
-| | |-- context_ecg/
-| | | |-- context_ecg.js                           # Fetches and plots the ECG graph in the history view
-| | |
-| | |-- dashboard/
-| | | |-- dashboard-custom.js                      # Fetches and updates ECG, PPG, RR, EWS score, and five vitals on the dashboard
-| | | |-- Dashboard-UI.js                          # Renders patient cards on the dashboard
-| | |
-| | |-- history/
-| | | |-- Ecg_line_chart.js
-| | | |-- history_fb_module.js                     # Fetches data and calculates values for the history charts
-| | | |-- history_UI_module.js                     # Renders charts on the history page
-| | | |-- option-module.js                         # Sets Hour, Day, Week, and custom options for the History component
-| | |
-| | |-- LeftandTopNavigation/
-| | | |-- LeftandTopNavigation.js                  # Displays patient details in the left taskbar and the doctor name in the navbar
-| | |
-| | |-- livepage/
-| | | |-- database_function.js                     # Calculates live data and falls back to the last valid reading when a device is not connected
-| | | |-- EchartGraphs.js                          # Defines placeholder states such as no ECG, PPG, RR, or other live data
-| | | |-- live-custom.js                           # Displays ECG, PPG, RR, EWS score, and five vitals on the live page and plots five vitals in context assessment
-| | |
-| | |-- login/
-| | | |-- login.js                                 # Handles login logic
-| | |
-| | |-- utils/
-| | | |-- echarts-auto-resize.js                   # Resizes charts based on the app zoom level
-| | | |-- Threshold_triggers.js                    # Listens for threshold triggers used in dashboard.html and index.html
-| | |
-| | |-- vitals/
-| | | |-- vitals_module.js                         # Handles threshold configuration logic
-|
-|-- production/
-| |-- context_assment.html                         # Popup view showing ECG, PPG, RR, EWS score, and five vitals
-| |-- context_ecg.html                             # Popup view showing only the patient's ECG in history
-| |-- dashboard.html                               # Dashboard page showing all patient cards
-| |-- index.html                                   # Main page containing the Live, History, and Threshold Configuration components
-| |-- login.html                                   # Login page
-| |
-| |-- css/
-| | |-- maps/
-| | | |-- jquery-jvectormap-2.0.3.css
-| |
-| |-- images/
-| | |-- Female.jpg                                # Left taskbar profile image
-| | |-- Male.jpg                                  # Left taskbar profile image
-| | |-- user.png                                  # Navbar profile image
-| | |-- ... (other image assets)
-|
-|-- vendors/
-| |-- animate.css/
-| |-- autosize/
-| |-- bootstrap/
-| |-- bootstrap-daterangepicker/
-| |-- ... (other vendor libraries)
+The application is built as a client-side Firebase application with no backend service inside this repository. The UI is served as static HTML, CSS, and JavaScript files, while authentication and realtime data access are handled through Firebase.
 
-<hr>
+Core use cases:
 
-# Version Control
+- Doctor login with Firebase Authentication
+- Dashboard view for patients assigned to the logged-in doctor
+- Live monitoring of ECG, PPG, respiration rate, EWS, and key vitals
+- Historical trend review by hour, day, week, or custom range
+- Threshold configuration for patient-specific alerting
+- Realtime alert highlighting and audio notification when thresholds are breached
+- Context popup screens for focused waveform review
 
-1. Version Update: 0.1.0
+## Application Flow
 
-   Features:
-   - Used the Svasthya Playstore Respiration as base Version
-   - Added blinking effect and sound effect for a patients card if his/her vital cross threshold values
-   - Redsigned the Congiration tab
+```mermaid
+flowchart LR
+   A[Root index.html] --> B[production/login.html]
+   B --> C[production/dashboard.html]
+   C --> D[production/index.html?openpage=livecomponents]
+   D --> E[Live tab]
+   D --> F[History tab]
+   D --> G[Configuration tab]
+```
 
-RELEASE DATE: 17-03-2026
+## Entry Pages
 
-<hr>
+| Page                        | Purpose                                                                     |
+| --------------------------- | --------------------------------------------------------------------------- |
+| `index.html`                | Redirects to `production/login.html` for GitHub Pages hosting               |
+| `production/login.html`     | Doctor authentication screen                                                |
+| `production/dashboard.html` | Patient dashboard with card-based overview                                  |
+| `production/index.html`     | Main patient workspace containing Live, History, and Configuration sections |
 
-2. Version Update: 0.1.1
+## Navigation And State Model
 
-   Features:
-   - Removed double click for all charts in HIstory tab
-   - Rounded the Tempratuere to 2 digit after decimal in History Tab
-   - Resolved the issue for flickring in dashborad page
-   - Resolved issue with battery icon not showing.
-   - Redsigned the patient card in dashborad page
-   - Redsigned the history tab
+The application uses browser storage and query parameters instead of a router.
 
-RELEASE DATE: 18-03-2026
+### Local storage keys
 
-<hr>
+- `doctor_id`: Firebase authenticated user id
+- `docname`: doctor display name shown in the UI
+- `doc_registerId`: registration id used to match patients by `patients/{patientId}/docId`
+- `patient_unique_id`: currently selected patient id
+- `patient_info`: cached patient list for dashboard and alert listeners
+- `username`: remembered login email
+- `password`: remembered login password
+- `RadioButtonValue`: remembered state of the login checkbox
 
-3. Version Update: 0.1.5
+### Session storage keys
 
-Features:
+- `THRESHOLD_TRIGGERS`: active threshold alerts used to restore blinking alert state during the current browser session
 
-- Fixed issue with SPO2 not beening displayed in History
-- Resolved 2 UI Changes
+### Query parameters
 
-RELEASE DATE: 23-03-2026
+- `production/index.html?openpage=livecomponents`
+- `production/index.html?openpage=historycomponents`
+- `production/index.html?openpage=vitalscomponents`
 
-<hr>
+If `openpage` is missing, the current implementation defaults to the Configuration section.
 
-4. Version Update: 0.1.7
+The context popup pages use base64-encoded query values:
 
-Features:
+- `param1`: timestamp in seconds
+- `param2`: patient id
+- `param3`: page mode marker
 
-- Removed activity from history.
-- Remove notification and video files and code from codebase
+Base64 is only obfuscation. It is not a security mechanism.
 
-RELEASE DATE: 23-03-2026
+## Technology Stack
 
-<hr>
+### Core platform
 
-5. Version Update: 0.1.8
+- HTML5
+- CSS3
+- Vanilla JavaScript with ES modules
+- Firebase Web SDK v8
 
-Features:
+### UI and utilities
 
-- Added Listerns to both dashborad page and live page.
-- Added empty string handling for threshold_trigers
-- Added CSS to fit it in TV Screen
-- Resolved Issue with EWS Score
-- undefined getting displayed in dashboard for new created patients - Issue resolved
-- no chart getting ploted for Alert threshold - Issue resolved
+- Bootstrap
+- jQuery
+- Font Awesome
+- Toastify
+- NProgress
+- Bootstrap Date Range Picker
 
-RELEASE DATE: 24-03-2026
+### Charts and data visualization
 
-<hr>
+- ECharts for live and historical charts
+- Chart.js is bundled and available in the repository
+- Flot and several chart-related vendor libraries are also present
 
-6. Version Update: 0.1.10
+## Repository Structure
 
-Features:
+This repository is organized as a static web app. The folder names below are the actual runtime paths used by the codebase.
 
-- Resolved issue related EWS score
+```text
+.
+|- .nojekyll
+|- index.html
+|- README.md
+|- build/
+|  |- assests/
+|  |  |- aduio2.mp3
+|  |- css/
+|  |- js/
+|- production/
+|  |- login.html
+|  |- dashboard.html
+|  |- index.html
+|  |- context_assment.html
+|  |- context_ecg.html
+|  |- images/
+|- vendors/
+```
 
-RELEASE DATE: 24-03-2026
+Notes:
 
-<hr>
+- `build/` contains the runtime CSS and JavaScript used by the application. Despite the name, there is no build pipeline in this repository.
 
-7. Version Update: 0.1.11
+## Front-End Module Map
 
-Features:
+### Authentication
 
-- Update UI in dashborad and patient cards, Live page and Login page
+- `build/js/login/login.js`: handles login submission, browser check, internet status check, Firebase Authentication, doctor role validation, and remember-me behavior
 
-RELEASE DATE: 30-03-2026
+### Dashboard
+
+- `build/js/dashboard/dashboard-custom.js`: loads patients linked to the logged-in doctor, fetches current vitals and latest waveform snapshots, and prepares dashboard card data
+- `build/js/dashboard/Dashboard-UI.js`: renders patient cards and card interactions
+
+### Shared navigation and patient context
+
+- `build/js/LeftandTopNavigation/LeftandTopNavigation.js`: populates doctor and patient identity details, handles logout, and binds profile menu UI
+
+### Live monitoring
+
+- `build/js/livepage/database_function.js`: initializes Firebase, connects live page widgets, loads current patient data, and manages waveform placeholders and timestamps
+- `build/js/livepage/live-custom.js`: formats and pushes live vital values into the UI layer
+- `build/js/livepage/EchartGraphs.js`: placeholder chart states when live waveform data is unavailable
+
+### History
+
+- `build/js/history/option-module.js`: time-range controls for hour, day, week, and custom range
+- `build/js/history/history_fb_module.js`: fetches historical vital, ECG, and threshold-trigger data for the selected patient and time window
+- `build/js/history/history_UI_module.js`: renders the history charts and launches context popup windows
+
+### Threshold configuration and alerts
+
+- `build/js/vitals/vitals_module.js`: loads and saves patient-specific threshold rules for SpO2, heart rate, temperature, respiratory rate, systolic BP, and diastolic BP
+- `build/js/utils/Threshold_triggers.js`: listens for new threshold-trigger records, applies blink states to patient cards, and controls alert sound playback
+
+### Utilities
+
+- `build/js/backend/toastmsg.js`: toast notifications
+- `build/js/utils/echarts-auto-resize.js`: automatic chart resizing support
+
+## Firebase Integration
+
+Firebase is initialized in `build/js/livepage/database_function.js`. The app currently contains a hardcoded Firebase configuration for a live project, plus a commented staging configuration.
+
+### Firebase services used
+
+- Firebase Authentication
+- Firebase Realtime Database
+- Firebase Analytics
+- Firebase Messaging scripts are loaded in some pages
+
+### Authentication model
+
+- Users sign in with email and password
+- After sign-in, the app verifies `roles/{uid}/role`
+- Only users whose role is `Doctor` are allowed through to the dashboard
+
+### Realtime Database model
+
+The following database nodes are read by the current implementation.
+
+```text
+roles/{uid}
+doctors/{uid}
+patients/{patientId}
+
+patientlivedata7s/{patientId}
+patientlivedata/{patientId}/{timestamp}
+
+ECG_plot/{patientId}
+PPG_plot/{patientId}
+RR_plot/{patientId}
+
+patientecgdata/{patientId}/{timestamp}
+patientppgdata/{patientId}/{timestamp}
+patientrrdata/{patientId}/{timestamp}
+
+EWS/{patientId}/{timestamp}
+Threshold_Default/{patientId}/{vitalKey}
+threshold_triggers/{patientId}/{timestamp}
+```
+
+### What each node is used for
+
+- `roles/{uid}`: role guard during login
+- `doctors/{uid}`: doctor profile, including `username` and `registerId`
+- `patients/{patientId}`: patient profile and doctor linkage through `docId`
+- `patientlivedata7s/{patientId}`: latest aggregated live vital snapshot used by dashboard and live monitoring
+- `patientlivedata/{patientId}/{timestamp}`: historical vital records used by history and context views
+- `ECG_plot`, `PPG_plot`, `RR_plot`: latest waveform payloads for the live/dashboard experience
+- `patientecgdata`, `patientppgdata`, `patientrrdata`: timestamped waveform history
+- `EWS/{patientId}/{timestamp}`: timestamped EWS records and visual severity state
+- `Threshold_Default/{patientId}/{vitalKey}`: saved threshold configuration for the selected patient
+- `threshold_triggers/{patientId}/{timestamp}`: alert events that drive card blinking and session alert state
+
+### Important implementation detail
+
+The dashboard filters patients by comparing:
+
+- `doctors/{uid}/registerId`
+- `patients/{patientId}/docId`
+
+This means patient-to-doctor assignment in the database is based on the doctor's registration id, not the Firebase auth uid.
+
+## Threshold Configuration Model
+
+Threshold rules are saved per patient and per vital in `Threshold_Default/{patientId}`.
+
+Supported vitals:
+
+- `spo2`
+- `hr`
+- `temp`
+- `rr`
+- `sbp`
+- `dbp`
+
+Supported rule styles in the UI:
+
+- Less than
+- Greater than
+- In between
+
+The UI stores condition metadata plus value fields such as `Min`, `Max`, `val1`, `val2`, and `typ` depending on the rule shape.
+
+## User Experience Summary
+
+### Login
+
+- Checks browser compatibility and recommends Chrome
+- Shows internet connectivity warnings
+- Supports remember-me by caching email and password in local storage
+
+### Dashboard
+
+- Displays all patients assigned to the logged-in doctor
+- Shows current vitals, EWS, and waveform snapshots per patient
+- Plays an alert sound and adds blink states when threshold events arrive
+- Selecting a patient stores `patient_unique_id` and opens the Live section
+
+### Patient workspace
+
+The main workspace in `production/index.html` contains three sections:
+
+- Live: realtime ECG, PPG, RR, EWS, and vitals
+- History: granular and consolidated historical chart views with selectable time windows
+- Configuration: patient threshold configuration UI
+
+### Context views
+
+- `context_assment.html` shows a full timestamp-specific context including waveform and vitals
+- `context_ecg.html` shows ECG only
+
+## Local Development
+
+### Prerequisites
+
+- A Firebase project configured for Authentication and Realtime Database
+- Modern browser with ES module support
+- Internet access for CDN-hosted dependencies
+- A static web server
+
+Chrome is explicitly recommended by the current login script.
+
+## Deployment Notes
+
+This project is already structured for GitHub Pages style deployment.
+
+- `.nojekyll` is included
+- Root `index.html` redirects to `production/login.html`
+- All runtime assets are loaded through relative paths
+- The existing directory structure must be preserved
+
+## Version History
+
+### Version 0.1.11 - 30-03-2026
+
+- Updated the UI in the dashboard, patient cards, live page, and login page
+
+### Version 0.1.10 - 24-03-2026
+
+- Resolved an EWS score issue
+
+### Version 0.1.8 - 24-03-2026
+
+- Added listeners to both dashboard and live page
+- Added empty string handling for threshold triggers
+- Added CSS adjustments for TV screen layouts
+- Resolved EWS score issues
+- Resolved undefined values appearing on newly created patient cards
+- Resolved missing chart plotting for alert thresholds
+
+### Version 0.1.7 - 23-03-2026
+
+- Removed activity from history
+- Removed notification and video files and related code
+
+### Version 0.1.5 - 23-03-2026
+
+- Fixed SpO2 not displaying in history
+- Applied two UI changes
+
+### Version 0.1.1 - 18-03-2026
+
+- Removed double-click behavior from history charts
+- Rounded temperature to two decimal places in history
+- Resolved flickering on the dashboard page
+- Resolved battery icon visibility issue
+- Redesigned the dashboard patient card
+- Redesigned the history tab
+
+### Version 0.1.0 - 17-03-2026
+
+- Used the Svasthya Playstore Respiration version as the base
+- Added blinking and sound effects for patient cards when vitals cross thresholds
+- Redesigned the Configuration tab
+
+## License
+
+This project is distributed under the terms described in `LICENSE`.
