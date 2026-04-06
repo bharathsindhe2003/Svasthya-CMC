@@ -14,6 +14,12 @@ applybutton.addEventListener("click", applyfunction);
 cancelbutton.addEventListener("click", cancelfunction);
 document.getElementById("onehourbutton").click();
 
+/**
+ * Handle the click event for the "One Hour" button.
+ * This function calculates the time range for the past hour,
+ * initializes a local array with null values for each minute,
+ * and calls the Firebase function to fetch data.
+ */
 export function onehourclick() {
   var max_time = Math.floor(Date.now() / 1000);
   max_time = Math.floor(max_time / 60);
@@ -32,6 +38,12 @@ export function onehourclick() {
   firebase(min_time, max_time, localarray, 0);
 }
 
+/**
+ * Handle the click event for the "One Day" button.
+ * This function calculates the time range for the past day,
+ * initializes a local array with null values for each minute,
+ * and calls the Firebase function to fetch data.
+ */
 export function onedayclick() {
   var max_time = Math.floor(Date.now() / 1000);
   max_time = Math.floor(max_time / 60);
@@ -51,6 +63,12 @@ export function onedayclick() {
   firebase(min_time, max_time, localarray, 7);
 }
 
+/**
+ * Handle the click event for the "One Week" button.
+ * This function calculates the time range for the past week,
+ * initializes a local array with null values for each hour,
+ * and calls the Firebase function to fetch data.
+ */
 export function oneweekclick() {
   var max_time = Math.floor(Date.now() / 1000);
   max_time = Math.floor(max_time / 60);
@@ -66,6 +84,12 @@ export function oneweekclick() {
   firebase(min_time, max_time, localarray, 7);
 }
 
+/**
+ * Handle the click event for the "Apply" button.
+ * This function validates the selected date range,
+ * initializes a local array with null values for each minute,
+ * and calls the Firebase function to fetch data.
+ */
 function applyfunction() {
   var fromdate = document.getElementById("fromdate").value;
   var todate = document.getElementById("todate").value;

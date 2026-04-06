@@ -54,6 +54,9 @@ if (localStorage.username !== undefined && localStorage.password !== undefined) 
 const element1 = document.getElementById("submit_button");
 element1.addEventListener("click", submit);
 
+/**
+ * Handles the login process when the submit button is clicked.
+ */
 function submit() {
   try {
     var emailInput = document.getElementById("email").value;

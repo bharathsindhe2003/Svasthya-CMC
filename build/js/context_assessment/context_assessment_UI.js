@@ -32,26 +32,13 @@ console.log("[context_assessment_UI.js] Timestamp:", timestamp);
 console.log("[context_assessment_UI.js] ID:", id);
 console.log("[context_assessment_UI.js] page", page, "timestamp", timestamp);
 
-// var patients = fb.database().ref().child("patients").child(id);
-
-// patients.once("value", function (snapshot) {
-//   // console.log("[context_assessment_UI.js] Fetching patient data...");
-//   let patient_data = snapshot.val() || {};
-//   username = patient_data.username;
-// });
-
-var patientsDataRef;
-var patientsECGDataRef;
-var patientsPPGDataRef;
-var patientsRRDataRef;
-var patientsEWSDataRef;
 try {
   if (page === "1") {
-    patientsDataRef = fb.database().ref().child("patientlivedata").child(id).child(timestamp);
-    patientsECGDataRef = fb.database().ref().child("patientecgdata").child(id).child(timestamp);
-    patientsPPGDataRef = fb.database().ref().child("patientppgdata").child(id).child(timestamp);
-    patientsRRDataRef = fb.database().ref().child("patientrrdata").child(id).child(timestamp);
-    patientsEWSDataRef = fb.database().ref().child("EWS").child(id).child(timestamp);
+    const patientsDataRef = fb.database().ref().child("patientlivedata").child(id).child(timestamp);
+    const patientsECGDataRef = fb.database().ref().child("patientecgdata").child(id).child(timestamp);
+    const patientsPPGDataRef = fb.database().ref().child("patientppgdata").child(id).child(timestamp);
+    const patientsRRDataRef = fb.database().ref().child("patientrrdata").child(id).child(timestamp);
+    const patientsEWSDataRef = fb.database().ref().child("EWS").child(id).child(timestamp);
 
     Promise.all([
       patientsDataRef.once("value").then((snapshot) => snapshot.val() || {}),
@@ -218,7 +205,12 @@ try {
 } catch (error) {
   console.log("[context_assessment_UI.js] Error:", error);
 }
-
+/**
+ * Add EWS Score if data exists for the specific timestamp selected in context assessment card/pop-up
+ * @param {number|null} ews_value
+ * @param {string|null} ews_color
+ * @returns {void}
+ */
 function ews_value_passing_context(ews_value, ews_color) {
   try {
     const cardContainer = document.getElementById("context_ews_id");
@@ -246,6 +238,17 @@ function ews_value_passing_context(ews_value, ews_color) {
     console.log("[live-custom.js] Error in ews_value_passing:", e);
   }
 }
+/**
+ * Add ECG plot if data exists for a specific timestamp in context assessment card/pop-up
+ * @param {Array} LiveEcgValues Live ECG values
+ * @param {string} date Date string
+ * @param {string} time Time string
+ * @param {string} option1 Option 1
+ * @param {number} value Value
+ * @param {Array} ecgdata ECG data
+ * @param {number} endzoom End zoom value
+ * @returns {void}
+ */
 function ECG_data(LiveEcgValues, date, time, option1, value, ecgdata, endzoom) {
   var EcgData;
   var contextECG;
@@ -544,7 +547,17 @@ function ECG_data(LiveEcgValues, date, time, option1, value, ecgdata, endzoom) {
     console.error("[context_assessment_UI.js] Error:", e);
   }
 }
-
+/**
+ * Add PPG plot if data exists for a specific timestamp in context assessment card/pop-up
+ * @param {Array} LivePpgValues Live PPG values
+ * @param {string} date Date string
+ * @param {string} time Time string
+ * @param {string} option1 Option 1
+ * @param {number} value Value
+ * @param {Array} ppgdata PPG data
+ * @param {number} endzoom End zoom value
+ * @returns {void}
+ */
 function PPG_data(LivePpgValues, date, time, option1, value, ppgdata, endzoom) {
   var PpgData;
   var echartLine;
@@ -750,6 +763,17 @@ function PPG_data(LivePpgValues, date, time, option1, value, ppgdata, endzoom) {
     console.error("[context_assessment_UI.js] PPG building chart:", e);
   }
 }
+/**
+ * Add RR plot if data exists for a specific timestamp in context assessment card/pop-up
+ * @param {Array} LiveRRValues Live RR values
+ * @param {string} date Date string
+ * @param {string} time Time string
+ * @param {string} option1 Option 1
+ * @param {number} value Value
+ * @param {Array} rrdata RR data
+ * @param {number} endzoom End zoom value
+ * @returns {void}
+ */
 function RR_data(LiveRRValues, date, time, option1, value, rrdata, endzoom) {
   var RrData;
   var echartLine;
@@ -1028,26 +1052,3 @@ function RR_data(LiveRRValues, date, time, option1, value, rrdata, endzoom) {
     console.error("[context_assessment_UI.js] Error:", e.message);
   }
 }
-// Keep live ECG/PPG charts responsive to layout changes
-// by resizing the echarts instances when the window size changes.
-// window.addEventListener("resize", function () {
-//   try {
-//     var liveEcgDom = document.getElementById("LiveECGId");
-//     if (liveEcgDom) {
-//       var ecgInstance = echarts.getInstanceByDom(liveEcgDom);
-//       if (ecgInstance) {
-//         ecgInstance.resize();
-//       }
-//     }
-
-//     var livePpgDom = document.getElementById("LivePPGId");
-//     if (livePpgDom) {
-//       var ppgInstance = echarts.getInstanceByDom(livePpgDom);
-//       if (ppgInstance) {
-//         ppgInstance.resize();
-//       }
-//     }
-//   } catch (e) {
-//     console.error("[context_assessment_UI.js] Live chart resize error:", e);
-//   }
-// });

@@ -1,3 +1,8 @@
+/**
+ * Creates patients card in dashborad based on patient_info
+ * @param {Array} patient_info - Array of patient information.
+ * @returns {void}
+ */
 export async function patient_details(patient_info) {
   console.log("[Dashboard-UI.js] patient_info before in array: ", patient_info.length);
   const normalizedPatientInfo = Array.isArray(patient_info)

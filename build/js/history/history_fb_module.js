@@ -10,6 +10,13 @@ import {
 } from "./history_UI_module.js";
 import { fb } from "../livepage/database_function.js";
 
+/**
+ * Fetches data from Firebase for the given time range and updates the local array.
+ * @param {number} min_time - The minimum timestamp (in seconds) for the data range.
+ * @param {number} max_time - The maximum timestamp (in seconds) for the data range.
+ * @param {Array} localarray - The local array to store the fetched data.
+ * @param {number} trim - The trim value for data processing.
+ */
 export function firebase(min_time, max_time, localarray, trim) {
   try {
     var start_index = min_time.toString();
@@ -129,18 +136,22 @@ export function firebase(min_time, max_time, localarray, trim) {
           .catch((error) => {
             console.error("[history_fb_module.js] Error fetching Firebase data:", error);
           }),
-
-        threshold_triggers.once("value", function (snapshot) {
-          if (snapshot.val() != null) {
-            snapshot.forEach((data) => {
-              var tme_in_ms = data.key * 1000;
-              threshold_triggers_timestamps.push([parseInt(tme_in_ms), parseInt(5)]);
-            });
-          } else {
-            console.log("[history_fb_module.js] No threshold triggers data available for the given time range.");
-          }
-          history_threshold_triggers(min_time, max_time, threshold_triggers_timestamps, id);
-        }),
+        // For Threshold Triggers
+        threshold_triggers
+          .once("value", function (snapshot) {
+            if (snapshot.val() != null) {
+              snapshot.forEach((data) => {
+                var tme_in_ms = data.key * 1000;
+                threshold_triggers_timestamps.push([parseInt(tme_in_ms), parseInt(5)]);
+              });
+            } else {
+              console.log("[history_fb_module.js] No threshold triggers data available for the given time range.");
+            }
+            history_threshold_triggers(min_time, max_time, threshold_triggers_timestamps, id);
+          })
+          .catch((error) => {
+            console.error("[history_fb_module.js] Error fetching threshold triggers data:", error);
+          }),
       ]).then(() => {
         const loader = document.querySelector(".loader");
         loader.classList.add("loader--hidden");

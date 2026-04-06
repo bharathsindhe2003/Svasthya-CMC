@@ -145,7 +145,11 @@ function sanitizeVitalValue(value, invalidSentinel) {
 
   return numericValue;
 }
-
+/**
+ * Update Vitals
+ * @param {Object} data - The vital signs data object.
+ * @returns {void}
+ */
 function applyVitalsToUi(data) {
   if (!data) {
     return;

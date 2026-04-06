@@ -48,6 +48,10 @@ if (DoctorNameElement && doctor_name) {
   console.warn('[dashboard-custom.js] Element with id "DoctorName" not found.');
 }
 
+/**
+ * fetch patients related to the given doctor ID
+ * @param {string} ref_doc_id
+ */
 function firebase_Data_retrieval(ref_doc_id) {
   try {
     var patient_list = fb.database().ref().child("patients");
@@ -546,6 +550,14 @@ function firebase_Data_retrieval(ref_doc_id) {
     console.error("[dashboard-custom.js] Error in firebase_Data_retrieval:", e);
   }
 }
+/**
+ *  refresh EWS score and update color based on ID
+ * @param {string} ews_value - EWS Score to update
+ * @param {string} ews_color - EWS Color to update
+ * @param {string} ID - The ID of the element to update
+ * @returns {void}
+
+ */
 function refreshews(ews_value, ews_color, ID) {
   var ewsvId = "ewsv" + ID;
   var ewscId = "ewsc" + ID;
@@ -596,6 +608,12 @@ document.addEventListener("visibilitychange", function () {
   }
 });
 
+/**
+ * Creates an ECG chart for the given ECG data and container ID.
+ * @param {Array<number>} ecg - The ECG data array.
+ * @param {string} Id - The container ID suffix for the ECG chart.
+ * @returns {void}
+ */
 function createECGchart(ecg, Id) {
   var LiveECGId = "chart" + Id;
   var chart = getOrCreateChart(LiveECGId);
@@ -853,6 +871,12 @@ function createECGchart(ecg, Id) {
     chart.setOption(option1, true);
   }
 }
+/**
+ * Create a PPG chart for the given PPG data and container ID.
+ * @param {Array<number>} ppg - The PPG data array.
+ * @param {string} ID - The container ID suffix for the PPG chart.
+ * @returns {void}
+ */
 function createPPGchart(ppg, ID) {
   var LivePPGId = "ppgchart" + ID;
   var chart = getOrCreateChart(LivePPGId);
@@ -1100,6 +1124,12 @@ function createPPGchart(ppg, ID) {
     chart.setOption(option1, true);
   }
 }
+/**
+ * Create a RR chart for the given RR data and container ID.
+ * @param {Array<number>} rr - The RR data array.
+ * @param {string} ID - The container ID suffix for the RR chart.
+ * @returns {void}
+ */
 function createRRchart(rr, ID) {
   var LiveRRId = "rrchart" + ID;
   var chart = getOrCreateChart(LiveRRId);
@@ -1206,6 +1236,17 @@ function createRRchart(rr, ID) {
   }
   chart.setOption(option, true);
 }
+/**
+ * Refresh the vital signs displayed in the dashboard.
+ * @param {number} hr - Heart rate value.
+ * @param {string} bp - Blood pressure value.
+ * @param {number} temp - Temperature value.
+ * @param {number} rr - Respiratory rate value.
+ * @param {number} spo - SpO2 value.
+ * @param {string} ID - The ID suffix for the elements to update.
+ * @returns {void}
+ */
+
 function refreshvitals(hr, bp, temp, rr, spo, ID) {
   var hrId = "hr" + ID;
   var bpId = "bp" + ID;

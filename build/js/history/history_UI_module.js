@@ -135,6 +135,14 @@ function formatTooltipWithValues(params) {
   }
 }
 
+/**
+ * Plot the point when data is captured in patientlivedata node
+ * @param {number|string} min_time Start Date and time in epoch
+ * @param {number|string} max_time End Date and time in epoch
+ * @param {string} id Patient ID
+ * @param {Array} context_timestamp Timestamps
+ * @returns {void} No return params but when point is clicked it opens a popup
+ */
 function history_context_assessment_2(min_time, max_time, id, context_timestamp) {
   try {
     if (!$("#vital_notifications_echart_content").length) {
@@ -299,6 +307,14 @@ function history_context_assessment_2(min_time, max_time, id, context_timestamp)
   }
 }
 
+/**
+ * Plot point when data is capture in patientecgdata node
+ * @param {*} min_time Start Date and time in epoch
+ * @param {*} max_time End Date and time in epoch
+ * @param {*} ecg_timestamp timestamps
+ * @param {*} id Patient ID
+ * @returns {void} No return params but when point is clicked it opens a popup
+ */
 function history_ECG(min_time, max_time, ecg_timestamp, id) {
   try {
     if (!$("#ecg_echart_content").length) {
@@ -472,6 +488,14 @@ function history_ECG(min_time, max_time, ecg_timestamp, id) {
   }
 }
 
+/**
+ * Plot Heart Rate values from the min_time to max_time
+ * @param {number|string} min_time - Start Date and time in epoch
+ * @param {number|string} max_time - End Date and time in epoch
+ * @param {Array} heart_rate - Values of HR with Date and time in epoch
+ * @param {string} id - Patient ID
+ * @returns {void}
+ */
 function history_Heart_Rate(min_time, max_time, heart_rate, id) {
   try {
     if (!$("#heart_rate_echart_content").length) {
@@ -622,6 +646,14 @@ function history_Heart_Rate(min_time, max_time, heart_rate, id) {
   }
 }
 
+/**
+ * Plot SPO2 values from the min_time to max_time
+ * @param {number|string} min_time - Start Date and time in epoch
+ * @param {number|string} max_time - End Date and time in epoch
+ * @param {Array} blood_oxygen - Values of SpO2 with Date and time in epoch
+ * @param {string} id - Patient ID
+ * @returns {void}
+ */
 function history_Blood_Oxygen(min_time, max_time, blood_oxygen, id) {
   try {
     if (!$("#spo2_echart_content").length) {
@@ -775,6 +807,14 @@ function history_Blood_Oxygen(min_time, max_time, blood_oxygen, id) {
   }
 }
 
+/**
+ * Plot Temperature values from the min_time to max_time
+ * @param {number|string} min_time - Start Date and time in epoch
+ * @param {number|string} max_time - End Date and time in epoch
+ * @param {Array} temperature - Values of Temperature with Date and time in epoch
+ * @param {string} id - Patient ID
+ * @returns {void}
+ */
 function history_temperature(min_time, max_time, temperature, id) {
   try {
     if (!$("#temperature_echart_content").length) {
@@ -927,7 +967,14 @@ function history_temperature(min_time, max_time, temperature, id) {
     console.error(" [history_UI_module.js] Error in history_temperature function:", error);
   }
 }
-
+/**
+ * Plot Blood Pressure values from the min_time to max_time
+ * @param {number|string} min_time - Start Date and time in epoch
+ * @param {number|string} max_time - End Date and time in epoch
+ * @param {Array} blood_pressure - Values of BP with Date and time in epoch
+ * @param {string} id - Patient ID
+ * @returns {void}
+ */
 function history_Blood_presure(min_time, max_time, blood_pressure, id) {
   try {
     if (!$("#blood_pressure_echart_content").length) {
@@ -1118,7 +1165,14 @@ function history_Blood_presure(min_time, max_time, blood_pressure, id) {
     console.error(" [history_UI_module.js] Error in history_Blood_presure function:", error);
   }
 }
-
+/**
+ * Plot RR values from the min_time to max_time
+ * @param {number|string} min_time Start Date and time in epoch
+ * @param {number|string} max_time End Date and time in epoch
+ * @param {Array} respiration_rate Values of RR with Date and time in epoch
+ * @param {string} id Patient ID
+ * @returns {void}
+ */
 function history_Respiration_Rate(min_time, max_time, respiration_rate, id) {
   try {
     if (!$("#respiration_rate_echart_content").length) {
@@ -1272,6 +1326,14 @@ function history_Respiration_Rate(min_time, max_time, respiration_rate, id) {
   }
 }
 
+/**
+ * Plot point when trigger are genrated in Threshold_trigers
+ * @param {number|string} min_time Start Date and time in epoch
+ * @param {number|string} max_time End Date and time in epoch
+ * @param {Array} threshold_triggers Threshold triggers data
+ * @param {string} id Patient ID
+ * @returns {void} No return params but when point is clicked it opens a popup
+ */
 function history_threshold_triggers(min_time, max_time, threshold_triggers, id) {
   try {
     if (!$("#threshold_notifications_echart_content").length) {
@@ -1435,6 +1497,7 @@ function history_threshold_triggers(min_time, max_time, threshold_triggers, id) 
     console.error(" [history_UI_module.js] Error in history_context_assessment function:", error);
   }
 }
+
 var parentDoc = window.parent && window.parent.document ? window.parent.document : document;
 
 var modal = parentDoc.getElementById("myModal_2");

@@ -18,9 +18,8 @@ console.log("[context_ecg.js] Timestamp:", timestamp);
 console.log("[context_ecg.js] ID:", id);
 console.log("[context_ecg.js] page", page, "timestamp", timestamp);
 
-var patientsDataRef;
 if (page == "2") {
-  patientsDataRef = fb.database().ref().child("patientecgdata").child(id).child(timestamp);
+  const patientsDataRef = fb.database().ref().child("patientecgdata").child(id).child(timestamp);
 
   patientsDataRef
     .once("value", function (snapshot) {
@@ -65,6 +64,16 @@ if (page == "2") {
       loader.classList.add("loader--hidden");
     });
 }
+/**
+ * Add ECG data if exists for the given timestamp
+ * @param {*} LiveEcgValues
+ * @param {*} ecgdate
+ * @param {*} ecgtime
+ * @param {*} option1
+ * @param {*} value
+ * @param {*} ecgdata
+ * @param {*} endzoom
+ */
 function ECG_data(LiveEcgValues, ecgdate, ecgtime, option1, value, ecgdata, endzoom) {
   console.log("[context_ecg.js] [context_assessment_UI_2.js] EcgValues in echarts", "context:", ecgdata);
   var EcgData;

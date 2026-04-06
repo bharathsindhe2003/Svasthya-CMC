@@ -1,4 +1,9 @@
-/**************************** EWS on live page **********************************/
+/**
+ * Update EWS value on the live page.
+ * @param {number|string} ews_value - The EWS value to display.
+ * @param {string} ews_color - The color to use for the EWS bar.
+ * @returns {void}
+ */
 function ews_value_passing(ews_value, ews_color) {
   try {
     const cardContainer = document.getElementById("ews_id");
@@ -30,9 +35,17 @@ function ews_value_passing(ews_value, ews_color) {
     console.log("[live-custom.js] Error in ews_value_passing:", e);
   }
 }
-/***************************EOF of EWS on live page*****************************/
-
-/****************************Electrocardiogram(ECG)***********************************/
+/**
+ * Update ECG data on the live page.
+ * @param {Array<number>} LiveEcgValues - The live ECG values.
+ * @param {string} ecgdate - The date of the ECG data.
+ * @param {string} ecgtime - The time of the ECG data.
+ * @param {Object} option1 - The chart options.
+ * @param {number} value - The value to display.
+ * @param {Array<number>} ecgdata - The ECG data array.
+ * @param {number} endzoom - The end zoom value for the chart.
+ * @returns {void}
+ */
 function ECG_data_passing(LiveEcgValues, ecgdate, ecgtime, option1, value, ecgdata, endzoom) {
   var EcgData;
   var contextECG;
@@ -328,9 +341,17 @@ function ECG_data_passing(LiveEcgValues, ecgdate, ecgtime, option1, value, ecgda
     console.log("Error:", e.message);
   }
 }
-/***************************EOF of Electrocardiogram(ECG)*****************************/
-
-/**************************** Photoplethysmogram (PPG)***********************************/
+/**
+ * Update PPG data on the live page
+ * @param {Array<number>} LivePpgValues - The live PPG values.
+ * @param {string} ecgdate - The date of the ECG data.
+ * @param {string} ecgtime - The time of the ECG data.
+ * @param {Object} option1 - The chart options.
+ * @param {number} value - The value to display.
+ * @param {Array<number>} ppgdata - The PPG data array.
+ * @param {number} endzoom - The end zoom value for the chart.
+ * @returns {void}
+ */
 function PPG_data_passing(LivePpgValues, ecgdate, ecgtime, option1, value, ppgdata, endzoom) {
   if (window.location.pathname.includes("context_assment.html")) return;
 
@@ -594,10 +615,18 @@ function PPG_data_passing(LivePpgValues, ecgdate, ecgtime, option1, value, ppgda
     console.error("[live-custom.js] Error in building PPG chart:", e);
   }
 }
-/***************************EOF of Photoplethysmogram (PPG)*****************************/
 
-/**************************** Respiration Rate ******************************/
-
+/**
+ * Update Respiration Rate (RR) data on the live page.
+ * @param {Array<number>} LiveRrValues - The live RR values.
+ * @param {string} rrdate - The date of the RR data.
+ * @param {string} rrtime - The time of the RR data.
+ * @param {Object} option1 - The chart options.
+ * @param {number} value - The value to display.
+ * @param {Array<number>} rrdata - The RR data array.
+ * @param {number} endzoom - The end zoom value for the chart.
+ * @returns {void}
+ */
 function RR_data_passing(LiveRrValues, rrdate, rrtime, option1, value, rrdata, endzoom) {
   if (!$("#LiveRRId").length) return;
   try {
@@ -817,9 +846,12 @@ function RR_data_passing(LiveRrValues, rrdate, rrtime, option1, value, rrdata, e
     console.error("[live-custom.js] Error in RR_data_passing:", e);
   }
 }
-/*********************** EOF of Respiration Rate ****************************/
-/**************************** Heart Rate ******************************/
-
+/**
+ * Update Heart Rate (HR) data on the live page and context assessment.
+ * @param {number|string} LiveHeartrate - The live heart rate value.
+ * @param {number|string} ContextHeartrate - The context heart rate value.
+ * @returns {void}
+ */
 function heartrate_data(LiveHeartrate, ContextHeartrate) {
   // console.log("[live-custom.js] Calling Heart rate *******88", ContextHeartrate);
   var LiveHRId;
@@ -955,12 +987,17 @@ function normalizeSpO2(value) {
   return n;
 }
 
-// Live-page SPO2 gauge (used on main live/history page)
+/**
+ * Update Blood Oxygen (SpO2) data on the live page and context assessment.
+ * @param {number|string} LiveBloodOxygen - The live blood oxygen value.
+ * @param {number|string} ContextBloodOxygen - The context blood oxygen value.
+ * @returns {void}
+ */
 function blood_oxygen_data(LiveBloodOxygen) {
-  console.log("[live-custom.js] Calling blood_oxygen_data (live)", {
-    LiveBloodOxygen,
-    // ContextBloodOxygen,
-  });
+  // console.log("[live-custom.js] Calling blood_oxygen_data (live)", {
+  // LiveBloodOxygen,
+  // ContextBloodOxygen,
+  // });
 
   var LiveBloodOxygenId;
   // var ContextBloodOxygenId;
@@ -1066,7 +1103,12 @@ function blood_oxygen_data(LiveBloodOxygen) {
     LiveBloodOxygenId.setOption(echartGauge2);
   }
 }
-/***************************  BloodOxygen(spo2) for Context Assessment only ***********************/
+
+/**
+ * Update Blood Oxygen (SpO2) data for context assessment.
+ * @param {number|string} ContextBloodOxygen - The context blood oxygen value.
+ * @returns {void}
+ */
 function blood_oxygen_data_context(ContextBloodOxygen) {
   console.log("[live-custom.js] Calling blood_oxygen_data_context", {
     ContextBloodOxygen,
@@ -1162,9 +1204,14 @@ function blood_oxygen_data_context(ContextBloodOxygen) {
   echartGauge.series[0].data[0].value = d;
   ContextBloodOxygenId.setOption(echartGauge);
 }
-/************************* EOF of BloodOxygen(spo2) ********************/
 
-/************************ Temperature  ********************************/
+/**
+ * Update Temperature data for live and context assessment.
+ * @param {number|string} LiveTemperature - The live temperature value.
+ * @param {number|string} ContextTemperature - The context temperature value.
+ * @returns {void}
+ */
+
 function temperature_data(LiveTemperature, ContextTemperature) {
   // Convert inputs to strings if they are not already
   // console.log("[live-custom.js] LiveTemperature 1", LiveTemperature);
@@ -1285,8 +1332,14 @@ function temperature_data(LiveTemperature, ContextTemperature) {
     LiveTemperatureId.setOption(echartGauge2);
   }
 }
-/*********************** EOF of Temperature  ****************************/
-
+/**
+ * Update Blood Pressure (BP) data for live and context assessment.
+ * @param {number|string} LiveSBP - The live systolic blood pressure value.
+ * @param {number|string} LiveDBP - The live diastolic blood pressure value.
+ * @param {number|string} ContextSBP - The context systolic blood pressure value.
+ * @param {number|string} ContextDBP - The context diastolic blood pressure value.
+ * @returns {void}
+ */
 function blood_pressure_data(LiveSBP, LiveDBP, ContextSBP, ContextDBP) {
   //var echartGauge;
   //var sbp;
@@ -1401,7 +1454,12 @@ function blood_pressure_data(LiveSBP, LiveDBP, ContextSBP, ContextDBP) {
   }
 }
 
-/**************************** Respiration Rate *************************/
+/**
+ * Update Respiration Rate (RR) data for live and context assessment.
+ * @param {number|string} LiveRRData - The live respiration rate value.
+ * @param {number|string} contextRRData - The context respiration rate value.
+ * @returns {void}
+ */
 function respiration_rate_data(LiveRRData, contextRRData) {
   // console.log("[live-custom.js] Calling LiveRRData in live page", LiveRRData, contextRRData);
   var LiveHRId;
@@ -1511,7 +1569,6 @@ function respiration_rate_data(LiveRRData, contextRRData) {
     LiveHRId.setOption(echartGauge2);
   }
 }
-/**************************** EOF of Respiration Rate *************************/
 export {
   heartrate_data,
   blood_pressure_data,
