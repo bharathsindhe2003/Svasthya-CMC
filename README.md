@@ -1,6 +1,6 @@
 # Svasthya CMC
 
-Svasthya CMC is a static web application for remote patient monitoring. It is designed for doctor-facing workflows where a clinician signs in, reviews assigned patients, opens a patient monitoring view, watches live waveform and vital feeds, reviews history, and configures alert thresholds.
+Svasthya CMC is a static web application for remote patient monitoring. It is designed for doctor-facing workflows where a doctor logs in, reviews assigned patients, opens a patient monitoring view, watches live waveform and vital feeds, reviews history, and configures alert thresholds.
 
 Company: TANTRAGYAAN - Unit of TANTROTTOLAN SOLUTIONS LLP
 
@@ -184,7 +184,7 @@ Notes:
 - `production/login.html`: doctor login page with the Svasthya brand panel, credential form, remember-me option, and login script entrypoint
 - `production/dashboard.html`: patient overview page that shows doctor identity, patient cards, alert sound/lightbox containers, and dashboard card interactions
 - `production/index.html`: main patient workspace shell that combines shared navigation with the live monitoring, history, and threshold-configuration sections selected through the `openpage` query parameter
-- `production/context_assment.html`: context assessment popup page for timestamp-based review of ECG, PPG, RR, vitals, symptoms, and EWS details
+- `production/context_assment.html`: context assessment popup page for timestamp-based review of ECG, PPG, RR, vitals, and EWS details
 - `production/context_ecg.html`: focused ECG popup page for timestamp-based alert and history drill-down when only the ECG view is needed
 
 ## Front-End CSS Roadmap
