@@ -155,6 +155,14 @@ Notes:
 - `build/js/history/history_fb_module.js`: fetches historical vital, ECG, and threshold-trigger data for the selected patient and time window
 - `build/js/history/history_UI_module.js`: renders the history charts and launches context popup windows
 
+### Context assessment popup
+
+- `build/js/context_assessment/context_assessment_UI.js`: loads the selected timestamp snapshot for a patient, fills context vitals and EWS values, and renders ECG, PPG, and respiration waveform charts or no-data states in the assessment popup
+
+### Context ECG popup
+
+- `build/js/context_ecg/context_ecg.js`: loads the selected timestamp ECG payload for alert and history drill-down views, formats the capture date and time, and renders the ECG-only popup chart with reset and no-data handling
+
 ### Threshold configuration and alerts
 
 - `build/js/vitals/vitals_module.js`: loads and saves patient-specific threshold rules for SpO2, heart rate, temperature, respiratory rate, systolic BP, and diastolic BP
@@ -248,7 +256,7 @@ Supported rule styles in the UI:
 - Greater than
 - In between
 
-The UI stores condition metadata plus value fields such as `Min`, `Max`, `val1`, `val2`, and `typ` depending on the rule shape.
+The UI stores condition metadata plus value fields such as `val1`, `val2`, and `typ` depending on the rule shape.
 
 ## User Experience Summary
 
