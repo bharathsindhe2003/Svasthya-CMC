@@ -128,7 +128,7 @@ Notes:
 
 - `build/` contains the runtime CSS and JavaScript used by the application. Despite the name, there is no build pipeline in this repository.
 
-## Front-End Module Map
+## Front-End JS Module Map
 
 ### Authentication
 
@@ -172,6 +172,45 @@ Notes:
 
 - `build/js/backend/toastmsg.js`: toast notifications
 - `build/js/utils/echarts-auto-resize.js`: automatic chart resizing support
+
+## Front-End HTML Roadmap
+
+### Entry point
+
+- `index.html`: root landing page that immediately redirects the browser to `production/login.html`
+
+### Runtime pages
+
+- `production/login.html`: doctor login page with the Svasthya brand panel, credential form, remember-me option, and login script entrypoint
+- `production/dashboard.html`: patient overview page that shows doctor identity, patient cards, alert sound/lightbox containers, and dashboard card interactions
+- `production/index.html`: main patient workspace shell that combines shared navigation with the live monitoring, history, and threshold-configuration sections selected through the `openpage` query parameter
+- `production/context_assment.html`: context assessment popup page for timestamp-based review of ECG, PPG, RR, vitals, symptoms, and EWS details
+- `production/context_ecg.html`: focused ECG popup page for timestamp-based alert and history drill-down when only the ECG view is needed
+
+## Front-End CSS Roadmap
+
+### Shared shell and overlays
+
+- `build/css/LeftandTopNavigation.css`: shared navigation, header, sidebar, profile, and shell styling used by the dashboard and main patient workspace
+- `build/css/lightbox.css`: reusable lightbox and popup container styling for image, chart, and iframe overlays
+- `build/css/incomingDialogbox.css`: modal and incoming dialog styling used around dashboard and main workspace popup flows
+
+### Page-specific layouts
+
+- `build/css/login-custom.css`: branded login layout, login card, form field, password toggle, and responsive authentication page styling
+- `build/css/DashbordRightColomn.css`: dashboard patient card grid, right-column layout, and dashboard-specific content styling
+- `build/css/LiveRightColomn.css`: live monitoring page layout for waveform cards, vital cards, EWS panel, and responsive main workspace alignment
+- `build/css/HistoryRightColomn.css`: history page layout, chart containers, filters, modal iframe presentation, and trend review styling loaded by the main workspace page
+- `build/css/vital.css`: threshold configuration and vital settings layout inside the main patient workspace
+
+### Context popup layouts
+
+- `build/css/context_assment_LeftandTopNavigation.css`: shared shell styling for context popup pages
+- `build/css/context_assment_LiveRightColomn.css`: context assessment and context ECG layout styling for popup charts, vitals, and focused review panels
+
+### Legacy or unused bundle
+
+- `build/css/custom.min.css`: bundled theme stylesheet that is currently commented out in `production/index.html` and not part of the active runtime styling path
 
 ## Firebase Integration
 
