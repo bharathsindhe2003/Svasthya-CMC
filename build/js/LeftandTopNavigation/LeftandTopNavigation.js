@@ -40,6 +40,10 @@ try {
   console.error("Unable to attach profile dropdown handlers", e);
 }
 
+/**
+ * Clears the active doctor/patient session and sends the user back to login.
+ * @returns {void}
+ */
 function logout() {
   localStorage.removeItem("patient_unique_id");
   localStorage.removeItem("doctor_id");

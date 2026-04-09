@@ -1,3 +1,7 @@
+/**
+ * Renders the ECG-only context popup used from alert history and timestamp-based
+ * drill-down views.
+ */
 import { fb } from "../livepage/database_function.js";
 import { NoEcgData } from "../livepage/EchartGraphs.js";
 

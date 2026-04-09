@@ -40,6 +40,10 @@ if (!uid) {
   loadVitals();
 }
 
+/**
+ * Attach toggle, rule, and save handlers for the threshold configuration form.
+ * @returns {void}
+ */
 function wireEvents() {
   VITALS.forEach((vital) => {
     const toggle = document.getElementById(`${vital.key}toggle`);
@@ -57,6 +61,10 @@ function wireEvents() {
   saveButton?.addEventListener("click", saveVitals);
 }
 
+/**
+ * Load the saved threshold rules for the active patient and hydrate the form.
+ * @returns {Promise<void>}
+ */
 async function loadVitals() {
   try {
     const snapshot = await vitalsRef.once("value");
@@ -75,6 +83,13 @@ async function loadVitals() {
   }
 }
 
+/**
+ * Push a normalized vital state into the corresponding form controls.
+ * @param {string} key
+ * @param {Object} node
+ * @param {Object} fallback
+ * @returns {void}
+ */
 function hydrateVital(key, node, fallback) {
   const state = normalizeState(node, fallback);
   const toggle = document.getElementById(`${key}toggle`);
@@ -96,6 +111,12 @@ function hydrateVital(key, node, fallback) {
   updateVitalUI(key);
 }
 
+/**
+ * Normalize a stored threshold node into the UI state consumed by the form.
+ * @param {Object} node
+ * @param {Object} fallback
+ * @returns {{enabled: boolean, condition: string, singleValue: string, minValue: string, maxValue: string}}
+ */
 function normalizeState(node, fallback) {
   const enabledValue = node?.enabled;
   const condition = normalizeCondition(node?.condition || CONDITION_BY_TYPE[node?.typ] || fallback?.condition || "off");
@@ -124,6 +145,13 @@ function normalizeState(node, fallback) {
   };
 }
 
+/**
+ * Pick the single comparison value from either the new node structure or the legacy fallback.
+ * @param {string} condition
+ * @param {Object} node
+ * @param {Object} fallback
+ * @returns {string}
+ */
 function deriveSingleValue(condition, node, fallback) {
   if (condition === "lt") {
     return node?.val1 ?? node?.Max ?? fallback?.singleValue ?? fallback?.maxValue ?? "";
@@ -140,6 +168,11 @@ function deriveSingleValue(condition, node, fallback) {
   return node?.val1 ?? fallback?.singleValue ?? "";
 }
 
+/**
+ * Show or hide the correct input controls for the selected vital rule.
+ * @param {string} key
+ * @returns {void}
+ */
 function updateVitalUI(key) {
   const card = document.querySelector(`[data-vital-key="${key}"]`);
   const toggle = document.getElementById(`${key}toggle`);
@@ -167,6 +200,10 @@ function updateVitalUI(key) {
   maxField?.classList.toggle("is-hidden", !isEnabled || !isBetween);
 }
 
+/**
+ * Validate and persist the currently selected threshold rules to Firebase.
+ * @returns {Promise<void>}
+ */
 async function saveVitals() {
   if (!uid) {
     return;
@@ -206,6 +243,11 @@ async function saveVitals() {
   }
 }
 
+/**
+ * Read and validate the current UI state for a single vital rule.
+ * @param {Object} vital
+ * @returns {{enabled: boolean, condition: string, singleValue: string, minValue: string, maxValue: string}}
+ */
 function collectVitalState(vital) {
   const toggle = document.getElementById(`${vital.key}toggle`);
   const conditionElement = document.getElementById(`${vital.key}condition`);
@@ -254,6 +296,12 @@ function collectVitalState(vital) {
   };
 }
 
+/**
+ * Convert the normalized form state into the compact Firebase payload format.
+ * @param {string} key
+ * @param {Object} state
+ * @returns {{typ: string, val1: string, val2: string}}
+ */
 function buildVitalUpdates(key, state) {
   const typeCode = state.enabled ? TYPE_BY_CONDITION[state.condition] || "" : "";
   const valueOne = state.condition === "between" ? state.minValue : state.singleValue;
@@ -266,6 +314,11 @@ function buildVitalUpdates(key, state) {
   };
 }
 
+/**
+ * Split the legacy combined blood-pressure node into SBP and DBP fallback states.
+ * @param {Object} bpNode
+ * @returns {{sbp: Object|null, dbp: Object|null}}
+ */
 function splitLegacyBloodPressure(bpNode) {
   const minParts = splitBloodPressureValue(bpNode?.Min);
   const maxParts = splitBloodPressureValue(bpNode?.Max);
@@ -298,6 +351,11 @@ function splitLegacyBloodPressure(bpNode) {
   };
 }
 
+/**
+ * Break a blood-pressure string like SBP/DBP into separate values.
+ * @param {string} value
+ * @returns {Array<string>}
+ */
 function splitBloodPressureValue(value) {
   const normalized = stringifyValue(value);
 
@@ -309,10 +367,20 @@ function splitBloodPressureValue(value) {
   return [parts[0]?.trim() || "", parts[1]?.trim() || ""];
 }
 
+/**
+ * Limit condition values to the rule types supported by the UI.
+ * @param {string} value
+ * @returns {string}
+ */
 function normalizeCondition(value) {
   return ["lt", "eq", "gt", "between", "off"].includes(value) ? value : "off";
 }
 
+/**
+ * Convert optional values into trimmed strings for form consumption.
+ * @param {unknown} value
+ * @returns {string}
+ */
 function stringifyValue(value) {
   if (value == null) {
     return "";
@@ -321,6 +389,12 @@ function stringifyValue(value) {
   return String(value).trim();
 }
 
+/**
+ * Parse an integer rule input and throw a user-facing validation error on failure.
+ * @param {string|number} value
+ * @param {string} label
+ * @returns {number}
+ */
 function parseInteger(value, label) {
   const parsed = Number.parseInt(String(value).trim(), 10);
 
@@ -331,6 +405,12 @@ function parseInteger(value, label) {
   return parsed;
 }
 
+/**
+ * Parse a decimal rule input and throw a user-facing validation error on failure.
+ * @param {string|number} value
+ * @param {string} label
+ * @returns {number}
+ */
 function parseDecimal(value, label) {
   const parsed = Number.parseFloat(String(value).trim());
 
@@ -341,6 +421,13 @@ function parseDecimal(value, label) {
   return parsed;
 }
 
+/**
+ * Show transient save feedback beside the vitals configuration form.
+ * @param {string} message
+ * @param {boolean} isError
+ * @param {boolean} autoClear
+ * @returns {void}
+ */
 function setSaveStatus(message, isError, autoClear) {
   if (!saveStatus) {
     return;

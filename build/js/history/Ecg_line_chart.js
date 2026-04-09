@@ -1,6 +1,15 @@
 import { fb } from "../livepage/database_function.js";
 import { ECG_data_passing } from "../livepage/live-custom.js";
 
+/**
+ * Load a historical ECG payload for the selected timestamp and replace the
+ * scatter view with a detailed waveform chart.
+ * @param {number|string} timestamp
+ * @param {string} id
+ * @param {Object} ECG_scatter_graph
+ * @param {Object} ECG_scatter_opt
+ * @returns {void}
+ */
 export function ecg_lineChart(timestamp, id, ECG_scatter_graph, ECG_scatter_opt) {
   console.log("time stamp and id is: ", timestamp, id);
 

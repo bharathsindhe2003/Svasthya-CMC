@@ -1,7 +1,21 @@
+/**
+ * Global ECharts resize helpers that keep charts aligned after layout changes,
+ * sidebar toggles, and responsive viewport updates.
+ */
+
+/**
+ * Safely access the global ECharts instance when it is available on the page.
+ * @returns {Object|undefined}
+ */
 function getEcharts() {
   return globalThis.echarts;
 }
 
+/**
+ * Resize a single chart instance without throwing if the chart is mid-transition.
+ * @param {Object} chart
+ * @returns {void}
+ */
 function safeResizeChart(chart) {
   if (!chart) return;
   try {
@@ -15,6 +29,10 @@ function safeResizeChart(chart) {
   }
 }
 
+/**
+ * Resize every chart instance currently attached to the DOM.
+ * @returns {void}
+ */
 export function resizeAllEcharts() {
   const echarts = getEcharts();
   if (!echarts || !document) return;
@@ -30,6 +48,14 @@ export function resizeAllEcharts() {
   });
 }
 
+/**
+ * Register a debounced event listener and return a cleanup function.
+ * @param {EventTarget} target
+ * @param {string} eventName
+ * @param {Function} handler
+ * @param {number} delayMs
+ * @returns {Function}
+ */
 function addDebouncedListener(target, eventName, handler, delayMs) {
   let timer = null;
   const wrapped = () => {

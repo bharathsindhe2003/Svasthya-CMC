@@ -43,6 +43,12 @@ export async function patient_details(patient_info) {
   // console.log("[Dashboard-UI.js] patient_info before in array: ", normalizedPatientInfo);
   normalizedPatientInfo.sort(sortFunction);
 
+  /**
+   * Prioritize cards by the computed EWS severity ordering.
+   * @param {Array} a
+   * @param {Array} b
+   * @returns {number}
+   */
   function sortFunction(a, b) {
     if (a[5] === b[5]) {
       return 0;
@@ -97,6 +103,27 @@ export async function patient_details(patient_info) {
       console.log("[Dashboard-UI.js] Created card for:", normalizedPatientInfo[i]);
     }
 
+    /**
+     * Render a single patient card with waveform placeholders and vital targets.
+     * @param {Array} patientDetails
+     * @param {string} LiveECGId
+     * @param {string} LivePPGId
+     * @param {string} LiveRRId
+     * @param {string} hrId
+     * @param {string} spoId
+     * @param {string} bpId
+     * @param {string} rrId
+     * @param {string} tempId
+     * @param {string} ewsvId
+     * @param {string} ewscId
+     * @param {string} borderId
+     * @param {string} hrBorderId
+     * @param {string} spo2BorderId
+     * @param {string} tempBorderId
+     * @param {string} rrBorderId
+     * @param {string} bpBorderId
+     * @returns {void}
+     */
     function createCard(patientDetails, LiveECGId, LivePPGId, LiveRRId, hrId, spoId, bpId, rrId, tempId, ewsvId, ewscId, borderId, hrBorderId, spo2BorderId, tempBorderId, rrBorderId, bpBorderId) {
       const [name, age, gender, ailment, patient_id_no, ews, color] = patientDetails;
       console.log("[Dashboard-UI.js] Creating card with IDs:", ewsvId, ewscId);
@@ -204,6 +231,13 @@ export async function patient_details(patient_info) {
   }
 }
 
+/**
+ * Update the EWS badge on a dashboard card.
+ * @param {string|number} ews_value
+ * @param {string} ews_color
+ * @param {string} ID
+ * @returns {void}
+ */
 function refreshews(ews_value, ews_color, ID) {
   var ewsvId = "ewsv" + ID;
   var ewscId = "ewsc" + ID;

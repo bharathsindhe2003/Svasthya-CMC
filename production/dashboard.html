@@ -145,10 +145,15 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </body>
   <script>
+    /**
+     * Function handles the click event on a card
+     * @param {string} id - The ID of the card
+     * @returns {void}
+     */
     function cardclick(id) {
       const key = "THRESHOLD_TRIGGERS";
       const data = JSON.parse(sessionStorage.getItem(key)) || {};
-
+      // remove id from session storage since it was clicked
       delete data[id];
 
       sessionStorage.setItem(key, JSON.stringify(data));

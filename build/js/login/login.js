@@ -7,6 +7,11 @@ if (internetConnectionStatus == "OFFline") {
 }
 
 fnBrowserDetect();
+
+/**
+ * Detect the current browser and warn users when the app is opened outside Chrome.
+ * @returns {void}
+ */
 function fnBrowserDetect() {
   let userAgent = navigator.userAgent;
   let browserName;

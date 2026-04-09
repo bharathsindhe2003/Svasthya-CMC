@@ -572,6 +572,11 @@ function refreshews(ews_value, ews_color, ID) {
   }
 }
 
+/**
+ * Reuse an existing ECharts instance for a card preview or create one on demand.
+ * @param {string} containerId
+ * @returns {Object|null}
+ */
 function getOrCreateChart(containerId) {
   const container = document.getElementById(containerId);
 
@@ -588,6 +593,10 @@ function getOrCreateChart(containerId) {
   return chart;
 }
 
+/**
+ * Resize all registered dashboard preview charts after layout or viewport changes.
+ * @returns {void}
+ */
 function resizeAllCharts() {
   chartRegistry.forEach((chart, containerId) => {
     const container = document.getElementById(containerId);

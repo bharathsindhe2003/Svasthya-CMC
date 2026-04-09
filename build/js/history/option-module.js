@@ -129,6 +129,10 @@ function applyfunction() {
   }
 }
 
+/**
+ * Clear the custom history date-range inputs.
+ * @returns {void}
+ */
 function cancelfunction() {
   var fromdate = document.getElementById("fromdate");
   var todate = document.getElementById("todate");

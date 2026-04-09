@@ -1,3 +1,7 @@
+/**
+ * Loads the context assessment popup for a selected timestamp and renders
+ * historical vitals, waveforms, and EWS information.
+ */
 import { fb } from "../livepage/database_function.js";
 import { heartrate_data, blood_pressure_data, respiration_rate_data, blood_oxygen_data_context, temperature_data, ews_value_passing } from "../livepage/live-custom.js";
 import { NoEcgData, NoPpgData, NoRRData, NoData } from "../livepage/EchartGraphs.js";

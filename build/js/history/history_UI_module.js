@@ -16,6 +16,13 @@ const temperature_graph = echarts.init(document.getElementById("temperature_echa
 const blood_pressure_graph = echarts.init(document.getElementById("blood_pressure_echart_content"));
 const Respiration_graph = echarts.init(document.getElementById("respiration_rate_echart_content"));
 
+/**
+ * Inserts a null point after missing minute intervals so ECharts breaks the line
+ * instead of drawing across gaps in the historical data.
+ * @param {Array} rawData
+ * @param {number} gapMultiplier
+ * @returns {Array}
+ */
 function addTimeGapsForMissingData(rawData, gapMultiplier) {
   try {
     if (!Array.isArray(rawData) || rawData.length === 0) {
@@ -73,6 +80,11 @@ function addTimeGapsForMissingData(rawData, gapMultiplier) {
   }
 }
 
+/**
+ * Builds a multi-series tooltip string for history charts that share a timestamp.
+ * @param {Array|Object} params
+ * @returns {string}
+ */
 function formatTooltipWithValues(params) {
   try {
     if (!params) {
@@ -1513,6 +1525,11 @@ if (spanEcg) {
   spanEcg.addEventListener("click", closeModal_ecg);
 }
 
+/**
+ * Open the context-assessment modal inside the parent document iframe.
+ * @param {string} pageUrl
+ * @returns {void}
+ */
 function openModal(pageUrl) {
   if (!modal) {
     console.warn("[context_assessment_UI_2.js] myModal_2 not found on parent document");
@@ -1529,6 +1546,12 @@ function openModal(pageUrl) {
   iframe.src = pageUrl;
   modal.style.display = "block";
 }
+
+/**
+ * Open the ECG drill-down modal inside the parent document iframe.
+ * @param {string} pageUrl
+ * @returns {void}
+ */
 function openModal_ecg(pageUrl) {
   if (!modal_ecg) {
     console.warn("[context_assessment_UI_2.js] myModal_3 not found on parent document");
@@ -1546,6 +1569,10 @@ function openModal_ecg(pageUrl) {
   modal_ecg.style.display = "block";
 }
 
+/**
+ * Close the context-assessment modal and clear its iframe source.
+ * @returns {void}
+ */
 function closeModal() {
   if (!modal) {
     return;
@@ -1557,6 +1584,11 @@ function closeModal() {
   }
   modal.style.display = "none";
 }
+
+/**
+ * Close the ECG modal and clear its iframe source.
+ * @returns {void}
+ */
 function closeModal_ecg() {
   if (!modal_ecg) {
     return;

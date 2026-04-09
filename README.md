@@ -1,6 +1,6 @@
 # Svasthya CMC
 
-Svasthya CMC is a static web application for remote patient monitoring. It is designed for doctor-facing workflows where a doctor logs in, reviews assigned patients, opens a patient monitoring view, watches live waveform and vital feeds, reviews history, and configures alert thresholds.
+Svasthya CMC is a static web application for remote patient monitoring. It is designed for doctor-facing workflows in which a doctor logs in, reviews assigned patients, opens a patient monitoring view, monitors live waveform and vital feeds, reviews history, and configures alert thresholds.
 
 Company: TANTRAGYAAN - Unit of TANTROTTOLAN SOLUTIONS LLP
 
@@ -8,7 +8,7 @@ Hosted URL: https://bharathsindhe2003.github.io/Svasthya-CMC/production/login.ht
 
 ## Overview
 
-The application is built as a client-side Firebase application with no backend service inside this repository. The UI is served as static HTML, CSS, and JavaScript files, while authentication and realtime data access are handled through Firebase.
+The application is built as a client-side Firebase application with no backend service in this repository. The UI is served as static HTML, CSS, and JavaScript files, while authentication and realtime data access are handled through Firebase.
 
 Core use cases:
 
@@ -32,25 +32,27 @@ flowchart LR
    D --> G[Configuration tab]
 ```
 
+If the `openpage` query parameter is missing, the current implementation defaults to the Configuration section.
+
 ## Entry Pages
 
 | Page                        | Purpose                                                                     |
 | --------------------------- | --------------------------------------------------------------------------- |
 | `index.html`                | Redirects to `production/login.html` for GitHub Pages hosting               |
 | `production/login.html`     | Doctor authentication screen                                                |
-| `production/dashboard.html` | Patient dashboard with card-based overview                                  |
+| `production/dashboard.html` | Patient dashboard with a card-based overview                                |
 | `production/index.html`     | Main patient workspace containing Live, History, and Configuration sections |
 
-## Navigation And State Model
+## Navigation and State Model
 
 The application uses browser storage and query parameters instead of a router.
 
 ### Local storage keys
 
-- `doctor_id`: Firebase authenticated user id
+- `doctor_id`: Firebase authenticated user ID
 - `docname`: doctor display name shown in the UI
-- `doc_registerId`: registration id used to match patients by `patients/{patientId}/docId`
-- `patient_unique_id`: currently selected patient id
+- `doc_registerId`: registration ID used to match patients by `patients/{patientId}/docId`
+- `patient_unique_id`: currently selected patient ID
 - `patient_info`: cached patient list for dashboard and alert listeners
 - `username`: remembered login email
 - `password`: remembered login password
@@ -66,12 +68,10 @@ The application uses browser storage and query parameters instead of a router.
 - `production/index.html?openpage=historycomponents`
 - `production/index.html?openpage=vitalscomponents`
 
-If `openpage` is missing, the current implementation defaults to the Configuration section.
-
 The context popup pages use base64-encoded query values:
 
 - `param1`: timestamp in seconds
-- `param2`: patient id
+- `param2`: patient ID
 - `param3`: page mode marker
 
 Base64 is only obfuscation. It is not a security mechanism.
@@ -102,7 +102,7 @@ Base64 is only obfuscation. It is not a security mechanism.
 
 ## Repository Structure
 
-This repository is organized as a static web app. The folder names below are the actual runtime paths used by the codebase.
+This repository is organized as a static web application. The folder names below are the actual runtime paths used by the codebase.
 
 ```text
 .
@@ -127,90 +127,97 @@ This repository is organized as a static web app. The folder names below are the
 Notes:
 
 - `build/` contains the runtime CSS and JavaScript used by the application. Despite the name, there is no build pipeline in this repository.
+- `production/` contains the runtime HTML pages used by the application. Despite the name, there is no production pipeline or CI/CD setup in this repository.
+- The documented path names intentionally match the filesystem, including legacy spellings such as `assests`, `aduio2.mp3`, `DashbordRightColomn.css`, and `context_assment.html`.
 
 ## Front-End JS Module Map
 
 ### Authentication
 
-- `build/js/login/login.js`: handles login submission, browser check, internet status check, Firebase Authentication, doctor role validation, and remember-me behavior
+- `build/js/login/login.js`: Handles login submission, browser checks, internet status checks, Firebase Authentication, doctor role validation, and remember-me behavior.
 
 ### Dashboard
 
-- `build/js/dashboard/dashboard-custom.js`: loads patients linked to the logged-in doctor, fetches current vitals and latest waveform snapshots, and prepares dashboard card data
-- `build/js/dashboard/Dashboard-UI.js`: renders patient cards and card interactions
+- `build/js/dashboard/dashboard-custom.js`: Loads patients linked to the logged-in doctor, fetches current vitals and latest waveform snapshots, and prepares dashboard card data.
+  - When the page renders, listeners are attached for each patient UUID assigned to the logged-in doctor.
+  - The module listens to `patientlivedata7s/{uuid}`, `ECG_plot/{uuid}`, `PPG_plot/{uuid}`, `RR_plot/{uuid}`, and `EWS/{uuid}`.
+  - When live data is unavailable or stale, the UI falls back to the latest valid records in `patientlivedata/{uuid}`, `patientecgdata/{uuid}`, `patientppgdata/{uuid}`, and `patientrrdata/{uuid}`.
+- `build/js/dashboard/Dashboard-UI.js`: Renders patient cards and card interactions.
 
 ### Shared navigation and patient context
 
-- `build/js/LeftandTopNavigation/LeftandTopNavigation.js`: populates doctor and patient identity details, handles logout, and binds profile menu UI
+- `build/js/LeftandTopNavigation/LeftandTopNavigation.js`: Populates doctor and patient identity details, handles logout, and binds the profile menu UI.
 
 ### Live monitoring
 
-- `build/js/livepage/database_function.js`: initializes Firebase, connects live page widgets, loads current patient data, and manages waveform placeholders and timestamps
-- `build/js/livepage/live-custom.js`: formats and pushes live vital values into the UI layer
-- `build/js/livepage/EchartGraphs.js`: placeholder chart states when live waveform data is unavailable
+- `build/js/livepage/database_function.js`: Initializes Firebase, connects live page widgets, loads current patient data, and manages waveform placeholders and timestamps.
+  - When the page renders, listeners are attached to `patientlivedata7s/{current_patient_id}`, `ECG_plot/{current_patient_id}`, `PPG_plot/{current_patient_id}`, `RR_plot/{current_patient_id}`, and `EWS/{current_patient_id}`.
+  - When required, last valid records are retrieved from `patientlivedata/{current_patient_id}`, `patientecgdata/{current_patient_id}`, `patientppgdata/{current_patient_id}`, and `patientrrdata/{current_patient_id}`.
+- `build/js/livepage/live-custom.js`: Formats and pushes live vital values into the UI layer.
+- `build/js/livepage/EchartGraphs.js`: Provides placeholder chart states when live waveform data is unavailable.
 
 ### History
 
-- `build/js/history/option-module.js`: time-range controls for hour, day, week, and custom range
-- `build/js/history/history_fb_module.js`: fetches historical vital, ECG, and threshold-trigger data for the selected patient and time window
-- `build/js/history/history_UI_module.js`: renders the history charts and launches context popup windows
+- `build/js/history/option-module.js`: Provides time-range controls for hour, day, week, and custom ranges.
+- `build/js/history/history_fb_module.js`: Fetches historical vital, ECG, and threshold-trigger data for the selected patient and time window.
+- `build/js/history/history_UI_module.js`: Renders the history charts and launches context popup windows.
 
 ### Context assessment popup
 
-- `build/js/context_assessment/context_assessment_UI.js`: loads the selected timestamp snapshot for a patient, fills context vitals and EWS values, and renders ECG, PPG, and respiration waveform charts or no-data states in the assessment popup
+- `build/js/context_assessment/context_assessment_UI.js`: Loads the selected timestamp snapshot for a patient, fills context vitals and EWS values, and renders ECG, PPG, and respiration waveform charts or no-data states in the assessment popup.
 
 ### Context ECG popup
 
-- `build/js/context_ecg/context_ecg.js`: loads the selected timestamp ECG payload for alert and history drill-down views, formats the capture date and time, and renders the ECG-only popup chart with reset and no-data handling
+- `build/js/context_ecg/context_ecg.js`: Loads the selected timestamp ECG payload for alert and history drill-down views, formats the capture date and time, and renders the ECG-only popup chart with reset and no-data handling.
 
 ### Threshold configuration and alerts
 
-- `build/js/vitals/vitals_module.js`: loads and saves patient-specific threshold rules for SpO2, heart rate, temperature, respiratory rate, systolic BP, and diastolic BP
-- `build/js/utils/Threshold_triggers.js`: listens for new threshold-trigger records, applies blink states to patient cards, and controls alert sound playback
+- `build/js/vitals/vitals_module.js`: Loads and saves patient-specific threshold rules for SpO2, heart rate, temperature, respiratory rate, systolic BP, and diastolic BP.
+- `build/js/utils/Threshold_triggers.js`: Listens for new threshold-trigger records, applies blink states to patient cards, and controls alert sound playback.
 
 ### Utilities
 
-- `build/js/backend/toastmsg.js`: toast notifications
-- `build/js/utils/echarts-auto-resize.js`: automatic chart resizing support
+- `build/js/backend/toastmsg.js`: Handles toast notifications.
+- `build/js/utils/echarts-auto-resize.js`: Provides automatic chart resizing support.
 
 ## Front-End HTML Roadmap
 
 ### Entry point
 
-- `index.html`: root landing page that immediately redirects the browser to `production/login.html`
+- `index.html`: Root landing page that immediately redirects the browser to `production/login.html`.
 
 ### Runtime pages
 
-- `production/login.html`: doctor login page with the Svasthya brand panel, credential form, remember-me option, and login script entrypoint
-- `production/dashboard.html`: patient overview page that shows doctor identity, patient cards, alert sound/lightbox containers, and dashboard card interactions
-- `production/index.html`: main patient workspace shell that combines shared navigation with the live monitoring, history, and threshold-configuration sections selected through the `openpage` query parameter
-- `production/context_assment.html`: context assessment popup page for timestamp-based review of ECG, PPG, RR, vitals, and EWS details
-- `production/context_ecg.html`: focused ECG popup page for timestamp-based alert and history drill-down when only the ECG view is needed
+- `production/login.html`: Doctor login page with the Svasthya brand panel, credential form, remember-me option, and login script entry point.
+- `production/dashboard.html`: Patient overview page that shows doctor identity, patient cards, alert sound and lightbox containers, and dashboard card interactions.
+- `production/index.html`: Main patient workspace shell that combines shared navigation with the live monitoring, history, and threshold-configuration sections selected through the `openpage` query parameter.
+- `production/context_assment.html`: Context assessment popup page for timestamp-based review of ECG, PPG, RR, vitals, and EWS details.
+- `production/context_ecg.html`: Focused ECG popup page for timestamp-based alert and history drill-down when only the ECG view is needed.
 
 ## Front-End CSS Roadmap
 
 ### Shared shell and overlays
 
-- `build/css/LeftandTopNavigation.css`: shared navigation, header, sidebar, profile, and shell styling used by the dashboard and main patient workspace
-- `build/css/lightbox.css`: reusable lightbox and popup container styling for image, chart, and iframe overlays
-- `build/css/incomingDialogbox.css`: modal and incoming dialog styling used around dashboard and main workspace popup flows
+- `build/css/LeftandTopNavigation.css`: Shared navigation, header, sidebar, profile, and shell styling used by the dashboard and main patient workspace.
+- `build/css/lightbox.css`: Reusable lightbox and popup container styling for image, chart, and iframe overlays.
+- `build/css/incomingDialogbox.css`: Modal and incoming dialog styling used around dashboard and main workspace popup flows.
 
 ### Page-specific layouts
 
-- `build/css/login-custom.css`: branded login layout, login card, form field, password toggle, and responsive authentication page styling
-- `build/css/DashbordRightColomn.css`: dashboard patient card grid, right-column layout, and dashboard-specific content styling
-- `build/css/LiveRightColomn.css`: live monitoring page layout for waveform cards, vital cards, EWS panel, and responsive main workspace alignment
-- `build/css/HistoryRightColomn.css`: history page layout, chart containers, filters, modal iframe presentation, and trend review styling loaded by the main workspace page
-- `build/css/vital.css`: threshold configuration and vital settings layout inside the main patient workspace
+- `build/css/login-custom.css`: Branded login layout, login card, form field, password toggle, and responsive authentication page styling.
+- `build/css/DashbordRightColomn.css`: Dashboard patient card grid, right-column layout, and dashboard-specific content styling.
+- `build/css/LiveRightColomn.css`: Live monitoring page layout for waveform cards, vital cards, the EWS panel, and responsive main workspace alignment.
+- `build/css/HistoryRightColomn.css`: History page layout, chart containers, filters, modal iframe presentation, and trend review styling loaded by the main workspace page.
+- `build/css/vital.css`: Threshold configuration and vital settings layout inside the main patient workspace.
 
 ### Context popup layouts
 
-- `build/css/context_assment_LeftandTopNavigation.css`: shared shell styling for context popup pages
-- `build/css/context_assment_LiveRightColomn.css`: context assessment and context ECG layout styling for popup charts, vitals, and focused review panels
+- `build/css/context_assment_LeftandTopNavigation.css`: Shared shell styling for context popup pages.
+- `build/css/context_assment_LiveRightColomn.css`: Context assessment and context ECG layout styling for popup charts, vitals, and focused review panels.
 
 ### Legacy or unused bundle
 
-- `build/css/custom.min.css`: bundled theme stylesheet that is currently commented out in `production/index.html` and not part of the active runtime styling path
+- `build/css/custom.min.css`: Bundled theme stylesheet that is currently commented out in `production/index.html` and is not part of the active runtime styling path.
 
 ## Firebase Integration
 
@@ -256,16 +263,263 @@ threshold_triggers/{patientId}/{timestamp}
 
 ### What each node is used for
 
-- `roles/{uid}`: role guard during login
 - `doctors/{uid}`: doctor profile, including `username` and `registerId`
 - `patients/{patientId}`: patient profile and doctor linkage through `docId`
-- `patientlivedata7s/{patientId}`: latest aggregated live vital snapshot used by dashboard and live monitoring
-- `patientlivedata/{patientId}/{timestamp}`: historical vital records used by history and context views
-- `ECG_plot`, `PPG_plot`, `RR_plot`: latest waveform payloads for the live/dashboard experience
-- `patientecgdata`, `patientppgdata`, `patientrrdata`: timestamped waveform history
+- `patientlivedata7s/{patientId}`: latest aggregated live vital snapshot used by the dashboard and live monitoring, and as a connectivity indicator
+- `patientlivedata/{patientId}/{timestamp}`: historical vital records and last valid fallback data used by the dashboard, live monitoring, history, and context views
+- `ECG_plot`, `PPG_plot`, `RR_plot`: latest waveform payloads for the live and dashboard experience
+- `patientecgdata`, `patientppgdata`, `patientrrdata`: timestamped waveform history and last valid fallback records
 - `EWS/{patientId}/{timestamp}`: timestamped EWS records and visual severity state
 - `Threshold_Default/{patientId}/{vitalKey}`: saved threshold configuration for the selected patient
-- `threshold_triggers/{patientId}/{timestamp}`: alert events that drive card blinking and session alert state
+- `threshold_triggers/{patientId}/{timestamp}`: alert events that drive card blinking, audio playback, and alert history markers
+
+### Realtime Database node structures
+
+The structures below combine the fields currently dereferenced by the web app with the additional fields documented in the SDD. Additional keys may exist in Firebase, but the examples below cover the schema the project expects or already documents.
+
+#### Authentication and assignment
+
+`roles/{uid}`
+
+```text
+roles
+   <firebase-auth-uid>
+      role: "Doctor"
+```
+
+Used during login to allow only doctor accounts into the dashboard.
+
+`doctors/{uid}`
+
+```text
+doctors
+   <firebase-auth-uid>
+      email: "doctor@example.com"
+      id: "<firebase-auth-uid>"
+      lname: "Rao"
+      mobile: "9999999999"
+      password: "<documented-profile-value>"
+      registerId: "DOC-001"
+      surname: "R"
+      username: "Doctor Name"
+```
+
+Used after login to store the doctor's display name and registration ID in local storage.
+
+`patients/{patientId}`
+
+```text
+patients
+   <patient-uuid>
+      age: "54"
+      ailment: "Cardiac observation"
+      docId: "<doctor-registerId>"
+      email: "patient@example.com"
+      gender: "Male"
+      height: "172"
+      id: "<patient-uuid>"
+      lname: "Kumar"
+      mobile: "9999999999"
+      mode: "live"
+      password: "<documented-profile-value>"
+      surname: "K"
+      username: "Patient Name"
+      weight: "68"
+```
+
+Used by the dashboard to fetch the patient list assigned to the logged-in doctor.
+
+#### Live device and vital nodes
+
+`patientlivedata7s/{patientId}`
+
+```text
+patientlivedata7s
+   <patient-uuid>
+      acc: "0"
+      battery: "87"
+      bp: "120/80"
+      hr: "7200"
+      pat: "0"
+      rr: "18"
+      spo: "9800"
+      temp: "36.7"
+      timestamp: 1712649000
+      userId: "<patient-uuid>"
+```
+
+Used by the dashboard and live page for the latest aggregated vital snapshot and to infer live device availability.
+
+`ECG_plot/{patientId}`
+
+```text
+ECG_plot
+   <patient-uuid>
+      timestamp: 1712649000
+      ecg: "[12,13,14][15,16,17]..."
+      type: "normal"
+```
+
+When the device is connected and ECG data is streaming, this node is updated under the patient UUID. Listeners use it to determine whether the device is connected and to fetch the latest `timestamp`, `ecg`, and `type` values. If `type` is `noise` or `flat`, the current UI treats the waveform as unavailable.
+
+`PPG_plot/{patientId}`
+
+```text
+PPG_plot
+   <patient-uuid>
+      timestamp: 1712649000
+      ppg: "101 102 103 104 ..."
+```
+
+Used as the live PPG stream node for the dashboard and live page.
+
+`RR_plot/{patientId}`
+
+```text
+RR_plot
+   <patient-uuid>
+      timestamp: 1712649000
+      res: "21 22 20 19 ..."
+```
+
+Used as the live respiration waveform node for the dashboard and live page.
+
+#### Historical vital and waveform nodes
+
+`patientlivedata/{patientId}/{timestamp}`
+
+```text
+patientlivedata
+   <patient-uuid>
+      <unix-timestamp>
+         acc: "0"
+         battery: "87"
+         bp: "120/80"
+         hr: "7200"
+         pat: "0"
+         rr: "18"
+         spo: "9800"
+         temp: "36.7"
+         timestamp: 1712649000
+         userId: "<patient-uuid>"
+```
+
+Used by the history page, context assessment popup, and live or dashboard fallback logic.
+
+`patientecgdata/{patientId}/{timestamp}`
+
+```text
+patientecgdata
+   <patient-uuid>
+      <unix-timestamp>
+         payload: "[12,13,14][15,16,17]..."
+         timestamp: 1712649000
+         type: "normal"
+         userId: "<patient-uuid>"
+```
+
+Used for timestamp-based ECG history, ECG context popups, and last valid ECG fallback data.
+
+`patientppgdata/{patientId}/{timestamp}`
+
+```text
+patientppgdata
+   <patient-uuid>
+      <unix-timestamp>
+         payload: "101 102 103 104 ..."
+         timestamp: 1712649000
+         userId: "<patient-uuid>"
+```
+
+Used for timestamp-based PPG history, context assessment, and last valid PPG fallback data.
+
+`patientrrdata/{patientId}/{timestamp}`
+
+```text
+patientrrdata
+   <patient-uuid>
+      <unix-timestamp>
+         payload: "21 22 20 19 ..."
+         timestamp: 1712649000
+         userId: "<patient-uuid>"
+```
+
+Used for timestamp-based respiration waveform history, context assessment, and last valid RR fallback data.
+
+#### EWS, threshold, and alert nodes
+
+`EWS/{patientId}/{timestamp}`
+
+```text
+EWS
+   <patient-uuid>
+      <unix-timestamp>
+         color: "#ff8a00"
+         doc_id: "DOC-001"
+         ews_score: 5
+         timestamp: 1712649000
+```
+
+The latest child node is used on the dashboard and live page. The exact timestamp child is used in the context assessment popup.
+
+`Threshold_Default/{patientId}`
+
+```text
+Threshold_Default
+   <patient-uuid>
+      spo2
+         typ: "<" | ">" | "<>" | ""
+         val1: "90"
+         val2: ""
+      hr
+         typ: "<" | ">" | "<>" | ""
+         val1: "50"
+         val2: "120"
+      temp
+         typ: "<" | ">" | "<>" | ""
+         val1: "35.5"
+         val2: "38.5"
+      rr
+         typ: "<" | ">" | "<>" | ""
+         val1: "10"
+         val2: "24"
+      sbp
+         typ: "<" | ">" | "<>" | ""
+         val1: "90"
+         val2: "140"
+      dbp
+         typ: "<" | ">" | "<>" | ""
+         val1: "60"
+         val2: "90"
+      timestamp: "1712649000"
+```
+
+Type codes used by the current UI:
+
+- `<`: less than
+- `>`: greater than
+- `<>`: between
+- empty string (`""`): disabled or not configured
+
+Legacy blood-pressure data can also exist in the older combined format below, and the current UI still reads it as a fallback:
+
+```text
+Threshold_Default
+   <patient-uuid>
+      bp
+         Min: "90/60"
+         Max: "140/90"
+```
+
+`threshold_triggers/{patientId}/{timestamp}`
+
+```text
+threshold_triggers
+   <patient-uuid>
+      <unix-timestamp>: "HR,SPO2"
+```
+
+Each timestamp child currently stores a comma-separated string of triggered vitals. New child entries are used to start dashboard blink states and alert sound playback.
 
 ### Important implementation detail
 
@@ -274,7 +528,7 @@ The dashboard filters patients by comparing:
 - `doctors/{uid}/registerId`
 - `patients/{patientId}/docId`
 
-This means patient-to-doctor assignment in the database is based on the doctor's registration id, not the Firebase auth uid.
+This means patient-to-doctor assignment in the database is based on the doctor's registration ID, not the Firebase auth UID.
 
 ## Threshold Configuration Model
 
@@ -295,7 +549,7 @@ Supported rule styles in the UI:
 - Greater than
 - In between
 
-The UI stores condition metadata plus value fields such as `val1`, `val2`, and `typ` depending on the rule shape.
+The UI stores condition metadata plus value fields such as `val1`, `val2`, and `typ` depending on the rule shape. When the rule type is In between, both `val1` and `val2` are required; otherwise, only `val1` is required.
 
 ## User Experience Summary
 
@@ -330,7 +584,7 @@ The main workspace in `production/index.html` contains three sections:
 ### Prerequisites
 
 - A Firebase project configured for Authentication and Realtime Database
-- Modern browser with ES module support
+- A modern browser with ES module support
 - Internet access for CDN-hosted dependencies
 - A static web server
 

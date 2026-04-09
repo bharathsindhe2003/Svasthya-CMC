@@ -41,6 +41,11 @@ const existingFirebaseApp = Array.isArray(firebase.apps) && firebase.apps.length
 export const fb = existingFirebaseApp || firebase.initializeApp(firebaseConfig);
 // export var vct;
 
+/**
+ * Convert a Unix timestamp in seconds into the date/time strings used by the UI.
+ * @param {number|string} unixTimestamp
+ * @returns {{date: string, time: string}}
+ */
 function formatDateTime(unixTimestamp) {
   if (!Number.isFinite(Number(unixTimestamp))) {
     return {
@@ -57,6 +62,12 @@ function formatDateTime(unixTimestamp) {
   };
 }
 
+/**
+ * Set innerHTML when the target element exists.
+ * @param {string} elementId
+ * @param {string} value
+ * @returns {void}
+ */
 function setInnerHtml(elementId, value) {
   const element = document.getElementById(elementId);
   if (element) {
@@ -64,17 +75,38 @@ function setInnerHtml(elementId, value) {
   }
 }
 
+/**
+ * Update the date and time labels associated with a waveform panel.
+ * @param {string} dateElementId
+ * @param {string} timeElementId
+ * @param {number|string} unixTimestamp
+ * @returns {void}
+ */
 function updateChartDateTime(dateElementId, timeElementId, unixTimestamp) {
   const formatted = formatDateTime(unixTimestamp);
   setInnerHtml(dateElementId, formatted.date);
   setInnerHtml(timeElementId, formatted.time);
 }
 
+/**
+ * Clear the date and time labels associated with a waveform panel.
+ * @param {string} dateElementId
+ * @param {string} timeElementId
+ * @returns {void}
+ */
 function clearChartDateTime(dateElementId, timeElementId) {
   setInnerHtml(dateElementId, "");
   setInnerHtml(timeElementId, "");
 }
 
+/**
+ * Render a shared no-data chart state and remove the related timestamp labels.
+ * @param {string} chartElementId
+ * @param {Object} option
+ * @param {string} dateElementId
+ * @param {string} timeElementId
+ * @returns {void}
+ */
 function showNoDataChart(chartElementId, option, dateElementId, timeElementId) {
   clearChartDateTime(dateElementId, timeElementId);
 
@@ -88,6 +120,11 @@ function showNoDataChart(chartElementId, option, dateElementId, timeElementId) {
   chart.setOption(option);
 }
 
+/**
+ * Extract the newest timestamped record from a Firebase object keyed by epoch.
+ * @param {Object} snapshotValue
+ * @returns {{timestamp: number|null, record: Object|null}}
+ */
 function getLatestSnapshotEntry(snapshotValue) {
   if (!snapshotValue || typeof snapshotValue !== "object") {
     return { timestamp: null, record: null };
@@ -109,6 +146,11 @@ function getLatestSnapshotEntry(snapshotValue) {
   };
 }
 
+/**
+ * Parse the ECG payload format stored as bracket-delimited text into numbers.
+ * @param {string} payload
+ * @returns {Array<number>}
+ */
 function parseEcgPayload(payload) {
   if (typeof payload !== "string") {
     return [];
@@ -124,6 +166,11 @@ function parseEcgPayload(payload) {
     .filter((value) => Number.isFinite(value));
 }
 
+/**
+ * Parse space- or comma-separated waveform payload text into numeric samples.
+ * @param {string} payload
+ * @returns {Array<number>}
+ */
 function parseSpaceSeparatedWaveform(payload) {
   if (typeof payload !== "string") {
     return [];
@@ -137,6 +184,12 @@ function parseSpaceSeparatedWaveform(payload) {
     .filter((value) => Number.isFinite(value));
 }
 
+/**
+ * Normalize a vital value and replace invalid sentinel values with the UI placeholder.
+ * @param {number|string} value
+ * @param {number} invalidSentinel
+ * @returns {number|string}
+ */
 function sanitizeVitalValue(value, invalidSentinel) {
   const numericValue = Number(value);
   if (!Number.isFinite(numericValue) || numericValue === invalidSentinel) {
@@ -186,6 +239,11 @@ function applyVitalsToUi(data) {
   }
 }
 
+/**
+ * Attach Firebase listeners for the live page and seed charts from the latest
+ * historical snapshots until streaming data arrives.
+ * @returns {void}
+ */
 function init_echarts() {
   $(document).ready(() => {
     var PatientName;
@@ -451,6 +509,11 @@ function init_echarts() {
   });
 }
 
+/**
+ * Map a numeric battery percentage to the matching Font Awesome icon.
+ * @param {number} batteryPercentage
+ * @returns {string}
+ */
 function getBatteryIcon(batteryPercentage) {
   if (batteryPercentage >= 90) {
     return '<i class="fa fa-battery-full" aria-hidden="true"></i> ';

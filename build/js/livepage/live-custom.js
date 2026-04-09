@@ -973,6 +973,11 @@ function heartrate_data(LiveHeartrate, ContextHeartrate) {
 
 /***************************  BloodOxygen(spo2) ***********************/
 // Shared normalizer so both live and context SPO2 can reuse it.
+/**
+ * Normalize SpO2 input so both percent values and fractional values can drive the gauge.
+ * @param {number|string} value
+ * @returns {number}
+ */
 function normalizeSpO2(value) {
   const n = Number(value);
   if (!Number.isFinite(n) || n <= 0) {

@@ -11,6 +11,11 @@ const pendingBlinkAlerts = new Map();
 
 registerThresholdListeners(patient_info);
 
+/**
+ * Normalize a comma-separated threshold payload into dashboard vital keys.
+ * @param {string} vitalString
+ * @returns {Array<string>}
+ */
 function parseThresholdVitals(vitalString) {
   if (typeof vitalString !== "string") {
     return [];
@@ -29,6 +34,12 @@ function parseThresholdVitals(vitalString) {
     .filter(Boolean);
 }
 
+/**
+ * Map a patient/vital pair to the dashboard element id that should blink.
+ * @param {string} id
+ * @param {string} vital
+ * @returns {string}
+ */
 function resolveAlertElementId(id, vital) {
   if (vital === "HR") {
     return "hrBorder" + id;
@@ -49,11 +60,20 @@ function resolveAlertElementId(id, vital) {
   return "border" + id;
 }
 
+/**
+ * Get the wrapper id for the full patient card border.
+ * @param {string} id
+ * @returns {string}
+ */
 function getPatientBorderId(id) {
   return "border" + id;
 }
 const sessionStorageName = "THRESHOLD_TRIGGERS";
 
+/**
+ * Read the currently active threshold alerts persisted in session storage.
+ * @returns {Object}
+ */
 function getStoredThresholdAlerts() {
   try {
     const storedValue = sessionStorage.getItem(sessionStorageName);
@@ -72,7 +92,11 @@ function getStoredThresholdAlerts() {
     return {};
   }
 }
-
+/**
+ * Persist active alert vitals by patient for the current browser session.
+ * @param {Object} alertsByPatient
+ * @returns {void}
+ */
 function setStoredThresholdAlerts(alertsByPatient) {
   const patientIds = Object.keys(alertsByPatient || {});
 
@@ -83,13 +107,22 @@ function setStoredThresholdAlerts(alertsByPatient) {
 
   sessionStorage.setItem(sessionStorageName, JSON.stringify(alertsByPatient));
 }
-
+/**
+ * Queue an alert until the related dashboard card is available in the DOM.
+ * @param {string} id
+ * @param {string} vital
+ * @returns {void}
+ */
 function queuePendingBlink(id, vital) {
   const patientVitals = pendingBlinkAlerts.get(id) || new Set();
   patientVitals.add(vital);
   pendingBlinkAlerts.set(id, patientVitals);
 }
 
+/**
+ * Replay queued blink states after dashboard cards finish rendering.
+ * @returns {void}
+ */
 function flushPendingBlinkAlerts() {
   if (pendingBlinkAlerts.size === 0) {
     return;
@@ -105,6 +138,10 @@ function flushPendingBlinkAlerts() {
   });
 }
 
+/**
+ * Restore persisted blink indicators after a page reload within the same session.
+ * @returns {void}
+ */
 function restoreBlinkAlertsFromSession() {
   const storedAlerts = getStoredThresholdAlerts();
   const patientIds = Object.keys(storedAlerts);
@@ -128,7 +165,11 @@ function restoreBlinkAlertsFromSession() {
 
 // Apply the blink effect to the users
 restoreBlinkAlertsFromSession();
-
+/**
+ * Subscribe to threshold-trigger updates for each dashboard patient exactly once.
+ * @param {Array} patient_info
+ * @returns {void}
+ */
 function registerThresholdListeners(patient_info) {
   if (!Array.isArray(patient_info) || patient_info.length === 0) {
     return;
@@ -147,6 +188,8 @@ function registerThresholdListeners(patient_info) {
 
     console.log("[Threshold_triggers.js] threshold patient:", patientId);
 
+    // Fetching the data onceand then adding listern
+    //  because the we only need to track new entries since this JS file will be attached in index.html and dashboard.html
     patientRef.once("value", (initialSnap) => {
       const oldTimestampKeys = new Set();
 
@@ -186,6 +229,10 @@ if (sound) {
   sound.preload = "auto";
 }
 
+/**
+ * Prime the browser audio element so alert playback can start without later user prompts.
+ * @returns {void}
+ */
 function primeAlertSound() {
   if (!sound || alertSoundPrimed) {
     return;
@@ -215,6 +262,10 @@ function primeAlertSound() {
 document.addEventListener("pointerdown", primeAlertSound, { once: true });
 document.addEventListener("keydown", primeAlertSound, { once: true });
 
+/**
+ * There might be more the 1 active alert targets so this function sync the alert as one
+ * @returns {void}
+ */
 function syncAlertSound() {
   if (!sound) {
     return;
@@ -231,7 +282,10 @@ function syncAlertSound() {
   sound.pause();
   sound.currentTime = 0;
 }
-
+/**
+ * Function clears all blink alerts from the dashboard
+ * @returns {void}
+ */
 function clearAllBlinkAlerts() {
   document.querySelectorAll(".blink-border").forEach((element) => {
     element.classList.remove("blink-border");
@@ -245,6 +299,12 @@ function clearAllBlinkAlerts() {
   syncAlertSound();
 }
 
+/**
+ * Apply blink styling and alert-sound state for a patient/vital target.
+ * @param {string} id
+ * @param {string} vital
+ * @returns {void}
+ */
 function addBlink(id, vital) {
   try {
     let val = resolveAlertElementId(id, vital);
@@ -285,6 +345,12 @@ function addBlink(id, vital) {
   }
 }
 
+/**
+ * Function removes blink from the dashboard
+ * @param {string} id
+ * @param {string} vital
+ * @returns {void}
+ */
 function removeBlink(id, vital) {
   try {
     // remove from session storage
