@@ -128,7 +128,6 @@ Notes:
 
 - `build/` contains the runtime CSS and JavaScript used by the application. Despite the name, there is no build pipeline in this repository.
 - `production/` contains the runtime HTML pages used by the application. Despite the name, there is no production pipeline or CI/CD setup in this repository.
-- The documented path names intentionally match the filesystem, including legacy spellings such as `assests`, `aduio2.mp3`, `DashbordRightColomn.css`, and `context_assment.html`.
 
 ## Front-End JS Module Map
 
@@ -184,7 +183,7 @@ Notes:
 
 ### Entry point
 
-- `index.html`: Root landing page that immediately redirects the browser to `production/login.html`.
+- `index.html`: Root landing page that immediately redirects the browser to `production/login.html`.For GitHub Pages Hosting.
 
 ### Runtime pages
 
