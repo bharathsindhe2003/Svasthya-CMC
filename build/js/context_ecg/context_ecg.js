@@ -11,6 +11,13 @@ var value;
 
 document.getElementById("loader").className = "loader";
 
+/**
+ * Loads the context assessment popup for a selected timestamp and renders
+ * historical vitals, waveforms, and EWS information.
+ * @param {string} param1 - The encoded timestamp.
+ * @param {string} param2 - The encoded patient ID.
+ * @param {string} param3 - The encoded page identifier. (For Current implementation 1 is used because in Vitals and Alerts charts in Consolidated tab of History we use same node to display data. In future, for same structure, different values can be used/defined)
+ */
 const urlParams = new URLSearchParams(window.location.search);
 var originlalTimestamp = parseInt(atob(urlParams.get("param1")));
 var timestamp = originlalTimestamp;
@@ -70,13 +77,13 @@ if (page == "2") {
 }
 /**
  * Add ECG data if exists for the given timestamp
- * @param {*} LiveEcgValues
- * @param {*} ecgdate
- * @param {*} ecgtime
- * @param {*} option1
- * @param {*} value
+ * @param {*} LiveEcgValues (Not Used)
+ * @param {*} ecgdate (Not Used)
+ * @param {*} ecgtime (Not Used)
+ * @param {*} option1 (Not Used)
+ * @param {*} value (Not Used)
  * @param {*} ecgdata
- * @param {*} endzoom
+ * @param {*} endzoom (Not Used)
  */
 function ECG_data(LiveEcgValues, ecgdate, ecgtime, option1, value, ecgdata, endzoom) {
   console.log("[context_ecg.js] [context_assessment_UI_2.js] EcgValues in echarts", "context:", ecgdata);

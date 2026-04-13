@@ -20,7 +20,7 @@ const Respiration_graph = echarts.init(document.getElementById("respiration_rate
  * Inserts a null point after missing minute intervals so ECharts breaks the line
  * instead of drawing across gaps in the historical data.
  * @param {Array} rawData
- * @param {number} gapMultiplier
+ * @param {number} gapMultiplier 
  * @returns {Array}
  */
 function addTimeGapsForMissingData(rawData, gapMultiplier) {

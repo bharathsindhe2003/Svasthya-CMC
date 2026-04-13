@@ -25,6 +25,13 @@ var value;
 
 document.getElementById("loader").className = "loader";
 
+/**
+ * Loads the context assessment popup for a selected timestamp and renders
+ * historical vitals, waveforms, and EWS information.
+ * @param {string} param1 - The encoded timestamp.
+ * @param {string} param2 - The encoded patient ID.
+ * @param {string} param3 - The encoded page identifier. (For Current implementation 1 is used because in Vitals and Alerts charts in Consolidated tab of History we use same node to display data. In future, for same structure, different values can be used/defined)
+ */
 const urlParams = new URLSearchParams(window.location.search);
 var originlalTimestamp = parseInt(atob(urlParams.get("param1")));
 var timestamp = originlalTimestamp;
@@ -211,8 +218,8 @@ try {
 }
 /**
  * Add EWS Score if data exists for the specific timestamp selected in context assessment card/pop-up
- * @param {number|null} ews_value
- * @param {string|null} ews_color
+ * @param {number|null} ews_value - EWS value to be displayed
+ * @param {string|null} ews_color - EWS color to be done around the value.
  * @returns {void}
  */
 function ews_value_passing_context(ews_value, ews_color) {
@@ -244,13 +251,13 @@ function ews_value_passing_context(ews_value, ews_color) {
 }
 /**
  * Add ECG plot if data exists for a specific timestamp in context assessment card/pop-up
- * @param {Array} LiveEcgValues Live ECG values
- * @param {string} date Date string
- * @param {string} time Time string
- * @param {string} option1 Option 1
- * @param {number} value Value
+ * @param {Array} LiveEcgValues Live ECG values (Not Used)
+ * @param {string} date Date string (Not Used)
+ * @param {string} time Time string (Not Used)
+ * @param {string} option1 Option 1 (Not Used)
+ * @param {number} value Value (Not Used)
  * @param {Array} ecgdata ECG data
- * @param {number} endzoom End zoom value
+ * @param {number} endzoom End zoom value (Not Used)
  * @returns {void}
  */
 function ECG_data(LiveEcgValues, date, time, option1, value, ecgdata, endzoom) {
@@ -553,13 +560,13 @@ function ECG_data(LiveEcgValues, date, time, option1, value, ecgdata, endzoom) {
 }
 /**
  * Add PPG plot if data exists for a specific timestamp in context assessment card/pop-up
- * @param {Array} LivePpgValues Live PPG values
- * @param {string} date Date string
- * @param {string} time Time string
- * @param {string} option1 Option 1
- * @param {number} value Value
- * @param {Array} ppgdata PPG data
- * @param {number} endzoom End zoom value
+ * @param {Array} LivePpgValues Live PPG values  (Not Used)
+ * @param {string} date Date string  (Not Used)
+ * @param {string} time Time string  (Not Used)
+ * @param {string} option1 Option 1  (Not Used)
+ * @param {number} value Value (Not Used)
+ * @param {Array} ppgdata PPG data (Not Used)
+ * @param {number} endzoom End zoom value (Not Used)
  * @returns {void}
  */
 function PPG_data(LivePpgValues, date, time, option1, value, ppgdata, endzoom) {
@@ -769,13 +776,13 @@ function PPG_data(LivePpgValues, date, time, option1, value, ppgdata, endzoom) {
 }
 /**
  * Add RR plot if data exists for a specific timestamp in context assessment card/pop-up
- * @param {Array} LiveRRValues Live RR values
- * @param {string} date Date string
- * @param {string} time Time string
- * @param {string} option1 Option 1
- * @param {number} value Value
+ * @param {Array} LiveRRValues Live RR (Not Used)
+ * @param {string} date Date string (Not Used)
+ * @param {string} time Time string (Not Used)
+ * @param {string} option1 Option 1 (Not Used)
+ * @param {number} value Value (Not Used)
  * @param {Array} rrdata RR data
- * @param {number} endzoom End zoom value
+ * @param {number} endzoom End zoom value (Not Used)
  * @returns {void}
  */
 function RR_data(LiveRRValues, date, time, option1, value, rrdata, endzoom) {

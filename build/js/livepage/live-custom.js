@@ -38,11 +38,11 @@ function ews_value_passing(ews_value, ews_color) {
 /**
  * Update ECG data on the live page.
  * @param {Array<number>} LiveEcgValues - The live ECG values.
- * @param {string} ecgdate - The date of the ECG data.
- * @param {string} ecgtime - The time of the ECG data.
- * @param {Object} option1 - The chart options.
- * @param {number} value - The value to display.
- * @param {Array<number>} ecgdata - The ECG data array.
+ * @param {string} ecgdate - The date of the ECG data.  (Not Used)
+ * @param {string} ecgtime - The time of the ECG data. (Not Used)
+ * @param {Object} option1 - The chart options. (Not Used)
+ * @param {number} value - The value to display. (Not Used)
+ * @param {Array<number>} ecgdata - The ECG data array. (Not Used)
  * @param {number} endzoom - The end zoom value for the chart.
  * @returns {void}
  */
@@ -344,11 +344,11 @@ function ECG_data_passing(LiveEcgValues, ecgdate, ecgtime, option1, value, ecgda
 /**
  * Update PPG data on the live page
  * @param {Array<number>} LivePpgValues - The live PPG values.
- * @param {string} ecgdate - The date of the ECG data.
- * @param {string} ecgtime - The time of the ECG data.
- * @param {Object} option1 - The chart options.
- * @param {number} value - The value to display.
- * @param {Array<number>} ppgdata - The PPG data array.
+ * @param {string} ecgdate - The date of the ECG data. (Not Used)
+ * @param {string} ecgtime - The time of the ECG data. (Not Used)
+ * @param {Object} option1 - The chart options. (Not Used)
+ * @param {number} value - The value to display. (Not Used)
+ * @param {Array<number>} ppgdata - The PPG data array. (Not Used)
  * @param {number} endzoom - The end zoom value for the chart.
  * @returns {void}
  */
@@ -619,11 +619,11 @@ function PPG_data_passing(LivePpgValues, ecgdate, ecgtime, option1, value, ppgda
 /**
  * Update Respiration Rate (RR) data on the live page.
  * @param {Array<number>} LiveRrValues - The live RR values.
- * @param {string} rrdate - The date of the RR data.
- * @param {string} rrtime - The time of the RR data.
- * @param {Object} option1 - The chart options.
- * @param {number} value - The value to display.
- * @param {Array<number>} rrdata - The RR data array.
+ * @param {string} rrdate - The date of the RR data. (Not Used)
+ * @param {string} rrtime - The time of the RR data. (Not Used)
+ * @param {Object} option1 - The chart options. (Not Used)
+ * @param {number} value - The value to display. (Not Used)
+ * @param {Array<number>} rrdata - The RR data array. (Not Used)
  * @param {number} endzoom - The end zoom value for the chart.
  * @returns {void}
  */
@@ -995,7 +995,6 @@ function normalizeSpO2(value) {
 /**
  * Update Blood Oxygen (SpO2) data on the live page and context assessment.
  * @param {number|string} LiveBloodOxygen - The live blood oxygen value.
- * @param {number|string} ContextBloodOxygen - The context blood oxygen value.
  * @returns {void}
  */
 function blood_oxygen_data(LiveBloodOxygen) {

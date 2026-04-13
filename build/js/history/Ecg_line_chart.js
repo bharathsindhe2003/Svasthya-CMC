@@ -4,6 +4,9 @@ import { ECG_data_passing } from "../livepage/live-custom.js";
 /**
  * Load a historical ECG payload for the selected timestamp and replace the
  * scatter view with a detailed waveform chart.
+ *
+ * The File is not currently being used
+ *
  * @param {number|string} timestamp
  * @param {string} id
  * @param {Object} ECG_scatter_graph

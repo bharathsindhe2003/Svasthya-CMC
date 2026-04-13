@@ -14,8 +14,8 @@ import { fb } from "../livepage/database_function.js";
  * Fetches data from Firebase for the given time range and updates the local array.
  * @param {number} min_time - The minimum timestamp (in seconds) for the data range.
  * @param {number} max_time - The maximum timestamp (in seconds) for the data range.
- * @param {Array} localarray - The local array to store the fetched data.
- * @param {number} trim - The trim value for data processing.
+ * @param {Array} localarray - The local array to store the fetched data.  (Not Used)
+ * @param {number} trim - The trim value for data processing.  (Not Used)
  */
 export function firebase(min_time, max_time, localarray, trim) {
   try {
